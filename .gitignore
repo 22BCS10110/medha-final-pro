@@ -1,0 +1,23 @@
+# Build files
+dist/
+dist-electron/
+build/
+
+# Executables
+*.exe
+*.apk
+
+# Python
+__pycache__/
+*.pyc
+*.sqlite3
+
+# Env
+.venv/
+env/
+
+# Node
+node_modules/
+
+# OS
+.DS_Store
