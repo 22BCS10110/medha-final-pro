@@ -30,7 +30,7 @@ class Patient(models.Model):
     patient_id = models.CharField(max_length=20, unique=True)
     full_name = models.CharField(max_length=200)
     email = models.EmailField(unique=True, blank=True, null=True)
-    password_hash = models.CharField(max_length=255, blank=True)  # For Firebase auth sync
+    password_hash = models.CharField(max_length=255, blank=True)
     date_of_birth = models.DateField(null=True, blank=True)
     gender = models.CharField(max_length=1, choices=GENDER_CHOICES, default='M')
     blood_group = models.CharField(max_length=3, choices=BLOOD_GROUPS, blank=True)
@@ -41,7 +41,6 @@ class Patient(models.Model):
     reason_for_visit = models.TextField(blank=True)
     assigned_doctor = models.ForeignKey('doctors.Doctor', on_delete=models.SET_NULL, null=True, blank=True, related_name='assigned_patients')
     status = models.CharField(max_length=15, choices=STATUS_CHOICES, default='active')
-    firebase_uid = models.CharField(max_length=128, blank=True, null=True, unique=True)  # Firebase Auth UID
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
@@ -90,6 +89,10 @@ class PatientCard(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     patient = models.ForeignKey(Patient, on_delete=models.CASCADE, related_name='cards')
     card_number = models.CharField(max_length=30, unique=True, editable=False)
+    nfc_uid = models.CharField(
+        max_length=50, unique=True, null=True, blank=True,
+        help_text='Hardware NFC card UID (hex string from reader)'
+    )
     card_type = models.CharField(max_length=10, choices=CARD_TYPES, default='qr')
     status = models.CharField(max_length=10, choices=STATUS_CHOICES, default='active')
     issued_at = models.DateTimeField(auto_now_add=True)

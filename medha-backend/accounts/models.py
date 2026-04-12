@@ -17,6 +17,10 @@ class User(AbstractUser):
     # Keep hospital_name for backward compatibility during migration
     hospital_name = models.CharField(max_length=200, blank=True)
     user_id_code = models.CharField(max_length=20, blank=True, unique=True, null=True)
+    supabase_uid = models.CharField(max_length=255, blank=True, null=True, unique=True,
+                                     help_text="Supabase auth user ID (sub claim)")
+    is_profile_complete = models.BooleanField(default=False,
+                                               help_text="False until patient completes onboarding profile")
 
     def __str__(self):
         return f"{self.get_full_name()} ({self.role})"

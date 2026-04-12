@@ -16,6 +16,7 @@ import 'package:medha_mobile/features/screens/language_selection_screen.dart';
 import 'package:medha_mobile/features/screens/medicine_reminders_screen.dart';
 import 'package:medha_mobile/features/screens/medical_records_screen.dart';
 import 'package:medha_mobile/features/screens/onboarding_screen.dart';
+import 'package:medha_mobile/features/screens/complete_profile_screen.dart';
 import 'package:medha_mobile/features/screens/otp_auth_screen.dart';
 import 'package:medha_mobile/features/screens/prescriptions_screen.dart';
 import 'package:medha_mobile/features/screens/profile_screen.dart';
@@ -27,24 +28,48 @@ final appRouterProvider = Provider<GoRouter>((ref) {
   final isFirstLaunch = ref.watch(firstLaunchProvider);
   final locale = ref.watch(appLocaleProvider);
   final auth = ref.watch(authStateProvider);
+  final currentUser = auth.asData?.value;
+  final isAuthLoading = auth.isLoading;
 
   return GoRouter(
     initialLocation: "/language",
     redirect: (context, state) {
       final location = state.matchedLocation;
       final isSetupRoute = location == "/language" || location == "/onboarding";
+      final isAuthRoute = location == "/auth" || location == "/otp-auth";
+      final isProtectedRoute = !isSetupRoute && !isAuthRoute;
 
-      // Always allow setup routes
-      if (isSetupRoute) return null;
+      // Language selection always comes first.
+      if (locale == null) {
+        return location == "/language" ? null : "/language";
+      }
 
-      // Language selection first
-      if (locale == null) return "/language";
+      // After choosing a language, continue to onboarding, auth, or home.
+      if (location == "/language") {
+        if (isFirstLaunch) return "/onboarding";
+        if (isAuthLoading) return null;
+        return currentUser == null ? "/auth" : "/home";
+      }
 
-      // Onboarding for first launch
-      if (isFirstLaunch) return "/onboarding";
+      // Keep onboarding only for first launch.
+      if (isFirstLaunch) {
+        return location == "/onboarding" ? null : "/onboarding";
+      }
 
-      // Auth redirect handled by auth screen after successful login
-      // No redirect needed here to avoid race conditions with auth state
+      // Once onboarding is done, don't allow going back to it automatically.
+      if (location == "/onboarding") {
+        if (isAuthLoading) return null;
+        return currentUser == null ? "/auth" : "/home";
+      }
+
+      if (isAuthLoading) return null;
+
+      // Logged-in users should not stay on auth screens.
+      if (currentUser != null && isAuthRoute) return "/home";
+
+      // Logged-out users cannot access protected routes.
+      if (currentUser == null && isProtectedRoute) return "/auth";
+
       return null;
     },
     routes: [
@@ -52,6 +77,7 @@ final appRouterProvider = Provider<GoRouter>((ref) {
       GoRoute(path: "/onboarding", builder: (_, __) => const OnboardingScreen()),
       GoRoute(path: "/auth", builder: (_, __) => const AuthScreen()),
       GoRoute(path: "/otp-auth", builder: (_, __) => const OtpAuthScreen()),
+      GoRoute(path: "/complete-profile", builder: (_, __) => const CompleteProfileScreen()),
       ShellRoute(
         builder: (_, __, child) => AppShellScaffold(child: child),
         routes: [

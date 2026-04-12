@@ -59,6 +59,14 @@ const desktopAPI = {
     return { success: true };
   },
 
+  // NFC Hardware status (nfc-pcsc)
+  nfcHardwareStatus: async () => {
+    if (isElectron && window.medhaAPI?.nfcHardware) {
+      return await window.medhaAPI.nfcHardware.status();
+    }
+    return { available: false, readers: [], hasReader: false };
+  },
+
   // Auto-update listeners
   onUpdateAvailable: (callback) => {
     if (isElectron) {

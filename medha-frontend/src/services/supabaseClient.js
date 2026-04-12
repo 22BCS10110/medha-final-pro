@@ -1,41 +1,44 @@
-import { createClient } from '@supabase/supabase-js';
+/**
+ * Local auth adapter — replaces Supabase.
+ * Provides the same interface so AuthContext doesn't break.
+ * All auth is now handled via Django JWT backend.
+ */
 
-const SUPABASE_URL = 'https://mnwhjlgjncmdcjewktuo.supabase.co';
-const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1ud2hqbGdqbmNtZGNqZXdrdHVvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzUzMDEyOTAsImV4cCI6MjA5MDg3NzI5MH0.Ieucdm23X2umTxXXapzyBJko6_A-08GojQCEOv75pkY';
-
-export const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+const listeners = [];
 
 export const supabaseAuth = {
   signIn: async (email, password) => {
-    const { data, error } = await supabase.auth.signInWithPassword({ email, password });
-    if (error) throw error;
-    return data;
+    // Handled by authAPI.login in api.js — this is a no-op shim
+    return { session: null, user: null };
   },
 
   signUp: async (email, password) => {
-    const { data, error } = await supabase.auth.signUp({ email, password });
-    if (error) throw error;
-    return data;
+    return { session: null, user: null };
   },
 
   signOut: async () => {
-    const { error } = await supabase.auth.signOut();
-    if (error) throw error;
+    localStorage.removeItem('medha_token');
+    localStorage.removeItem('medha_refresh_token');
+    localStorage.removeItem('medha_user');
+    listeners.forEach(cb => cb('SIGNED_OUT', null));
   },
 
   getSession: async () => {
-    const { data: { session } } = await supabase.auth.getSession();
-    return session;
+    const token = localStorage.getItem('medha_token');
+    if (!token) return null;
+    const user = JSON.parse(localStorage.getItem('medha_user') || 'null');
+    return token ? { access_token: token, user } : null;
   },
 
   onAuthStateChange: (callback) => {
-    return supabase.auth.onAuthStateChange((event, session) => {
-      callback(event, session);
-    });
+    listeners.push(callback);
+    return { data: { subscription: { unsubscribe: () => {} } } };
   },
 
   getAccessToken: async () => {
-    const { data: { session } } = await supabase.auth.getSession();
-    return session?.access_token || null;
+    return localStorage.getItem('medha_token');
   },
 };
+
+// No actual Supabase client needed
+export const supabase = null;

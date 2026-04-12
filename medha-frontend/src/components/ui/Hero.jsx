@@ -1,7 +1,7 @@
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { ArrowRight, Sparkles, Activity, ShieldCheck, HeartPulse, Smartphone } from 'lucide-react';
-import { cn } from '../../lib/utils';
+import { cn } from '../../utils/cn';
 
 const Hero = ({ onOpenMobilePreview }) => {
   return (
@@ -70,16 +70,11 @@ const Hero = ({ onOpenMobilePreview }) => {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, delay: 0.3 }}
-          className="flex flex-col sm:flex-row items-center justify-center gap-6 mb-24"
+          className="flex items-center justify-center mb-24 w-full"
         >
-          <Link to="/portal" className="group relative w-full sm:w-auto bg-primary text-white px-10 py-5 rounded-[2rem] font-bold text-xl shadow-2xl shadow-primary/20 hover:shadow-primary/40 hover:-translate-y-1 transition-all flex items-center justify-center gap-3">
-            Enter Hospital Portal
-            <ArrowRight size={22} className="group-hover:translate-x-1 transition-transform" />
-          </Link>
-          
           <button 
             onClick={onOpenMobilePreview}
-            className="w-full sm:w-auto px-10 py-5 rounded-[2rem] font-bold text-xl text-slate-900 border-2 border-slate-100 hover:border-slate-300 hover:bg-slate-50 transition-all flex items-center justify-center gap-3"
+            className="w-full sm:w-auto px-10 py-5 rounded-[2rem] font-bold text-xl text-slate-900 border-2 border-slate-100 hover:border-slate-300 hover:bg-slate-50 hover:shadow-lg hover:-translate-y-1 transition-all flex items-center justify-center gap-3"
           >
             <Smartphone size={22} />
             Patient App Preview

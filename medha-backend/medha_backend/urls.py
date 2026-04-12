@@ -28,6 +28,12 @@ urlpatterns = [
     path('api/hospital/settings/', hospital_settings),
     path('api/patients/scan-card/<str:card_number>/', PatientCardViewSet.as_view({'get': 'scan_card'}), name='scan-card'),
     
-    # API v2 - Supabase Auth + RBAC + Hospital Isolation
-    path('api/v2/', include('api.v2.urls')),
+    # ── Consent System ──
+    path('api/consent/', include('consent.urls')),
+
+    # ── Chat System ──
+    path('api/chat/', include('chat.urls')),
+
+    # ── ABDM Simulator (Demo/Pilot) ──
+    path('api/abdm/', include('abdm_simulator.urls')),
 ]

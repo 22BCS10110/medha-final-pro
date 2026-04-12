@@ -2,7 +2,7 @@ import React from 'react';
 import { motion } from 'framer-motion';
 import { ShieldAlert, Zap, Search, BrainCircuit, Database, Star, ShieldCheck } from 'lucide-react';
 
-import { cn } from '../../lib/utils';
+import { cn } from '../../utils/cn';
 
 const Features = () => {
   const features = [

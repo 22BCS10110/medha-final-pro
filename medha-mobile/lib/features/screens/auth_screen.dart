@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:medha_mobile/features/auth/auth_repository.dart';
 import 'package:medha_mobile/l10n/app_localizations.dart';
 import 'package:medha_mobile/core/theme/app_theme.dart';
 import 'package:medha_mobile/core/widgets/enhanced_button.dart';
@@ -21,6 +22,7 @@ class _AuthScreenState extends ConsumerState<AuthScreen> with TickerProviderStat
   bool isLogin = true;
   bool _obscure = true;
   bool _loading = false;
+  bool _googleLoading = false;
   String? _errorMessage;
   
   late AnimationController _fadeController;
@@ -95,6 +97,33 @@ class _AuthScreenState extends ConsumerState<AuthScreen> with TickerProviderStat
       setState(() => _errorMessage = 'An error occurred. Please try again.');
     } finally {
       if (mounted) setState(() => _loading = false);
+    }
+  }
+
+  Future<void> _handleGoogleSignIn() async {
+    if (_googleLoading) return;
+    setState(() {
+      _googleLoading = true;
+      _errorMessage = null;
+    });
+
+    try {
+      final authRepo = ref.read(authRepositoryProvider);
+      final result = await authRepo.signInWithGoogle();
+
+      if (!mounted) return;
+
+      if (result.isProfileComplete) {
+        context.go('/home');
+      } else {
+        context.go('/complete-profile');
+      }
+    } catch (e) {
+      if (mounted) {
+        setState(() => _errorMessage = 'Google sign-in failed. Please try again.');
+      }
+    } finally {
+      if (mounted) setState(() => _googleLoading = false);
     }
   }
 
@@ -388,8 +417,35 @@ class _AuthScreenState extends ConsumerState<AuthScreen> with TickerProviderStat
                           isLoading: _loading,
                           icon: isLogin ? Icons.login_rounded : Icons.person_add_rounded,
                         ),
+                        const SizedBox(height: 14),
+
+                        // Divider
+                        Row(
+                          children: [
+                            Expanded(child: Divider(color: AppTheme.onSurface.withValues(alpha: 0.12))),
+                            Padding(
+                              padding: const EdgeInsets.symmetric(horizontal: 14),
+                              child: Text(
+                                "or",
+                                style: GoogleFonts.plusJakartaSans(
+                                  fontSize: 13,
+                                  fontWeight: FontWeight.w600,
+                                  color: AppTheme.onSurface.withValues(alpha: 0.4),
+                                ),
+                              ),
+                            ),
+                            Expanded(child: Divider(color: AppTheme.onSurface.withValues(alpha: 0.12))),
+                          ],
+                        ),
+                        const SizedBox(height: 14),
+
+                        // Google sign-in button
+                        _GoogleSignInButton(
+                          onPressed: _handleGoogleSignIn,
+                          isLoading: _googleLoading,
+                        ),
                         const SizedBox(height: 12),
-                        
+
                         // OTP button
                         EnhancedOutlineButton(
                           label: l10n.phoneOtp,
@@ -459,6 +515,68 @@ class _HeroBadge extends StatelessWidget {
           ),
         ],
       ),
+    );
+  }
+}
+
+class _GoogleSignInButton extends StatelessWidget {
+  final VoidCallback? onPressed;
+  final bool isLoading;
+
+  const _GoogleSignInButton({this.onPressed, this.isLoading = false});
+
+  @override
+  Widget build(BuildContext context) {
+    return OutlinedButton(
+      onPressed: isLoading ? null : onPressed,
+      style: OutlinedButton.styleFrom(
+        foregroundColor: AppTheme.onSurface,
+        minimumSize: const Size.fromHeight(56),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        side: BorderSide(color: AppTheme.onSurface.withValues(alpha: 0.15), width: 1.5),
+        backgroundColor: Colors.white,
+      ),
+      child: isLoading
+          ? SizedBox(
+              height: 20,
+              width: 20,
+              child: CircularProgressIndicator(
+                strokeWidth: 2,
+                color: AppTheme.onSurface.withValues(alpha: 0.5),
+              ),
+            )
+          : Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                // Google "G" icon using text (no asset dependency)
+                Container(
+                  width: 22,
+                  height: 22,
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(4),
+                  ),
+                  child: Center(
+                    child: Text(
+                      "G",
+                      style: GoogleFonts.roboto(
+                        fontSize: 18,
+                        fontWeight: FontWeight.w700,
+                        color: const Color(0xFF4285F4),
+                      ),
+                    ),
+                  ),
+                ),
+                const SizedBox(width: 10),
+                Text(
+                  "Continue with Google",
+                  style: GoogleFonts.plusJakartaSans(
+                    fontWeight: FontWeight.w700,
+                    fontSize: 16,
+                    color: AppTheme.onSurface.withValues(alpha: 0.8),
+                  ),
+                ),
+              ],
+            ),
     );
   }
 }

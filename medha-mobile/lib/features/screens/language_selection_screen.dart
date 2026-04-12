@@ -12,6 +12,7 @@ class LanguageSelectionScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final l10n = AppLocalizations.of(context)!;
+    final isFirstLaunch = ref.watch(firstLaunchProvider);
     return Scaffold(
       body: SafeArea(
         child: CustomScrollView(
@@ -107,7 +108,7 @@ class LanguageSelectionScreen extends ConsumerWidget {
               const Spacer(),
               // Continue button
               FilledButton(
-                onPressed: () => context.go("/home"),
+                onPressed: () => context.go(isFirstLaunch ? "/onboarding" : "/auth"),
                 style: FilledButton.styleFrom(
                   backgroundColor: AppTheme.primary,
                   foregroundColor: Colors.white,

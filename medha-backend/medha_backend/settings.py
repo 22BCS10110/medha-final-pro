@@ -3,6 +3,7 @@ Django settings for medha_backend project.
 Medhā Health Intelligence Platform — Backend Configuration
 """
 
+import os
 from pathlib import Path
 
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -33,6 +34,9 @@ INSTALLED_APPS = [
     'records',
     'billing',
     'contact',
+    'abdm_simulator',  # ABDM Simulation Module (Demo/Pilot)
+    'consent',          # One-time patient consent system
+    'chat',             # Doctor-patient real-time chat
 ]
 
 # ═══ MIDDLEWARE ═══
@@ -53,14 +57,30 @@ CORS_ALLOW_ALL_ORIGINS = True  # Dev only
 # ═══ REST FRAMEWORK ═══
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': [
-        'rest_framework.authentication.TokenAuthentication',
+        'rest_framework_simplejwt.authentication.JWTAuthentication',
         'rest_framework.authentication.SessionAuthentication',
     ],
     'DEFAULT_PERMISSION_CLASSES': [
-        'rest_framework.permissions.AllowAny',
+        'rest_framework.permissions.IsAuthenticated',
     ],
 }
 
+# ═══ JWT CONFIG ═══
+from datetime import timedelta
+SIMPLE_JWT = {
+    'ACCESS_TOKEN_LIFETIME': timedelta(hours=12),
+    'REFRESH_TOKEN_LIFETIME': timedelta(days=7),
+    'ROTATE_REFRESH_TOKENS': True,
+    'AUTH_HEADER_TYPES': ('Bearer',),
+}
+
+# ═══ GOOGLE OAUTH CONFIG ═══
+GOOGLE_CLIENT_ID = os.environ.get('GOOGLE_CLIENT_ID', '')
+GOOGLE_CLIENT_SECRET = os.environ.get('GOOGLE_CLIENT_SECRET', '')
+
+# ═══ SUPABASE SYNC ═══
+SUPABASE_URL = os.environ.get('SUPABASE_URL', '')
+SUPABASE_SERVICE_KEY = os.environ.get('SUPABASE_SERVICE_KEY', '')
 ROOT_URLCONF = 'medha_backend.urls'
 
 TEMPLATES = [
@@ -107,16 +127,14 @@ STATIC_URL = 'static/'
 # ═══ DEFAULT AUTO FIELD ═══
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-# ═══ SUPABASE CONFIG ═══
-# Supabase Authentication for patient mobile app
-# The JWT tokens from Supabase are verified by the backend.
-# SQLite remains the source of truth for all business data.
-import os
+# ═══ LOCAL FILE STORAGE ═══
+MEDIA_URL = '/media/'
+MEDIA_ROOT = BASE_DIR / 'media'
 
-SUPABASE_URL = os.environ.get('SUPABASE_URL', 'https://mnwhjlgjncmdcjewktuo.supabase.co')
-SUPABASE_ANON_KEY = os.environ.get('SUPABASE_ANON_KEY', 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1ud2hqbGdqbmNtZGNqZXdrdHVvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzUzMDEyOTAsImV4cCI6MjA5MDg3NzI5MH0.Ieucdm23X2umTxXXapzyBJko6_A-08GojQCEOv75pkY')
-SUPABASE_SERVICE_KEY = os.environ.get('SUPABASE_SERVICE_KEY', 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1ud2hqbGdqbmNtZGNqZXdrdHVvIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc3NTMwMTI5MCwiZXhwIjoyMDkwODc3MjkwfQ.K-XZs9RRGju-It-ojruLO2uPw5GEH5-IbXZ5ueTTnW8')
-
-# ═══ FIREBASE CONFIG (REMOVED - replaced by Supabase) ═══
-# Firebase has been replaced by Supabase for authentication.
-# See SUPABASE_* settings above.
+# ═══ CHANNELS (WebSocket for Chat) ═══
+ASGI_APPLICATION = 'medha_backend.asgi.application'
+CHANNEL_LAYERS = {
+    'default': {
+        'BACKEND': 'channels.layers.InMemoryChannelLayer',
+    },
+}

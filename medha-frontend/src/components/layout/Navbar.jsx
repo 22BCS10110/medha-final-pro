@@ -1,8 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { cn } from '../../lib/utils';
+import { cn } from '../../utils/cn';
 import Logo from '../ui/Logo';
-import { Menu, X, ArrowRight } from 'lucide-react';
+import { Menu, X, Download } from 'lucide-react';
+
+const isElectron = !!window.electronAPI?.isElectron;
 
 const Navbar = () => {
   const [isScrolled, setIsScrolled] = useState(false);
@@ -17,13 +19,14 @@ const Navbar = () => {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
+  // In Electron, the marketing navbar is not used (desktop app has its own layout).
+  if (isElectron) return null;
+
   const navLinks = [
     { title: 'Home', path: '/' },
-    { title: 'Portal', path: '/portal' },
     { title: 'About', path: '/about' },
     { title: 'Pricing', path: '/pricing' },
     { title: 'Contact', path: '/contact' },
-
   ];
 
   return (
@@ -31,15 +34,15 @@ const Navbar = () => {
       "fixed top-0 left-0 right-0 z-[1000] transition-all duration-300 px-6 md:px-12",
       isScrolled ? "h-20 bg-white/80 backdrop-blur-md border-b border-slate-200" : "h-24 bg-transparent"
     )}>
-      <div className="max-w-7xl mx-auto h-full flex items-center justify-between">
+      <div className="max-w-7xl mx-auto h-full flex items-center justify-between relative">
         <Link to="/" className="flex items-center">
           <Logo />
         </Link>
 
-        {/* Desktop Links */}
-        <div className="hidden md:flex items-center gap-8">
+        {/* Desktop Links - Centered */}
+        <div className="hidden md:flex items-center gap-8 absolute left-1/2 -translate-x-1/2">
           {navLinks.map((link) => (
-            <Link 
+            <Link
               key={link.path}
               to={link.path}
               className={cn(
@@ -50,16 +53,19 @@ const Navbar = () => {
               {link.title}
             </Link>
           ))}
-          
-          <Link to="/portal" className="flex items-center gap-2 bg-slate-900 text-white px-6 py-2.5 rounded-xl font-bold text-sm shadow-lg hover:bg-slate-800 hover:scale-[1.02] transition-all">
-            Hospital Login
-            <ArrowRight size={16} />
-          </Link>
-
         </div>
 
+        {/* Download CTA */}
+        <Link
+          to="/download"
+          className="hidden md:flex items-center gap-2 px-6 py-2.5 rounded-xl bg-primary text-white text-sm font-bold hover:bg-primary/90 shadow-md shadow-primary/20 transition-all"
+        >
+          <Download size={16} />
+          Download App
+        </Link>
+
         {/* Mobile Toggle */}
-        <button 
+        <button
           className="md:hidden p-2 text-slate-600"
           onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
         >
@@ -74,7 +80,7 @@ const Navbar = () => {
       )}>
         <div className="flex flex-col gap-6">
           {navLinks.map((link) => (
-            <Link 
+            <Link
               key={link.path}
               to={link.path}
               onClick={() => setMobileMenuOpen(false)}
@@ -86,14 +92,16 @@ const Navbar = () => {
               {link.title}
             </Link>
           ))}
-          <Link 
-            to="/portal" 
-            onClick={() => setMobileMenuOpen(false)}
-            className="mt-4 bg-primary text-white p-4 rounded-xl font-bold text-lg text-center"
-          >
-            Hospital Login
-          </Link>
 
+          {/* Mobile download button */}
+          <Link
+            to="/download"
+            onClick={() => setMobileMenuOpen(false)}
+            className="flex items-center gap-2 px-6 py-4 rounded-2xl bg-primary text-white font-bold text-lg mt-4"
+          >
+            <Download size={20} />
+            Download Desktop App
+          </Link>
         </div>
       </div>
     </nav>

@@ -1,0 +1,171 @@
+import React, { useState, useEffect } from 'react';
+import Layout from '../../components/layout/Layout';
+import { motion } from 'framer-motion';
+import { ArrowRight, Bed, Building, Calculator, CheckCircle2 } from 'lucide-react';
+import { cn } from '../../utils/cn';
+
+const Pricing = () => {
+  const [beds, setBeds] = useState(100);
+  const pricePerBed = 500;
+  const annualCost = beds * pricePerBed;
+
+  // Format currency
+  const formattedCost = new Intl.NumberFormat('en-IN', {
+    style: 'currency',
+    currency: 'INR',
+    maximumFractionDigits: 0
+  }).format(annualCost);
+
+  const handleSliderChange = (e) => {
+    setBeds(parseInt(e.target.value));
+  };
+
+  const handleInputChange = (e) => {
+    const val = parseInt(e.target.value);
+    if (!isNaN(val) && val >= 0) {
+      setBeds(val);
+    } else if (e.target.value === '') {
+      setBeds(0);
+    }
+  };
+
+  return (
+    <Layout>
+      <div className="pt-32 pb-24 px-6 bg-white min-h-[95vh] font-sans">
+        
+        {/* Background Decor */}
+        <div className="absolute top-0 inset-x-0 h-[500px] bg-[radial-gradient(ellipse_at_top,rgba(0,102,255,0.05)_0%,transparent_70%)] pointer-events-none" />
+
+        <div className="max-w-4xl mx-auto relative z-10">
+          
+          <div className="text-center mb-16">
+            <motion.div
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="inline-flex items-center gap-2 px-5 py-2 rounded-full bg-slate-50 border border-slate-200 mb-8 shadow-sm"
+            >
+              <Calculator size={14} className="text-primary" />
+              <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-slate-500">
+                Transparent Pricing
+              </span>
+            </motion.div>
+
+            <motion.h1 
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.1 }}
+              className="text-4xl md:text-6xl font-display font-bold text-slate-900 mb-6 tracking-tight"
+            >
+              Calculate Your Hospital <span className="text-primary italic">Subscription</span>
+            </motion.h1>
+            <motion.p 
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.2 }}
+              className="text-lg text-slate-500 max-w-2xl mx-auto"
+            >
+              Simple, smart, and hospital-focused pricing. Pay exactly for what you need based on your facility's scale. No hidden fees.
+            </motion.p>
+          </div>
+
+          {/* Calculator Card */}
+          <motion.div 
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.3 }}
+            className="bg-white rounded-[3rem] shadow-2xl border border-slate-100 p-8 md:p-14 mb-16 mx-auto relative overflow-hidden"
+          >
+            {/* Ambient card glow */}
+            <div className="absolute top-0 right-0 w-64 h-64 bg-primary/5 rounded-full blur-[80px] pointer-events-none" />
+
+            <div className="grid md:grid-cols-2 gap-12 items-center relative z-10">
+              
+              {/* Input Section */}
+              <div className="flex flex-col gap-8">
+                <div>
+                  <label className="flex items-center gap-2 text-sm font-bold uppercase tracking-widest text-slate-400 mb-4">
+                    <Bed size={16} className="text-primary" />
+                    Number of Beds
+                  </label>
+                  
+                  <div className="flex items-center gap-4 bg-slate-50 border border-slate-200 rounded-2xl p-4 focus-within:ring-2 focus-within:ring-primary/20 focus-within:border-primary transition-all">
+                    <Building className="text-slate-400" size={24} />
+                    <input 
+                      type="number" 
+                      value={beds}
+                      onChange={handleInputChange}
+                      className="w-full bg-transparent border-none outline-none text-3xl font-bold text-slate-900 placeholder:text-slate-300"
+                      placeholder="Enter beds"
+                    />
+                  </div>
+                </div>
+
+                <div>
+                  <input 
+                    type="range" 
+                    min="10" 
+                    max="2000" 
+                    step="10"
+                    value={beds} 
+                    onChange={handleSliderChange}
+                    className="w-full h-2 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-primary"
+                  />
+                  <div className="flex justify-between mt-3 text-xs font-bold text-slate-400">
+                    <span>10 Beds</span>
+                    <span>2000+ Beds</span>
+                  </div>
+                </div>
+                
+                <ul className="space-y-3 mt-4">
+                  {["Unlimited Patient Registrations", "Full Offline Capabilities", "AI Diagnostic Support"].map((item, idx) => (
+                    <li key={idx} className="flex items-center gap-3 text-sm font-medium text-slate-600">
+                      <CheckCircle2 size={16} className="text-secondary" />
+                      {item}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+
+              {/* Output Section */}
+              <div className="flex flex-col justify-center bg-slate-50 p-10 rounded-[2rem] border border-slate-100 text-center relative overflow-hidden h-full min-h-[300px]">
+                <p className="text-sm font-bold uppercase tracking-[0.2em] text-slate-400 mb-6">Estimated Annual Cost</p>
+                <div className="mb-4">
+                  <span className="text-5xl md:text-6xl font-display font-black text-slate-900 tracking-tight transition-all">
+                    {formattedCost}
+                  </span>
+                </div>
+                <p className="text-sm text-slate-500 font-medium mb-auto">Billed annually at ₹{pricePerBed} per bed.</p>
+                
+                <div className="mt-8 pt-6 border-t border-slate-200/60">
+                   <p className="text-xs font-bold text-slate-400 uppercase tracking-widest">
+                     Custom pricing available for large hospital networks.
+                   </p>
+                </div>
+              </div>
+
+            </div>
+          </motion.div>
+
+          {/* CTA Section */}
+          <motion.div 
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.4 }}
+            className="flex flex-col sm:flex-row items-center justify-center gap-6"
+          >
+            <button className="w-full sm:w-auto bg-primary text-white px-10 py-5 rounded-2xl font-bold text-lg shadow-xl shadow-primary/20 hover:shadow-primary/40 hover:-translate-y-1 transition-all flex items-center justify-center gap-3 group">
+              Request Demo
+              <ArrowRight size={20} className="group-hover:translate-x-1 transition-transform" />
+            </button>
+            <button className="w-full sm:w-auto bg-white text-slate-900 border-2 border-slate-100 px-10 py-5 rounded-2xl font-bold text-lg hover:border-slate-300 hover:bg-slate-50 transition-all">
+              Contact Sales
+            </button>
+          </motion.div>
+
+        </div>
+      </div>
+    </Layout>
+  );
+};
+
+export default Pricing;

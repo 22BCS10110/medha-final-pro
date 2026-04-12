@@ -1,0 +1,451 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; style-src 'self' 'unsafe-inline'; script-src 'self' 'unsafe-inline'; connect-src http://127.0.0.1:8000;">
+  <title>Medha Health</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+      background: #f1f5f9;
+      color: #0f172a;
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      user-select: none;
+    }
+
+    /* ── Header ── */
+    .header {
+      background: #fff;
+      border-bottom: 1px solid #e2e8f0;
+      padding: 18px 32px;
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+
+    .header-icon {
+      width: 36px;
+      height: 36px;
+      background: #0f766e;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #fff;
+      font-weight: 800;
+      font-size: 16px;
+    }
+
+    .header h1 {
+      font-size: 20px;
+      font-weight: 700;
+      color: #0f172a;
+      letter-spacing: -0.3px;
+    }
+
+    .header span {
+      font-size: 12px;
+      color: #94a3b8;
+      font-weight: 600;
+      margin-left: auto;
+    }
+
+    /* ── Main Content ── */
+    .main {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 32px;
+    }
+
+    /* ── Role Selection Screen ── */
+    .role-screen {
+      text-align: center;
+    }
+
+    .role-screen h2 {
+      font-size: 26px;
+      font-weight: 700;
+      margin-bottom: 6px;
+      color: #0f172a;
+    }
+
+    .role-screen p {
+      font-size: 15px;
+      color: #64748b;
+      margin-bottom: 36px;
+    }
+
+    .role-cards {
+      display: flex;
+      gap: 24px;
+    }
+
+    .role-card {
+      width: 260px;
+      background: #fff;
+      border: 2px solid #e2e8f0;
+      border-radius: 16px;
+      padding: 36px 28px;
+      cursor: pointer;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .role-card:hover {
+      border-color: #0f766e;
+      box-shadow: 0 4px 20px rgba(15, 118, 110, 0.1);
+    }
+
+    .role-card-icon {
+      width: 64px;
+      height: 64px;
+      border-radius: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 28px;
+    }
+
+    .role-card-icon.doctor {
+      background: #ecfdf5;
+      color: #059669;
+    }
+
+    .role-card-icon.admin {
+      background: #eff6ff;
+      color: #2563eb;
+    }
+
+    .role-card h3 {
+      font-size: 20px;
+      font-weight: 700;
+      color: #0f172a;
+    }
+
+    .role-card p {
+      font-size: 13px;
+      color: #94a3b8;
+      margin: 0;
+    }
+
+    /* ── Login Form Screen ── */
+    .login-screen {
+      width: 400px;
+      background: #fff;
+      border: 1px solid #e2e8f0;
+      border-radius: 20px;
+      padding: 40px 36px;
+      box-shadow: 0 4px 24px rgba(0, 0, 0, 0.04);
+    }
+
+    .login-back {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 13px;
+      font-weight: 600;
+      color: #64748b;
+      cursor: pointer;
+      margin-bottom: 24px;
+      border: none;
+      background: none;
+      padding: 0;
+    }
+
+    .login-back:hover { color: #0f172a; }
+
+    .login-header {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      margin-bottom: 32px;
+    }
+
+    .login-header-icon {
+      width: 48px;
+      height: 48px;
+      border-radius: 14px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 22px;
+    }
+
+    .login-header-icon.doctor { background: #ecfdf5; color: #059669; }
+    .login-header-icon.admin { background: #eff6ff; color: #2563eb; }
+
+    .login-header h2 {
+      font-size: 22px;
+      font-weight: 700;
+      color: #0f172a;
+    }
+
+    .login-header p {
+      font-size: 13px;
+      color: #94a3b8;
+      margin-top: 2px;
+    }
+
+    /* ── Form Fields ── */
+    .field {
+      margin-bottom: 20px;
+    }
+
+    .field label {
+      display: block;
+      font-size: 13px;
+      font-weight: 600;
+      color: #475569;
+      margin-bottom: 8px;
+    }
+
+    .field input {
+      width: 100%;
+      padding: 14px 16px;
+      font-size: 15px;
+      font-weight: 500;
+      border: 2px solid #e2e8f0;
+      border-radius: 12px;
+      outline: none;
+      color: #0f172a;
+      background: #f8fafc;
+      font-family: inherit;
+    }
+
+    .field input:focus {
+      border-color: #0f766e;
+      background: #fff;
+    }
+
+    .field input::placeholder {
+      color: #cbd5e1;
+    }
+
+    /* ── Submit Button ── */
+    .submit-btn {
+      width: 100%;
+      padding: 16px;
+      font-size: 16px;
+      font-weight: 700;
+      color: #fff;
+      background: #0f766e;
+      border: none;
+      border-radius: 12px;
+      cursor: pointer;
+      margin-top: 8px;
+      font-family: inherit;
+    }
+
+    .submit-btn:hover { background: #0d6d66; }
+    .submit-btn:active { background: #0b5e58; }
+
+    .submit-btn:disabled {
+      background: #94a3b8;
+      cursor: not-allowed;
+    }
+
+    /* ── Messages ── */
+    .message {
+      margin-top: 20px;
+      padding: 14px 16px;
+      border-radius: 10px;
+      font-size: 14px;
+      font-weight: 600;
+      text-align: center;
+      display: none;
+    }
+
+    .message.error {
+      background: #fef2f2;
+      color: #dc2626;
+      border: 1px solid #fecaca;
+      display: block;
+    }
+
+    .message.success {
+      background: #ecfdf5;
+      color: #059669;
+      border: 1px solid #a7f3d0;
+      display: block;
+    }
+
+    /* ── Hidden state ── */
+    .hidden { display: none !important; }
+  </style>
+</head>
+<body>
+
+  <!-- ── Header ── -->
+  <div class="header">
+    <div class="header-icon">M</div>
+    <h1>Medha Health</h1>
+    <span>Desktop Application</span>
+  </div>
+
+  <!-- ── Main Area ── -->
+  <div class="main">
+
+    <!-- ── Screen 1: Role Selection ── -->
+    <div class="role-screen" id="roleScreen">
+      <h2>Welcome</h2>
+      <p>Select your role to sign in</p>
+      <div class="role-cards">
+
+        <div class="role-card" onclick="showLogin('doctor')">
+          <div class="role-card-icon doctor">&#9764;</div>
+          <h3>Doctor</h3>
+          <p>Clinical staff login</p>
+        </div>
+
+        <div class="role-card" onclick="showLogin('admin')">
+          <div class="role-card-icon admin">&#9881;</div>
+          <h3>Admin</h3>
+          <p>Hospital management login</p>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- ── Screen 2: Login Form ── -->
+    <div class="login-screen hidden" id="loginScreen">
+      <button class="login-back" onclick="showRoleScreen()">&#8592; Back</button>
+
+      <div class="login-header">
+        <div class="login-header-icon" id="loginIcon"></div>
+        <div>
+          <h2 id="loginTitle"></h2>
+          <p id="loginSubtitle"></p>
+        </div>
+      </div>
+
+      <form id="loginForm" onsubmit="handleLogin(event)">
+        <div class="field">
+          <label for="username">Username</label>
+          <input type="text" id="username" placeholder="Enter your username" autocomplete="username" required>
+        </div>
+
+        <div class="field">
+          <label for="password">Password</label>
+          <input type="password" id="password" placeholder="Enter your password" autocomplete="current-password" required>
+        </div>
+
+        <button type="submit" class="submit-btn" id="submitBtn">Sign In</button>
+      </form>
+
+      <div class="message" id="message"></div>
+    </div>
+
+  </div>
+
+  <script>
+    let selectedRole = '';
+
+    function showLogin(role) {
+      selectedRole = role;
+      document.getElementById('roleScreen').classList.add('hidden');
+      document.getElementById('loginScreen').classList.remove('hidden');
+
+      const icon = document.getElementById('loginIcon');
+      const title = document.getElementById('loginTitle');
+      const subtitle = document.getElementById('loginSubtitle');
+
+      if (role === 'doctor') {
+        icon.className = 'login-header-icon doctor';
+        icon.innerHTML = '&#9764;';
+        title.textContent = 'Doctor Login';
+        subtitle.textContent = 'Sign in with your doctor credentials';
+      } else {
+        icon.className = 'login-header-icon admin';
+        icon.innerHTML = '&#9881;';
+        title.textContent = 'Admin Login';
+        subtitle.textContent = 'Sign in with your admin credentials';
+      }
+
+      clearMessage();
+      document.getElementById('username').value = '';
+      document.getElementById('password').value = '';
+      document.getElementById('username').focus();
+    }
+
+    function showRoleScreen() {
+      document.getElementById('loginScreen').classList.add('hidden');
+      document.getElementById('roleScreen').classList.remove('hidden');
+      clearMessage();
+    }
+
+    function clearMessage() {
+      const msg = document.getElementById('message');
+      msg.className = 'message';
+      msg.textContent = '';
+    }
+
+    function showMessage(text, type) {
+      const msg = document.getElementById('message');
+      msg.className = 'message ' + type;
+      msg.textContent = text;
+    }
+
+    async function handleLogin(e) {
+      e.preventDefault();
+
+      const username = document.getElementById('username').value.trim();
+      const password = document.getElementById('password').value;
+      const btn = document.getElementById('submitBtn');
+
+      if (!username || !password) {
+        showMessage('Please enter both username and password.', 'error');
+        return;
+      }
+
+      btn.disabled = true;
+      btn.textContent = 'Signing in...';
+      clearMessage();
+
+      try {
+        const result = await window.medhaAPI.login(username, password);
+
+        if (result.success) {
+          const user = result.user;
+          const role = user.role || '';
+          const name = user.full_name || user.username || username;
+
+          // Validate role matches selected portal
+          const isDoctor = role === 'doctor';
+          const isAdmin = role === 'hospital_admin' || role === 'super_admin' || role === 'admin';
+
+          if (selectedRole === 'doctor' && !isDoctor) {
+            showMessage('This account is not a doctor account. Please use the Admin login.', 'error');
+          } else if (selectedRole === 'admin' && !isAdmin) {
+            showMessage('This account is not an admin account. Please use the Doctor login.', 'error');
+          } else {
+            showMessage('Login Successful — Redirecting...', 'success');
+            // Store session and navigate to main app
+            sessionStorage.setItem('medha_user', JSON.stringify(user));
+            sessionStorage.setItem('medha_role', role);
+            setTimeout(() => {
+              window.medhaAPI.navigateToApp(user, result.tokens);
+            }, 600);
+          }
+        } else {
+          showMessage(result.error || 'Login failed. Please try again.', 'error');
+        }
+      } catch (err) {
+        showMessage('An unexpected error occurred.', 'error');
+      }
+
+      btn.disabled = false;
+      btn.textContent = 'Sign In';
+    }
+  </script>
+
+</body>
+</html>

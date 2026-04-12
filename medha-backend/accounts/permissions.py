@@ -62,14 +62,42 @@ class HasHospitalAccess(permissions.BasePermission):
 
 class IsOwnerOrReadOnly(permissions.BasePermission):
     """Object-level permission: allow object owner or read-only for others"""
-    
+
     def has_object_permission(self, request, view, obj):
-        # Read permissions allowed for any request
         if request.method in permissions.SAFE_METHODS:
             return True
-        # Write permissions only for owner
         return obj.__dict__.get('user_id') == request.user.id or \
                obj.__dict__.get('patient_id') == getattr(request.user, 'patient_id', None)
+
+
+class IsOwnerOrStaff(permissions.BasePermission):
+    """Object-level: owner (patient) or hospital staff can access."""
+
+    def has_object_permission(self, request, view, obj):
+        user = request.user
+        if user.role in ('super_admin', 'hospital_admin', 'doctor'):
+            return True
+        if hasattr(obj, 'patient') and hasattr(obj.patient, 'user'):
+            return obj.patient.user == user
+        if hasattr(obj, 'user'):
+            return obj.user == user
+        return False
+
+
+class BelongsToHospital(permissions.BasePermission):
+    """Ensures the user belongs to the same hospital as the resource."""
+
+    def has_object_permission(self, request, view, obj):
+        user = request.user
+        if user.role == 'super_admin':
+            return True
+        if user.role == 'patient':
+            return True  # Patients are global
+        if not hasattr(user, 'hospital') or not user.hospital:
+            return False
+        if hasattr(obj, 'hospital'):
+            return obj.hospital == user.hospital
+        return True
 
 
 class HospitalScopedPermission(permissions.BasePermission):

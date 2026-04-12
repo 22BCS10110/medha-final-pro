@@ -1,0 +1,18 @@
+{
+  "name": "medha-supabase-mcp",
+  "version": "1.0.0",
+  "description": "Supabase MCP server for Medha Health — exposes Supabase tools to Claude Code",
+  "type": "module",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node --watch server.js",
+    "test": "node test.js"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.10.2",
+    "@supabase/supabase-js": "^2.49.4",
+    "dotenv": "^16.4.5",
+    "zod": "^3.23.8"
+  }
+}

@@ -1,6 +1,9 @@
 import axios from "axios";
 
-const API_BASE = import.meta.env.VITE_API_URL || "";
+// In Electron production builds there's no Vite proxy, so we need the full backend URL.
+// In dev mode with Vite, the proxy handles /api -> localhost:8000.
+const isElectronProd = window.electronAPI?.isElectron && !import.meta.env.DEV;
+const API_BASE = import.meta.env.VITE_API_URL || (isElectronProd ? "http://127.0.0.1:8000" : "");
 const NFC_API_BASE = import.meta.env.VITE_NFC_API_URL || "http://localhost:8010";
 
 const api = axios.create({
@@ -10,63 +13,70 @@ const api = axios.create({
   },
 });
 
-// Request interceptor — attach token
+// Request interceptor — attach JWT Bearer token
 api.interceptors.request.use((config) => {
   const token = localStorage.getItem("medha_token");
   if (token) {
-    config.headers.Authorization = `Token ${token}`;
+    config.headers.Authorization = `Bearer ${token}`;
   }
   return config;
 });
 
-// Response interceptor — handle 401 only if user had a stored token (expired session)
+// Response interceptor — handle 401 with token refresh
 api.interceptors.response.use(
   (res) => res,
-  (err) => {
-    if (err.response?.status === 401) {
-      const hadToken = localStorage.getItem("medha_token");
-      if (hadToken) {
-        // Token expired — clear and redirect
-        localStorage.removeItem("medha_token");
-        localStorage.removeItem("medha_user");
-        window.location.href = "/";
+  async (err) => {
+    const originalRequest = err.config;
+    if (err.response?.status === 401 && !originalRequest._retry) {
+      originalRequest._retry = true;
+      const refreshToken = localStorage.getItem("medha_refresh_token");
+      if (refreshToken) {
+        try {
+          const res = await axios.post(`${API_BASE}/api/auth/refresh/`, {
+            refresh: refreshToken,
+          });
+          const newAccess = res.data.access;
+          localStorage.setItem("medha_token", newAccess);
+          originalRequest.headers.Authorization = `Bearer ${newAccess}`;
+          return api(originalRequest);
+        } catch {
+          // Refresh failed — clear session
+          localStorage.removeItem("medha_token");
+          localStorage.removeItem("medha_refresh_token");
+          localStorage.removeItem("medha_user");
+          window.location.href = "/";
+        }
+      } else {
+        const hadToken = localStorage.getItem("medha_token");
+        if (hadToken) {
+          localStorage.removeItem("medha_token");
+          localStorage.removeItem("medha_user");
+          window.location.href = "/";
+        }
       }
-      // If no token existed, let the component handle it (show fallback/demo data)
     }
     return Promise.reject(err);
   }
 );
 
-// ═══ AUTH ══
+// ═══ AUTH ═══
 export const authAPI = {
   login: (data) => api.post("/auth/login/", data),
-  logout: () => api.post("/auth/logout/"),
+  googleLogin: (credential) => api.post("/auth/google/", { credential }),
+  logout: (refresh) => api.post("/auth/logout/", { refresh }),
+  refresh: (refresh) => api.post("/auth/refresh/", { refresh }),
   me: () => api.get("/auth/me/"),
-  // Patient auth
-  patientLogin: (email, password) => api.post("/patients/auth/login/", { email, password }).then(r => r.data),
-  patientRegister: (data) => api.post("/patients/auth/register/", data).then(r => r.data),
-  patientLoginFirebase: (firebaseToken) => api.post("/patients/auth/login-firebase/", { firebase_token: firebaseToken }).then(r => r.data),
-  getPatientProfile: (patientId) => api.get(`/patients/profile/${patientId}/`).then(r => r.data),
-  getPatientByPatientId: (patientId) => api.get(`/patients/profile/patient-id/${patientId}/`).then(r => r.data),
 };
 
-// Patient auth API methods (for PatientPortal)
+// Patient auth API (for PatientPortal)
 export const patientAuthAPI = {
   login: async (email, password) => {
-    try {
-      const response = await api.post("/patients/auth/login/", { email, password });
-      return response.data;
-    } catch (err) {
-      throw new Error(err.response?.data?.error || 'Login failed');
-    }
+    const res = await api.post("/auth/login/", { username: email, password });
+    return res.data;
   },
   register: async (data) => {
-    try {
-      const response = await api.post("/patients/auth/register/", data);
-      return response.data;
-    } catch (err) {
-      throw new Error(err.response?.data?.error || 'Registration failed');
-    }
+    const res = await api.post("/auth/register/", data);
+    return res.data;
   },
 };
 
@@ -78,6 +88,9 @@ export const patientsAPI = {
   update: (id, data) => api.put(`/patients/${id}/`, data),
   delete: (id) => api.delete(`/patients/${id}/`),
   search: (q) => api.get("/patients/search/", { params: { q } }),
+  getByNfcUid: (uid) => api.get(`/patients/by-nfc/${encodeURIComponent(uid)}/`),
+  assignNfc: (patientId, nfcUid) => api.post('/patients/assign-nfc/', { patient_id: patientId, nfc_uid: nfcUid }),
+  nfcStatus: (patientId) => api.get(`/patients/${encodeURIComponent(patientId)}/nfc-status/`),
 };
 
 // ═══ DOCTORS ═══
@@ -140,6 +153,21 @@ export const dashboardAPI = {
   patient: () => api.get("/dashboard/patient/"),
 };
 
+// ═══ CONSENT ═══
+export const consentAPI = {
+  check: (patientId) => api.get(`/consent/${patientId}/check/`),
+  grant: (patientId, data) => api.post(`/consent/${patientId}/grant/`, data),
+  revoke: (patientId, data) => api.post(`/consent/${patientId}/revoke/`, data),
+};
+
+// ═══ CHAT ═══
+export const chatAPI = {
+  listRooms: () => api.get("/chat/rooms/"),
+  createRoom: (data) => api.post("/chat/rooms/create/", data),
+  getMessages: (roomId, params) => api.get(`/chat/rooms/${roomId}/messages/`, { params }),
+  sendMessage: (roomId, content) => api.post(`/chat/rooms/${roomId}/send/`, { content }),
+};
+
 // ═══ NFC BRIDGE API (FastAPI) ═══
 const nfcApi = axios.create({
   baseURL: NFC_API_BASE,
@@ -177,9 +205,7 @@ const nfcGet = async (path) => {
 };
 
 export const nfcAPI = {
-  resetAuth: () => {
-    nfcToken = null;
-  },
+  resetAuth: () => { nfcToken = null; },
   latestScan: () => nfcGet("/scan/latest"),
   patientById: (patientId) => nfcGet(`/patient/${encodeURIComponent(patientId)}`),
 };

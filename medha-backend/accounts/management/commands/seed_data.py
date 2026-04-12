@@ -23,7 +23,7 @@ class Command(BaseCommand):
         PatientHospitalVisit.objects.all().delete()
         Doctor.objects.all().delete()
         Patient.objects.all().delete()
-        User.objects.filter(is_superuser=False).delete()
+        User.objects.all().delete()
         Hospital.objects.all().delete()
 
         self.stdout.write(self.style.SUCCESS('Creating hospitals...'))

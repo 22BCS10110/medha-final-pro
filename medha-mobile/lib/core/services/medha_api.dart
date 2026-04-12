@@ -11,6 +11,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 class MedhaApi {
   static const _tokenKey = 'medha_django_token';
   static const _patientPkKey = 'medha_patient_pk';
+  static const _profileCompleteKey = 'medha_profile_complete';
 
   final String baseUrl; // e.g. http://10.0.2.2:8000
   final http.Client _client;
@@ -32,6 +33,17 @@ class MedhaApi {
   Future<void> clearToken() async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.remove(_tokenKey);
+    await prefs.remove(_profileCompleteKey);
+  }
+
+  Future<bool> isProfileComplete() async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getBool(_profileCompleteKey) ?? false;
+  }
+
+  Future<void> _setProfileComplete(bool value) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setBool(_profileCompleteKey, value);
   }
 
   Future<int?> getCachedPatientPk() async {
@@ -54,6 +66,71 @@ class MedhaApi {
       }
     }
     return h;
+  }
+
+  /// Headers using Bearer token (JWT) for authenticated requests.
+  Future<Map<String, String>> _bearerHeaders({bool jsonBody = false}) async {
+    final h = <String, String>{};
+    if (jsonBody) h['Content-Type'] = 'application/json';
+    final t = await getToken();
+    if (t != null && t.isNotEmpty) {
+      h['Authorization'] = 'Bearer $t';
+    }
+    return h;
+  }
+
+  /// Exchange Supabase access token for Django JWT tokens.
+  ///
+  /// Returns the full response including:
+  /// - tokens.access / tokens.refresh
+  /// - user object
+  /// - is_profile_complete flag
+  /// - created (true if this is a new user)
+  Future<Map<String, dynamic>> exchangeSupabaseToken(String supabaseAccessToken) async {
+    final res = await _client.post(
+      _u('/api/auth/supabase-google/'),
+      headers: {'Content-Type': 'application/json'},
+      body: jsonEncode({'token': supabaseAccessToken}),
+    );
+    if (res.statusCode != 200) {
+      throw Exception('Token exchange failed (${res.statusCode}): ${res.body}');
+    }
+    final data = jsonDecode(res.body) as Map<String, dynamic>;
+
+    // Store the Django JWT
+    final token = (data['token'] ?? '').toString();
+    if (token.isNotEmpty) await setToken(token);
+
+    // Cache profile completion status
+    final profileComplete = data['is_profile_complete'] == true;
+    await _setProfileComplete(profileComplete);
+
+    return data;
+  }
+
+  /// Complete patient onboarding profile (first-time Google sign-up).
+  Future<Map<String, dynamic>> completeProfile({
+    required String fullName,
+    required String phone,
+    required String gender,
+    required String dateOfBirth,
+  }) async {
+    final res = await _client.post(
+      _u('/api/auth/profile/complete/'),
+      headers: await _bearerHeaders(jsonBody: true),
+      body: jsonEncode({
+        'full_name': fullName,
+        'phone': phone,
+        'gender': gender,
+        'date_of_birth': dateOfBirth,
+      }),
+    );
+    if (res.statusCode != 200) {
+      throw Exception('Profile completion failed (${res.statusCode}): ${res.body}');
+    }
+    final data = jsonDecode(res.body) as Map<String, dynamic>;
+    await _setProfileComplete(true);
+    return data;
   }
 
   Future<Map<String, dynamic>> login({required String username, required String password}) async {

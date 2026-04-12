@@ -9,6 +9,7 @@ export default defineConfig(({ mode }) => {
     base: isProd ? './' : '/',
     plugins: [react()],
     server: {
+      port: 5174,
       proxy: {
         '/api': {
           target,
