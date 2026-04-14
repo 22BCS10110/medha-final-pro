@@ -1,3 +1,28 @@
+<<<<<<< HEAD
+# Build files
+dist/
+dist-electron/
+build/
+
+# Executables
+*.exe
+*.apk
+
+# Python
+__pycache__/
+*.pyc
+*.sqlite3
+
+# Env
+.venv/
+env/
+
+# Node
+node_modules/
+
+# OS
+.DS_Store
+=======
 # Miscellaneous
 *.class
 *.log
@@ -43,3 +68,4 @@ app.*.map.json
 /android/app/debug
 /android/app/profile
 /android/app/release
+>>>>>>> a3e9db8 (Updated mobile app code)

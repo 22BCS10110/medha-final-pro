@@ -79,18 +79,23 @@ class MedhaApi {
     return h;
   }
 
-  /// Exchange Supabase access token for Django JWT tokens.
+  /// Exchange a Firebase ID token for Django JWT tokens.
   ///
   /// Returns the full response including:
+  /// - success, user_id, patient_id
   /// - tokens.access / tokens.refresh
   /// - user object
   /// - is_profile_complete flag
   /// - created (true if this is a new user)
-  Future<Map<String, dynamic>> exchangeSupabaseToken(String supabaseAccessToken) async {
+  Future<Map<String, dynamic>> exchangeFirebaseToken(String firebaseIdToken) async {
+    // TEMP debug
+    // ignore: avoid_print
+    print('Token sent to backend');
+
     final res = await _client.post(
-      _u('/api/auth/supabase-google/'),
+      _u('/api/auth/firebase-login/'),
       headers: {'Content-Type': 'application/json'},
-      body: jsonEncode({'token': supabaseAccessToken}),
+      body: jsonEncode({'token': firebaseIdToken}),
     );
     if (res.statusCode != 200) {
       throw Exception('Token exchange failed (${res.statusCode}): ${res.body}');

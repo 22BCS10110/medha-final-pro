@@ -62,13 +62,14 @@ def admin_dashboard(request):
 def doctor_dashboard(request):
     """Doctor dashboard - only their appointments."""
     user = request.user
-
-    # Get doctor profile
+ 
     doctor = getattr(user, 'doctor_profile', None)
+
     if not doctor:
         return Response({'error': 'No doctor profile found'}, status=404)
 
     today = date.today()
+    
     appointments = Appointment.objects.filter(doctor=doctor, date=today)
 
     waitlist = []

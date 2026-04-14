@@ -2,16 +2,21 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 class AppTheme {
-  // Tonal Architecture (Stitch)
-  static const primary = Color(0xFF006070);
-  static const primaryContainer = Color(0xFF007b8e);
-  static const tertiary = Color(0xFFAF101A);
-  static const surface = Color(0xFFF8FAFB);
-  static const surfaceContainerLow = Color(0xFFF2F4F5);
-  static const surfaceContainerHighest = Color(0xFFE1E3E4);
+  // Medha Clarity Design System (Stitch)
+  static const primary = Color(0xFF0057C0);
+  static const primaryContainer = Color(0xFF006FF0);
+  static const secondary = Color(0xFF006E23);
+  static const tertiary = Color(0xFF575C62);
+  static const error = Color(0xFFBA1A1A);
   
-  static const outlineVariant = Color(0xFFBEC8CC);
-  static const onSurface = Color(0xFF191C1D);
+  static const surface = Color(0xFFF7F9FF);
+  static const surfaceContainerLow = Color(0xFFECF4FF);
+  static const surfaceContainerHighest = Color(0xFFDAE3EF);
+  
+  static const outlineVariant = Color(0xFFC1C6D7); // Ghost border
+  static const onBackground = Color(0xFF141C25);
+  static const onSurface = Color(0xFF141C25);
+  static const onSurfaceVariant = Color(0xFF414755);
 
   static ThemeData get lightTheme {
     final baseTheme = ThemeData(
@@ -24,72 +29,89 @@ class AppTheme {
       colorScheme: baseTheme.colorScheme.copyWith(
         primary: primary,
         primaryContainer: primaryContainer,
+        secondary: secondary,
         tertiary: tertiary,
+        error: error,
         surface: surface,
         onSurface: onSurface,
+        onSurfaceVariant: onSurfaceVariant,
         surfaceContainerLow: surfaceContainerLow,
         surfaceContainerHighest: surfaceContainerHighest,
         outlineVariant: outlineVariant,
       ),
       textTheme: TextTheme(
-        displayLarge: GoogleFonts.manrope(
+        displayLarge: GoogleFonts.inter(
           color: onSurface,
+          letterSpacing: -0.02,
+          fontSize: 56,
         ),
-        displayMedium: GoogleFonts.manrope(
+        displayMedium: GoogleFonts.inter(
           color: onSurface,
+          letterSpacing: -0.02,
         ),
-        displaySmall: GoogleFonts.manrope(
+        displaySmall: GoogleFonts.inter(
           color: onSurface,
+          letterSpacing: -0.02,
         ),
-        headlineLarge: GoogleFonts.manrope(
+        headlineLarge: GoogleFonts.inter(
           color: onSurface,
+          letterSpacing: -0.02,
         ),
-        headlineMedium: GoogleFonts.manrope(
+        headlineMedium: GoogleFonts.inter(
           color: onSurface,
+          fontSize: 28, // 1.75rem
+          letterSpacing: -0.02,
         ),
-        headlineSmall: GoogleFonts.manrope(
+        headlineSmall: GoogleFonts.inter(
           color: onSurface,
+          letterSpacing: -0.02,
         ),
-        titleLarge: GoogleFonts.manrope(
+        titleLarge: GoogleFonts.inter(
+          color: onSurface,
+          fontSize: 22, // 1.375rem
+          fontWeight: FontWeight.w600,
+        ),
+        titleMedium: GoogleFonts.inter(
           color: onSurface,
           fontWeight: FontWeight.w600,
         ),
-        titleMedium: GoogleFonts.plusJakartaSans(
+        titleSmall: GoogleFonts.inter(
           color: onSurface,
           fontWeight: FontWeight.w600,
         ),
-        titleSmall: GoogleFonts.plusJakartaSans(
+        bodyLarge: GoogleFonts.inter(
           color: onSurface,
-          fontWeight: FontWeight.w600,
+          height: 1.6,
         ),
-        bodyLarge: GoogleFonts.plusJakartaSans(
+        bodyMedium: GoogleFonts.inter(
           color: onSurface,
+          fontSize: 14, // 0.875rem
+          height: 1.6,
         ),
-        bodyMedium: GoogleFonts.plusJakartaSans(
+        bodySmall: GoogleFonts.inter(
           color: onSurface,
+          height: 1.6,
         ),
-        bodySmall: GoogleFonts.plusJakartaSans(
-          color: onSurface,
-        ),
-        labelLarge: GoogleFonts.plusJakartaSans(
-          color: onSurface,
+        labelLarge: GoogleFonts.inter(
+          color: tertiary,
           fontWeight: FontWeight.w500,
         ),
-        labelMedium: GoogleFonts.plusJakartaSans(
-          color: onSurface,
+        labelMedium: GoogleFonts.inter(
+          color: tertiary,
           fontWeight: FontWeight.w500,
         ),
-        labelSmall: GoogleFonts.plusJakartaSans(
-          color: onSurface,
+        labelSmall: GoogleFonts.inter(
+          color: tertiary,
+          fontSize: 11, // 0.6875rem
           fontWeight: FontWeight.w500,
         ),
       ),
       cardTheme: const CardThemeData(
         elevation: 0,
         color: Color(0xFFFFFFFF), // surface_container_lowest
-        shadowColor: Colors.transparent, // No shadow, ambient lift
+        shadowColor: Colors.transparent, // Ambient lift using cloud shadow on container
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.all(Radius.circular(24)),
+          borderRadius: BorderRadius.all(Radius.circular(16)), // lg
         ),
       ),
       navigationBarTheme: NavigationBarThemeData(
@@ -110,7 +132,9 @@ class AppTheme {
           backgroundColor: primary,
           foregroundColor: Colors.white,
           minimumSize: const Size.fromHeight(56),
-          shape: const StadiumBorder(),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(24), // xl (1.5rem)
+          ),
           elevation: 0,
         ),
       ),
@@ -119,108 +143,29 @@ class AppTheme {
           backgroundColor: primary,
           foregroundColor: Colors.white,
           minimumSize: const Size.fromHeight(56),
-          shape: const StadiumBorder(),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(24),
+          ),
         ),
       ),
       inputDecorationTheme: InputDecorationTheme(
         filled: true,
-        fillColor: surfaceContainerHighest,
+        fillColor: const Color(0xFFFFFFFF), // surface_container_lowest
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
-          borderSide: BorderSide.none,
+          borderSide: BorderSide(color: outlineVariant.withValues(alpha: 0.15), width: 1), // Ghost border
+        ),
+        enabledBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
+          borderSide: BorderSide(color: outlineVariant.withValues(alpha: 0.15), width: 1), 
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
-          borderSide: const BorderSide(color: primary, width: 2),
+          borderSide: const BorderSide(color: primary, width: 2), // Ghost border 100% opacity of primary
         ),
         errorBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
-          borderSide: const BorderSide(color: tertiary, width: 1), // Optional slight outline based on ghost border principles
-        ),
-      ),
-    );
-  }
-
-  static ThemeData get darkTheme {
-    // Basic conversion applying the same shape/typography rules 
-    // to dark mode.
-    final baseTheme = ThemeData(
-      colorScheme: ColorScheme.fromSeed(
-        seedColor: primary,
-        brightness: Brightness.dark,
-      ),
-      useMaterial3: true,
-      scaffoldBackgroundColor: const Color(0xFF0F1216),
-    );
-
-    final onSurfaceDark = Colors.white.withValues(alpha: 0.87);
-
-    return baseTheme.copyWith(
-      textTheme: TextTheme(
-        displayLarge: GoogleFonts.manrope(color: onSurfaceDark),
-        displayMedium: GoogleFonts.manrope(color: onSurfaceDark),
-        displaySmall: GoogleFonts.manrope(color: onSurfaceDark),
-        headlineLarge: GoogleFonts.manrope(color: onSurfaceDark),
-        headlineMedium: GoogleFonts.manrope(color: onSurfaceDark),
-        headlineSmall: GoogleFonts.manrope(color: onSurfaceDark),
-        titleLarge: GoogleFonts.manrope(color: onSurfaceDark, fontWeight: FontWeight.w600),
-        titleMedium: GoogleFonts.plusJakartaSans(color: onSurfaceDark, fontWeight: FontWeight.w600),
-        titleSmall: GoogleFonts.plusJakartaSans(color: onSurfaceDark, fontWeight: FontWeight.w600),
-        bodyLarge: GoogleFonts.plusJakartaSans(color: onSurfaceDark),
-        bodyMedium: GoogleFonts.plusJakartaSans(color: onSurfaceDark),
-        bodySmall: GoogleFonts.plusJakartaSans(color: onSurfaceDark),
-        labelLarge: GoogleFonts.plusJakartaSans(color: onSurfaceDark, fontWeight: FontWeight.w500),
-        labelMedium: GoogleFonts.plusJakartaSans(color: onSurfaceDark, fontWeight: FontWeight.w500),
-        labelSmall: GoogleFonts.plusJakartaSans(color: onSurfaceDark, fontWeight: FontWeight.w500),
-      ),
-      cardTheme: const CardThemeData(
-        elevation: 0,
-        color: Color(0xFF1E2124),
-        shadowColor: Colors.transparent,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.all(Radius.circular(24)),
-        ),
-      ),
-      navigationBarTheme: NavigationBarThemeData(
-        backgroundColor: const Color(0xFF1E2124),
-        elevation: 0,
-        height: 72,
-        surfaceTintColor: Colors.transparent,
-        indicatorColor: primaryContainer.withValues(alpha: 0.4),
-      ),
-      appBarTheme: const AppBarTheme(
-        elevation: 0,
-        backgroundColor: Colors.transparent,
-        centerTitle: false,
-        surfaceTintColor: Colors.transparent,
-      ),
-      elevatedButtonTheme: ElevatedButtonThemeData(
-        style: ElevatedButton.styleFrom(
-          backgroundColor: primary,
-          foregroundColor: Colors.white,
-          minimumSize: const Size.fromHeight(56),
-          shape: const StadiumBorder(),
-          elevation: 0,
-        ),
-      ),
-      filledButtonTheme: FilledButtonThemeData(
-        style: FilledButton.styleFrom(
-          backgroundColor: primary,
-          foregroundColor: Colors.white,
-          minimumSize: const Size.fromHeight(56),
-          shape: const StadiumBorder(),
-        ),
-      ),
-      inputDecorationTheme: InputDecorationTheme(
-        filled: true,
-        fillColor: const Color(0xFF2E3132),
-        border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
-          borderSide: BorderSide.none,
-        ),
-        focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
-          borderSide: const BorderSide(color: primary, width: 2),
+          borderSide: const BorderSide(color: error, width: 1),
         ),
       ),
     );

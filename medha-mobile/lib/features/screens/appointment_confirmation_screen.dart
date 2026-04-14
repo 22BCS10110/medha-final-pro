@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:medha_mobile/core/theme/app_theme.dart';
+import 'package:medha_mobile/core/widgets/enhanced_card.dart';
 
 class AppointmentConfirmationScreen extends StatelessWidget {
   final Map<String, dynamic> payload;
@@ -10,13 +10,16 @@ class AppointmentConfirmationScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final dt = DateTime.tryParse(payload["scheduledAt"] ?? "") ?? DateTime.now();
+    final tt = Theme.of(context).textTheme;
+    final cs = Theme.of(context).colorScheme;
+
     return Scaffold(
       appBar: AppBar(
         leading: IconButton(
           icon: const Icon(Icons.arrow_back_ios_new_rounded),
           onPressed: () => context.canPop() ? context.pop() : context.go("/home"),
         ),
-        title: Text("Booking Confirmed", style: GoogleFonts.manrope(fontWeight: FontWeight.w700)),
+        title: Text("Booking Confirmed", style: tt.titleLarge),
         backgroundColor: Colors.transparent,
         elevation: 0,
       ),
@@ -26,16 +29,8 @@ class AppointmentConfirmationScreen extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             // Success hero
-            Container(
+            GradientCard(
               padding: const EdgeInsets.all(28),
-              decoration: BoxDecoration(
-                gradient: const LinearGradient(
-                  colors: [AppTheme.primary, AppTheme.primaryContainer],
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomRight,
-                ),
-                borderRadius: BorderRadius.circular(24),
-              ),
               child: Column(
                 children: [
                   Container(
@@ -49,28 +44,24 @@ class AppointmentConfirmationScreen extends StatelessWidget {
                   const SizedBox(height: 18),
                   Text(
                     "Appointment Confirmed",
-                    style: GoogleFonts.manrope(color: Colors.white, fontWeight: FontWeight.w800, fontSize: 22),
+                    style: tt.titleLarge?.copyWith(color: Colors.white, fontWeight: FontWeight.w800),
                   ),
                   const SizedBox(height: 6),
                   Text(
                     "${dt.toLocal()}",
-                    style: GoogleFonts.plusJakartaSans(color: Colors.white.withValues(alpha: 0.78), fontWeight: FontWeight.w500, fontSize: 13),
+                    style: tt.bodySmall?.copyWith(color: Colors.white.withValues(alpha: 0.78), fontWeight: FontWeight.w500),
                   ),
                 ],
               ),
             ),
             const SizedBox(height: 20),
             // Details
-            Container(
+            EnhancedCard(
               padding: const EdgeInsets.all(24),
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(20),
-              ),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text("Details", style: GoogleFonts.manrope(fontWeight: FontWeight.w800, fontSize: 18, color: AppTheme.onSurface)),
+                  Text("Details", style: tt.titleMedium?.copyWith(fontWeight: FontWeight.w800)),
                   const SizedBox(height: 18),
                   _DetailRow(label: "Appointment ID", value: payload["appointmentId"]?.toString() ?? "-"),
                   _DetailRow(label: "Doctor", value: payload["doctorName"]?.toString() ?? "-"),
@@ -89,7 +80,7 @@ class AppointmentConfirmationScreen extends StatelessWidget {
                 shape: const StadiumBorder(),
                 elevation: 0,
               ),
-              child: Text("Back to Home", style: GoogleFonts.plusJakartaSans(fontWeight: FontWeight.w700, fontSize: 16)),
+              child: Text("Back to Home", style: tt.titleSmall?.copyWith(fontWeight: FontWeight.w700, color: Colors.white)),
             ),
           ],
         ),
@@ -105,6 +96,8 @@ class _DetailRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final tt = Theme.of(context).textTheme;
+    final cs = Theme.of(context).colorScheme;
     return Padding(
       padding: const EdgeInsets.only(bottom: 14),
       child: Row(
@@ -112,10 +105,10 @@ class _DetailRow extends StatelessWidget {
         children: [
           SizedBox(
             width: 120,
-            child: Text(label, style: GoogleFonts.plusJakartaSans(fontWeight: FontWeight.w500, fontSize: 13, color: AppTheme.onSurface.withValues(alpha: 0.5))),
+            child: Text(label, style: tt.bodySmall?.copyWith(fontWeight: FontWeight.w500, color: cs.onSurface.withValues(alpha: 0.5))),
           ),
           Expanded(
-            child: Text(value, style: GoogleFonts.plusJakartaSans(fontWeight: FontWeight.w700, fontSize: 14, color: AppTheme.onSurface), overflow: TextOverflow.ellipsis),
+            child: Text(value, style: tt.bodySmall?.copyWith(fontWeight: FontWeight.w700), overflow: TextOverflow.ellipsis),
           ),
         ],
       ),

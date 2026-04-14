@@ -1,0 +1,1530 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; style-src 'self' 'unsafe-inline'; script-src 'self' 'unsafe-inline'; connect-src http://127.0.0.1:8000 http://localhost:8010;">
+  <title>Medha Health</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    :root {
+      --bg: #f1f5f9;
+      --card: #ffffff;
+      --border: #e2e8f0;
+      --text: #0f172a;
+      --muted: #64748b;
+      --dim: #94a3b8;
+      --accent: #0f766e;
+      --accent-light: #ecfdf5;
+      --blue: #2563eb;
+      --blue-light: #eff6ff;
+      --red: #dc2626;
+      --red-light: #fef2f2;
+      --amber: #d97706;
+      --amber-light: #fffbeb;
+      --sidebar-w: 240px;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      height: 100vh;
+      display: flex;
+      overflow: hidden;
+      user-select: none;
+    }
+
+    /* ═══ SIDEBAR ═══ */
+    .sidebar {
+      width: var(--sidebar-w);
+      background: var(--text);
+      color: #fff;
+      display: flex;
+      flex-direction: column;
+      flex-shrink: 0;
+    }
+
+    .sidebar-brand {
+      padding: 20px 20px 16px;
+      border-bottom: 1px solid rgba(255,255,255,0.08);
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .sidebar-brand-icon {
+      width: 34px; height: 34px;
+      background: var(--accent);
+      border-radius: 9px;
+      display: flex; align-items: center; justify-content: center;
+      font-weight: 800; font-size: 15px;
+    }
+
+    .sidebar-brand h1 { font-size: 17px; font-weight: 700; }
+
+    .sidebar-nav { flex: 1; padding: 12px 10px; overflow-y: auto; }
+
+    .sidebar-label {
+      font-size: 10px; font-weight: 700; text-transform: uppercase;
+      letter-spacing: 1.5px; color: rgba(255,255,255,0.3);
+      padding: 16px 12px 6px; margin-top: 4px;
+    }
+
+    .nav-item {
+      display: flex; align-items: center; gap: 10px;
+      padding: 11px 14px; border-radius: 10px;
+      font-size: 14px; font-weight: 500; color: rgba(255,255,255,0.6);
+      cursor: pointer; margin-bottom: 2px;
+    }
+
+    .nav-item:hover { background: rgba(255,255,255,0.06); color: #fff; }
+    .nav-item.active { background: var(--accent); color: #fff; font-weight: 600; }
+
+    .nav-icon { width: 20px; text-align: center; font-size: 16px; flex-shrink: 0; }
+
+    .sidebar-footer {
+      padding: 16px;
+      border-top: 1px solid rgba(255,255,255,0.08);
+    }
+
+    .sidebar-user {
+      display: flex; align-items: center; gap: 10px;
+      padding: 8px; border-radius: 10px; font-size: 13px;
+    }
+
+    .sidebar-user-avatar {
+      width: 32px; height: 32px; border-radius: 8px;
+      background: var(--accent); display: flex;
+      align-items: center; justify-content: center;
+      font-weight: 700; font-size: 14px;
+    }
+
+    .sidebar-user-name { font-weight: 600; font-size: 13px; }
+    .sidebar-user-role { font-size: 11px; color: rgba(255,255,255,0.4); }
+
+    .logout-btn {
+      width: 100%; margin-top: 10px; padding: 9px;
+      background: rgba(255,255,255,0.06); border: none;
+      color: rgba(255,255,255,0.5); font-size: 13px;
+      font-weight: 600; border-radius: 8px; cursor: pointer;
+      font-family: inherit;
+    }
+    .logout-btn:hover { background: rgba(255,255,255,0.1); color: #fff; }
+
+    /* ═══ MAIN AREA ═══ */
+    .main-area {
+      flex: 1; display: flex; flex-direction: column;
+      overflow: hidden;
+    }
+
+    /* ── Top Bar ── */
+    .topbar {
+      background: var(--card);
+      border-bottom: 1px solid var(--border);
+      padding: 14px 28px;
+      display: flex; align-items: center; gap: 16px;
+      flex-shrink: 0;
+    }
+
+    .topbar-title { font-size: 18px; font-weight: 700; flex: 1; }
+
+    .sync-badge {
+      display: flex; align-items: center; gap: 6px;
+      padding: 5px 12px; border-radius: 8px;
+      font-size: 12px; font-weight: 600;
+      background: var(--accent-light); color: var(--accent);
+    }
+    .sync-badge.offline { background: var(--red-light); color: var(--red); }
+    .sync-badge.syncing { background: var(--blue-light); color: var(--blue); }
+    .sync-badge-dot {
+      width: 7px; height: 7px; border-radius: 50%;
+      background: currentColor;
+    }
+
+    .pending-badge {
+      padding: 4px 10px; border-radius: 6px;
+      font-size: 11px; font-weight: 700;
+      background: var(--amber-light); color: var(--amber);
+    }
+
+    /* ── Content ── */
+    .content { flex: 1; overflow-y: auto; padding: 24px 28px; }
+
+    /* ═══ SHARED UI COMPONENTS ═══ */
+
+    .page-title { font-size: 22px; font-weight: 700; margin-bottom: 20px; }
+
+    .card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 20px;
+      margin-bottom: 16px;
+    }
+
+    .card-title {
+      font-size: 13px; font-weight: 700; color: var(--muted);
+      text-transform: uppercase; letter-spacing: 1px;
+      margin-bottom: 12px;
+    }
+
+    .stat-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 14px; margin-bottom: 20px; }
+    .stat-card { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 18px; }
+    .stat-label { font-size: 12px; font-weight: 600; color: var(--dim); margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.5px; }
+    .stat-value { font-size: 28px; font-weight: 800; color: var(--text); }
+    .stat-sub { font-size: 12px; color: var(--muted); margin-top: 4px; }
+
+    .search-bar {
+      display: flex; align-items: center; gap: 10px;
+      background: var(--card); border: 2px solid var(--border);
+      border-radius: 12px; padding: 10px 16px;
+      margin-bottom: 16px;
+    }
+    .search-bar input {
+      border: none; outline: none; font-size: 15px; font-weight: 500;
+      flex: 1; color: var(--text); background: transparent; font-family: inherit;
+    }
+    .search-bar input::placeholder { color: var(--dim); }
+    .search-icon { font-size: 18px; color: var(--dim); }
+
+    table { width: 100%; border-collapse: collapse; }
+    th {
+      text-align: left; font-size: 11px; font-weight: 700;
+      color: var(--dim); text-transform: uppercase; letter-spacing: 0.8px;
+      padding: 12px 16px; border-bottom: 1px solid var(--border);
+    }
+    td {
+      padding: 14px 16px; border-bottom: 1px solid #f1f5f9;
+      font-size: 14px; font-weight: 500;
+    }
+    tr:hover td { background: #f8fafc; }
+    .td-name { font-weight: 600; color: var(--text); }
+    .td-muted { color: var(--muted); font-size: 13px; }
+
+    .badge {
+      display: inline-block; padding: 3px 10px; border-radius: 6px;
+      font-size: 11px; font-weight: 700; text-transform: uppercase;
+    }
+    .badge-green { background: var(--accent-light); color: var(--accent); }
+    .badge-red { background: var(--red-light); color: var(--red); }
+    .badge-blue { background: var(--blue-light); color: var(--blue); }
+    .badge-amber { background: var(--amber-light); color: var(--amber); }
+    .badge-gray { background: #f1f5f9; color: var(--dim); }
+
+    .btn {
+      display: inline-flex; align-items: center; gap: 6px;
+      padding: 10px 18px; border-radius: 10px;
+      font-size: 14px; font-weight: 600; cursor: pointer;
+      border: none; font-family: inherit;
+    }
+    .btn-primary { background: var(--accent); color: #fff; }
+    .btn-primary:hover { background: #0d6d66; }
+    .btn-outline { background: var(--card); border: 1px solid var(--border); color: var(--text); }
+    .btn-outline:hover { background: #f8fafc; }
+    .btn-sm { padding: 7px 14px; font-size: 13px; }
+    .btn-link { background: none; border: none; color: var(--accent); cursor: pointer; font-weight: 600; font-size: 14px; padding: 0; font-family: inherit; }
+    .btn-link:hover { text-decoration: underline; }
+
+    .action-row { display: flex; align-items: center; gap: 10px; margin-bottom: 16px; flex-wrap: wrap; }
+
+    .empty-state {
+      text-align: center; padding: 48px 20px; color: var(--dim);
+      font-size: 15px; font-weight: 500;
+    }
+
+    .form-group { margin-bottom: 16px; }
+    .form-label { display: block; font-size: 13px; font-weight: 600; color: var(--muted); margin-bottom: 6px; }
+    .form-input {
+      width: 100%; padding: 12px 14px; font-size: 14px; font-weight: 500;
+      border: 2px solid var(--border); border-radius: 10px; outline: none;
+      color: var(--text); background: #f8fafc; font-family: inherit;
+    }
+    .form-input:focus { border-color: var(--accent); background: #fff; }
+    .form-select { appearance: none; cursor: pointer; }
+    .form-textarea { min-height: 100px; resize: vertical; }
+    .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+
+    .modal-overlay {
+      position: fixed; inset: 0; background: rgba(0,0,0,0.4);
+      display: flex; align-items: center; justify-content: center; z-index: 100;
+    }
+    .modal {
+      background: var(--card); border-radius: 18px;
+      padding: 28px; width: 520px; max-height: 85vh;
+      overflow-y: auto; box-shadow: 0 20px 60px rgba(0,0,0,0.15);
+    }
+    .modal-title { font-size: 20px; font-weight: 700; margin-bottom: 20px; }
+    .modal-actions { display: flex; gap: 10px; justify-content: flex-end; margin-top: 20px; }
+
+    .hidden { display: none !important; }
+
+    .loading-text { padding: 40px; text-align: center; color: var(--dim); font-size: 15px; }
+
+    .data-source {
+      font-size: 11px; font-weight: 600; padding: 2px 8px; border-radius: 4px;
+      display: inline-block; margin-left: 8px;
+    }
+    .data-source.cache { background: var(--amber-light); color: var(--amber); }
+    .data-source.api { background: var(--accent-light); color: var(--accent); }
+
+    .detail-row { display: flex; gap: 8px; padding: 8px 0; border-bottom: 1px solid #f1f5f9; }
+    .detail-label { font-size: 13px; font-weight: 600; color: var(--dim); width: 140px; flex-shrink: 0; }
+    .detail-value { font-size: 14px; font-weight: 500; color: var(--text); }
+
+    .waitlist-item {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 12px 16px; border-bottom: 1px solid #f1f5f9;
+    }
+    .waitlist-item:last-child { border-bottom: none; }
+    .waitlist-name { font-weight: 600; font-size: 14px; }
+    .waitlist-meta { font-size: 12px; color: var(--muted); }
+
+    .nfc-panel {
+      background: var(--blue-light); border: 2px dashed var(--blue);
+      border-radius: 14px; padding: 24px; text-align: center;
+      margin-bottom: 16px; cursor: pointer;
+    }
+    .nfc-panel:hover { background: #dbeafe; }
+    .nfc-panel-icon { font-size: 32px; margin-bottom: 8px; }
+    .nfc-panel-text { font-size: 15px; font-weight: 600; color: var(--blue); }
+    .nfc-panel-sub { font-size: 12px; color: var(--muted); margin-top: 4px; }
+
+    .tab-bar { display: flex; gap: 4px; margin-bottom: 20px; border-bottom: 2px solid var(--border); padding-bottom: 0; }
+    .tab-item {
+      padding: 10px 18px; font-size: 14px; font-weight: 600;
+      color: var(--muted); cursor: pointer; border-bottom: 2px solid transparent;
+      margin-bottom: -2px;
+    }
+    .tab-item:hover { color: var(--text); }
+    .tab-item.active { color: var(--accent); border-bottom-color: var(--accent); }
+  </style>
+</head>
+<body>
+
+  <!-- ═══ SIDEBAR ═══ -->
+  <div class="sidebar">
+    <div class="sidebar-brand">
+      <div class="sidebar-brand-icon">M</div>
+      <h1>Medha Health</h1>
+    </div>
+
+    <div class="sidebar-nav" id="sidebarNav"></div>
+
+    <div class="sidebar-footer">
+      <div class="sidebar-user">
+        <div class="sidebar-user-avatar" id="userAvatar">D</div>
+        <div>
+          <div class="sidebar-user-name" id="userName">Doctor</div>
+          <div class="sidebar-user-role" id="userRole">doctor</div>
+        </div>
+      </div>
+      <button class="logout-btn" onclick="doLogout()">Sign Out</button>
+    </div>
+  </div>
+
+  <!-- ═══ MAIN AREA ═══ -->
+  <div class="main-area">
+    <div class="topbar">
+      <div class="topbar-title" id="topbarTitle">Dashboard</div>
+      <div class="sync-badge" id="syncBadge">
+        <div class="sync-badge-dot"></div>
+        <span id="syncLabel">Online</span>
+      </div>
+      <div class="pending-badge hidden" id="pendingBadge">0 pending</div>
+    </div>
+
+    <div class="content" id="content">
+      <div class="loading-text">Loading...</div>
+    </div>
+  </div>
+
+  <!-- ═══ MODAL CONTAINER ═══ -->
+  <div id="modalContainer" class="hidden"></div>
+
+<script>
+// ══════════════════════════════════════════════════════════════
+//  STATE
+// ══════════════════════════════════════════════════════════════
+
+const api = window.medhaAPI;
+let currentUser = {};
+let currentRole = '';
+let currentPage = '';
+let syncStatus = { online: true, state: 'idle', pending: 0 };
+
+// ══════════════════════════════════════════════════════════════
+//  INIT
+// ══════════════════════════════════════════════════════════════
+
+window.addEventListener('DOMContentLoaded', async () => {
+  // Retrieve user from sessionStorage (set by login page)
+  try {
+    currentUser = JSON.parse(sessionStorage.getItem('medha_user') || '{}');
+    currentRole = sessionStorage.getItem('medha_role') || currentUser.role || 'doctor';
+  } catch { currentRole = 'doctor'; }
+
+  // Set user info in sidebar
+  const name = currentUser.full_name || currentUser.username || 'User';
+  document.getElementById('userName').textContent = name;
+  document.getElementById('userRole').textContent = currentRole;
+  document.getElementById('userAvatar').textContent = name.charAt(0).toUpperCase();
+
+  buildSidebar();
+  setupSyncListener();
+
+  // Navigate to dashboard
+  if (currentRole === 'doctor') navigateTo('doctor-dashboard');
+  else navigateTo('admin-dashboard');
+});
+
+// ══════════════════════════════════════════════════════════════
+//  SIDEBAR NAVIGATION
+// ══════════════════════════════════════════════════════════════
+
+const doctorNav = [
+  { section: 'Clinical' },
+  { id: 'doctor-dashboard', icon: '&#9636;', label: 'Dashboard' },
+  { id: 'doctor-patients', icon: '&#128101;', label: 'Patients' },
+  { id: 'doctor-appointments', icon: '&#128197;', label: 'Appointments' },
+  { id: 'doctor-records', icon: '&#128203;', label: 'Records & Notes' },
+  { id: 'doctor-prescriptions', icon: '&#128138;', label: 'Prescriptions' },
+  { section: 'Tools' },
+  { id: 'doctor-nfc', icon: '&#128179;', label: 'NFC Scanner' },
+  { id: 'doctor-consent', icon: '&#9989;', label: 'Consent' },
+];
+
+const adminNav = [
+  { section: 'Management' },
+  { id: 'admin-dashboard', icon: '&#9636;', label: 'Dashboard' },
+  { id: 'admin-patients', icon: '&#128101;', label: 'Patients' },
+  { id: 'admin-doctors', icon: '&#129658;', label: 'Doctors' },
+  { section: 'Finance' },
+  { id: 'admin-billing', icon: '&#128176;', label: 'Billing' },
+  { section: 'System' },
+  { id: 'admin-offline', icon: '&#128230;', label: 'Offline Data' },
+];
+
+function buildSidebar() {
+  const nav = currentRole === 'doctor' ? doctorNav : adminNav;
+  const container = document.getElementById('sidebarNav');
+  container.innerHTML = '';
+  for (const item of nav) {
+    if (item.section) {
+      container.innerHTML += `<div class="sidebar-label">${item.section}</div>`;
+    } else {
+      container.innerHTML += `<div class="nav-item" data-page="${item.id}" onclick="navigateTo('${item.id}')"><span class="nav-icon">${item.icon}</span>${item.label}</div>`;
+    }
+  }
+}
+
+function navigateTo(page) {
+  currentPage = page;
+
+  // Update sidebar active state
+  document.querySelectorAll('.nav-item').forEach(el => {
+    el.classList.toggle('active', el.dataset.page === page);
+  });
+
+  // Update topbar title
+  const label = page.replace('doctor-','').replace('admin-','').replace(/-/g,' ');
+  document.getElementById('topbarTitle').textContent = label.charAt(0).toUpperCase() + label.slice(1);
+
+  // Render page
+  const c = document.getElementById('content');
+  c.innerHTML = '<div class="loading-text">Loading...</div>';
+
+  const pages = {
+    'doctor-dashboard': renderDoctorDashboard,
+    'doctor-patients': renderDoctorPatients,
+    'doctor-appointments': renderDoctorAppointments,
+    'doctor-records': renderDoctorRecords,
+    'doctor-prescriptions': renderDoctorPrescriptions,
+    'doctor-nfc': renderNfcScanner,
+    'doctor-consent': renderConsent,
+    'admin-dashboard': renderAdminDashboard,
+    'admin-patients': renderAdminPatients,
+    'admin-doctors': renderAdminDoctors,
+    'admin-billing': renderAdminBilling,
+    'admin-offline': renderOfflineData,
+  };
+
+  if (pages[page]) pages[page](c);
+  else c.innerHTML = '<div class="empty-state">Page not found</div>';
+}
+
+// ══════════════════════════════════════════════════════════════
+//  SYNC STATUS
+// ══════════════════════════════════════════════════════════════
+
+function setupSyncListener() {
+  api.sync.onStatus((s) => {
+    syncStatus = s;
+    updateSyncUI();
+  });
+  // Initial check
+  api.sync.isOnline().then(online => {
+    syncStatus.online = online;
+    updateSyncUI();
+  });
+}
+
+function updateSyncUI() {
+  const badge = document.getElementById('syncBadge');
+  const label = document.getElementById('syncLabel');
+  const pending = document.getElementById('pendingBadge');
+
+  badge.className = 'sync-badge';
+  if (!syncStatus.online) {
+    badge.classList.add('offline');
+    label.textContent = 'Offline';
+  } else if (syncStatus.state === 'syncing' || syncStatus.state === 'pushing') {
+    badge.classList.add('syncing');
+    label.textContent = 'Syncing...';
+  } else {
+    label.textContent = 'Online';
+  }
+
+  if (syncStatus.pending > 0) {
+    pending.classList.remove('hidden');
+    pending.textContent = `${syncStatus.pending} pending`;
+  } else {
+    pending.classList.add('hidden');
+  }
+}
+
+// ══════════════════════════════════════════════════════════════
+//  DATA FETCHING (online-first, offline fallback)
+// ══════════════════════════════════════════════════════════════
+
+async function fetchData(apiEndpoint, cacheGetter, cacheSetter) {
+  try {
+    const res = await api.apiGet(apiEndpoint);
+    if (res.success) {
+      if (cacheSetter) cacheSetter(res.data);
+      return { data: res.data, source: 'api' };
+    }
+    throw new Error('API failed');
+  } catch {
+    if (cacheGetter) {
+      const cached = await cacheGetter();
+      if (cached && (Array.isArray(cached) ? cached.length : true)) {
+        return { data: cached, source: 'cache' };
+      }
+    }
+    return { data: null, source: 'none' };
+  }
+}
+
+async function fetchCached(key, apiEndpoint) {
+  try {
+    const res = await api.apiGet(apiEndpoint);
+    if (res.success) {
+      api.db.setCache(key, res.data);
+      return { data: res.data, source: 'api' };
+    }
+    throw new Error();
+  } catch {
+    const c = await api.db.getCache(key);
+    return c ? { data: c.data, source: 'cache' } : { data: null, source: 'none' };
+  }
+}
+
+function srcBadge(source) {
+  if (source === 'cache') return '<span class="data-source cache">Cached</span>';
+  if (source === 'api') return '<span class="data-source api">Live</span>';
+  return '';
+}
+
+function statusBadge(status) {
+  if (!status) return '';
+  const s = status.toLowerCase();
+  if (['active','completed','paid','confirmed','on_duty','stable'].includes(s)) return `<span class="badge badge-green">${status}</span>`;
+  if (['critical','cancelled','failed','off_duty'].includes(s)) return `<span class="badge badge-red">${status}</span>`;
+  if (['pending','scheduled','waiting','break'].includes(s)) return `<span class="badge badge-amber">${status}</span>`;
+  if (['in_progress','in_surgery','checked_in'].includes(s)) return `<span class="badge badge-blue">${status}</span>`;
+  return `<span class="badge badge-gray">${status}</span>`;
+}
+
+function formatDate(d) {
+  if (!d) return '-';
+  try { return new Date(d).toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' }); }
+  catch { return d; }
+}
+
+// ══════════════════════════════════════════════════════════════
+//  DOCTOR: DASHBOARD
+// ══════════════════════════════════════════════════════════════
+
+async function renderDoctorDashboard(el) {
+  const dash = await fetchCached('dashboard_doctor', '/dashboard/doctor/');
+  const d = dash.data || {};
+  const stats = d.stats || {};
+  const waitlist = d.waitlist || [];
+
+  el.innerHTML = `
+    <div class="page-title">Good ${getTimeGreeting()}, Dr. ${currentUser.full_name || currentUser.username || ''} ${srcBadge(dash.source)}</div>
+
+    <div class="stat-grid">
+      <div class="stat-card">
+        <div class="stat-label">Today's Appointments</div>
+        <div class="stat-value">${stats.appointments ?? 0}</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Reports Pending</div>
+        <div class="stat-value">${stats.reports ?? 0}</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Alerts</div>
+        <div class="stat-value">${stats.alerts ?? 0}</div>
+      </div>
+    </div>
+
+    ${d.insight ? `
+    <div class="card" style="border-left: 4px solid var(--accent);">
+      <div class="card-title">AI Insight</div>
+      <p style="font-size:14px; font-weight:500; margin-bottom:6px;">${d.insight.message || ''}</p>
+      <p style="font-size:13px; color:var(--muted);">${d.insight.recommendation || ''}</p>
+    </div>` : ''}
+
+    <div class="card">
+      <div class="card-title">Today's Waitlist</div>
+      ${waitlist.length === 0 ? '<div class="empty-state">No patients waiting</div>' :
+        waitlist.map(w => `
+        <div class="waitlist-item">
+          <div>
+            <div class="waitlist-name">${w.patient_name || 'Unknown'}</div>
+            <div class="waitlist-meta">${w.appointment_type || ''} &middot; ${w.time || ''}</div>
+          </div>
+          ${statusBadge(w.status)}
+        </div>`).join('')}
+    </div>
+  `;
+}
+
+function getTimeGreeting() {
+  const h = new Date().getHours();
+  if (h < 12) return 'Morning';
+  if (h < 17) return 'Afternoon';
+  return 'Evening';
+}
+
+// ══════════════════════════════════════════════════════════════
+//  DOCTOR: PATIENTS
+// ══════════════════════════════════════════════════════════════
+
+async function renderDoctorPatients(el) {
+  el.innerHTML = `
+    <div class="page-title">Patient Management</div>
+    <div class="action-row">
+      <div class="search-bar" style="flex:1; margin-bottom:0;">
+        <span class="search-icon">&#128269;</span>
+        <input type="text" id="patientSearch" placeholder="Search by name, phone, ABHA ID..." oninput="searchPatientsDebounced()">
+      </div>
+    </div>
+    <div id="patientsList"><div class="loading-text">Loading patients...</div></div>
+  `;
+  loadPatients();
+}
+
+let searchTimer = null;
+function searchPatientsDebounced() {
+  clearTimeout(searchTimer);
+  searchTimer = setTimeout(loadPatients, 300);
+}
+
+async function loadPatients() {
+  const q = document.getElementById('patientSearch')?.value?.trim() || '';
+  const listEl = document.getElementById('patientsList');
+  if (!listEl) return;
+
+  let result;
+  if (q.length > 1) {
+    result = await fetchData(
+      `/patients/search/?q=${encodeURIComponent(q)}`,
+      () => api.db.searchPatients(q),
+      (d) => api.db.cachePatients(Array.isArray(d) ? d : [])
+    );
+  } else {
+    result = await fetchData('/patients/', () => api.db.patients(), (d) => api.db.cachePatients(Array.isArray(d) ? d : []));
+  }
+
+  const patients = Array.isArray(result.data) ? result.data : [];
+
+  if (patients.length === 0) {
+    listEl.innerHTML = '<div class="empty-state">No patients found</div>';
+    return;
+  }
+
+  const isAdmin = currentRole !== 'doctor';
+
+  listEl.innerHTML = `
+    <div class="card" style="padding:0; overflow:hidden;">
+      <table>
+        <thead><tr>
+          <th>Patient</th><th>Age / Gender</th><th>Phone</th><th>Status</th>
+          ${isAdmin ? '<th>NFC Card</th>' : ''}
+          <th>Actions</th>
+        </tr></thead>
+        <tbody>
+          ${patients.map(p => {
+             const hasAssigned = (window._nfcAssignedIds && window._nfcAssignedIds.has(p.id || p.patient_id)) || p.has_nfc || p.nfc_uid;
+             let nfcTd = '';
+             if (isAdmin) {
+                nfcTd = `<td>
+                   ${hasAssigned ? 
+                      '<span style="color:green;font-weight:bold;">Assigned &#9989;</span>' : 
+                      `<button onclick="showAssignNfcModal('${p.id || p.patient_id}', '${p.full_name}')" style="background:#6366f1;color:#fff;padding:6px 14px;border-radius:8px;font-weight:600;cursor:pointer;border:none;">Assign NFC</button>`
+                   }
+                </td>`;
+             }
+             return `
+          <tr>
+            <td>
+              <div class="td-name">${p.full_name || '-'}</div>
+              <div class="td-muted">${p.patient_id || p.id || ''}</div>
+            </td>
+            <td>${p.age || '-'} / ${genderLabel(p.gender)}</td>
+            <td class="td-muted">${p.phone || '-'}</td>
+            <td>${statusBadge(p.status)}</td>
+            ${nfcTd}
+            <td><button class="btn btn-sm btn-outline" onclick="viewPatient('${p.id}')">View</button></td>
+          </tr>`
+          }).join('')}
+        </tbody>
+      </table>
+    </div>
+    <div style="font-size:12px; color:var(--dim); margin-top:8px;">${patients.length} patient(s) ${srcBadge(result.source)}</div>
+  `;
+}
+
+function genderLabel(g) {
+  if (!g) return '-';
+  if (g === 'M' || g === 'male' || g === 'Male') return 'Male';
+  if (g === 'F' || g === 'female' || g === 'Female') return 'Female';
+  return g;
+}
+
+// ══════════════════════════════════════════════════════════════
+//  PATIENT PROFILE (Detail View)
+// ══════════════════════════════════════════════════════════════
+
+async function viewPatient(id) {
+  const el = document.getElementById('content');
+  el.innerHTML = '<div class="loading-text">Loading patient profile...</div>';
+  document.getElementById('topbarTitle').textContent = 'Patient Profile';
+
+  // Fetch patient (offline-first: try local DB first for speed)
+  let patient = null, source = 'none';
+  const local = await api.db.patient(id);
+  if (local) { patient = local; source = 'cache'; }
+
+  try {
+    const res = await api.apiGet(`/patients/${id}/`);
+    if (res.success) { patient = res.data; source = 'api'; api.db.cachePatients([patient]); }
+  } catch {}
+
+  if (!patient) { el.innerHTML = '<div class="empty-state">Patient not found</div>'; return; }
+
+  // Also fetch records and prescriptions
+  const [records, prescriptions] = await Promise.all([
+    fetchData(`/records/?patient=${id}`, () => api.db.recordsFor(id), null),
+    fetchData(`/prescriptions/?patient=${id}`, () => api.db.prescriptionsFor(id), null),
+  ]);
+
+  const recs = Array.isArray(records.data) ? records.data : [];
+  const rxs = Array.isArray(prescriptions.data) ? prescriptions.data : [];
+
+  el.innerHTML = `
+    <div style="margin-bottom:16px;">
+      <button class="btn-link" onclick="navigateTo('${currentRole}-patients')">&larr; Back to Patients</button>
+    </div>
+
+    <div class="card">
+      <div style="display:flex; align-items:center; gap:16px; margin-bottom:16px;">
+        <div style="width:56px; height:56px; border-radius:14px; background:var(--accent-light); color:var(--accent);
+          display:flex; align-items:center; justify-content:center; font-size:24px; font-weight:800;">
+          ${(patient.full_name || '?').charAt(0)}
+        </div>
+        <div>
+          <div style="font-size:20px; font-weight:700;">${patient.full_name} ${srcBadge(source)}</div>
+          <div class="td-muted">${patient.patient_id || patient.id}</div>
+        </div>
+        <div style="margin-left:auto;">${statusBadge(patient.status)}</div>
+      </div>
+
+      <div style="display:grid; grid-template-columns:1fr 1fr; gap:0;">
+        <div class="detail-row"><div class="detail-label">Age</div><div class="detail-value">${patient.age || '-'}</div></div>
+        <div class="detail-row"><div class="detail-label">Gender</div><div class="detail-value">${genderLabel(patient.gender)}</div></div>
+        <div class="detail-row"><div class="detail-label">Phone</div><div class="detail-value">${patient.phone || '-'}</div></div>
+        <div class="detail-row"><div class="detail-label">Email</div><div class="detail-value">${patient.email || '-'}</div></div>
+        <div class="detail-row"><div class="detail-label">Blood Group</div><div class="detail-value">${patient.blood_group || '-'}</div></div>
+        <div class="detail-row"><div class="detail-label">ABHA ID</div><div class="detail-value">${patient.abha_id || '-'}</div></div>
+        <div class="detail-row"><div class="detail-label">Allergies</div><div class="detail-value">${patient.allergies || 'None reported'}</div></div>
+        <div class="detail-row"><div class="detail-label">Doctor</div><div class="detail-value">${patient.assigned_doctor_name || '-'}</div></div>
+      </div>
+    </div>
+
+    <div class="tab-bar">
+      <div class="tab-item active" onclick="showPatientTab('records', this)">Records (${recs.length})</div>
+      <div class="tab-item" onclick="showPatientTab('prescriptions', this)">Prescriptions (${rxs.length})</div>
+    </div>
+
+    <div id="patientTabContent">
+      ${renderRecordsTable(recs, records.source, id)}
+    </div>
+  `;
+
+  // Store for tab switching
+  window._patientRecs = recs;
+  window._patientRxs = rxs;
+  window._patientRecsSrc = records.source;
+  window._patientRxsSrc = prescriptions.source;
+  window._viewingPatientId = id;
+}
+
+function showPatientTab(tab, tabEl) {
+  document.querySelectorAll('.tab-item').forEach(t => t.classList.remove('active'));
+  tabEl.classList.add('active');
+  const container = document.getElementById('patientTabContent');
+  if (tab === 'records') container.innerHTML = renderRecordsTable(window._patientRecs, window._patientRecsSrc, window._viewingPatientId);
+  else container.innerHTML = renderPrescriptionsTable(window._patientRxs, window._patientRxsSrc, window._viewingPatientId);
+}
+
+function renderRecordsTable(recs, source, patientId) {
+  return `
+    <div class="action-row">
+      <span style="font-size:13px; color:var(--dim);">${recs.length} record(s) ${srcBadge(source)}</span>
+      <button class="btn btn-sm btn-primary" style="margin-left:auto;" onclick="showAddRecordModal('${patientId}')">+ Add Record</button>
+    </div>
+    ${recs.length === 0 ? '<div class="empty-state">No records found</div>' : `
+    <div class="card" style="padding:0; overflow:hidden;">
+      <table>
+        <thead><tr><th>Date</th><th>Diagnosis</th><th>Type</th><th>Doctor</th><th>Notes</th></tr></thead>
+        <tbody>${recs.map(r => `
+          <tr>
+            <td class="td-muted">${formatDate(r.date)}</td>
+            <td class="td-name">${r.diagnosis || '-'}</td>
+            <td>${r.record_type || '-'}</td>
+            <td class="td-muted">${r.doctor_name || '-'}</td>
+            <td class="td-muted" style="max-width:200px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">${r.notes || '-'}</td>
+          </tr>`).join('')}
+        </tbody>
+      </table>
+    </div>`}
+  `;
+}
+
+function renderPrescriptionsTable(rxs, source, patientId) {
+  return `
+    <div class="action-row">
+      <span style="font-size:13px; color:var(--dim);">${rxs.length} prescription(s) ${srcBadge(source)}</span>
+      <button class="btn btn-sm btn-primary" style="margin-left:auto;" onclick="showAddPrescriptionModal('${patientId}')">+ New Prescription</button>
+    </div>
+    ${rxs.length === 0 ? '<div class="empty-state">No prescriptions found</div>' : `
+    <div class="card" style="padding:0; overflow:hidden;">
+      <table>
+        <thead><tr><th>Date</th><th>Medicine</th><th>Dosage</th><th>Duration</th><th>Status</th></tr></thead>
+        <tbody>${rxs.map(rx => `
+          <tr>
+            <td class="td-muted">${formatDate(rx.date)}</td>
+            <td class="td-name">${rx.medicine || '-'}</td>
+            <td>${rx.dosage || '-'}</td>
+            <td>${rx.duration || '-'}</td>
+            <td>${statusBadge(rx.status)}</td>
+          </tr>`).join('')}
+        </tbody>
+      </table>
+    </div>`}
+  `;
+}
+
+// ══════════════════════════════════════════════════════════════
+//  ADD RECORD MODAL
+// ══════════════════════════════════════════════════════════════
+
+function showAddRecordModal(patientId) {
+  const mc = document.getElementById('modalContainer');
+  mc.classList.remove('hidden');
+  mc.innerHTML = `
+    <div class="modal-overlay" onclick="closeModal(event)">
+      <div class="modal" onclick="event.stopPropagation()">
+        <div class="modal-title">Add Medical Record</div>
+        <form onsubmit="submitRecord(event, '${patientId}')">
+          <div class="form-group">
+            <label class="form-label">Diagnosis</label>
+            <input class="form-input" id="recDiagnosis" placeholder="Enter diagnosis" required>
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label class="form-label">Record Type</label>
+              <select class="form-input form-select" id="recType">
+                <option value="consultation">Consultation</option>
+                <option value="lab_report">Lab Report</option>
+                <option value="imaging">Imaging</option>
+                <option value="procedure">Procedure</option>
+                <option value="follow_up">Follow Up</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Date</label>
+              <input class="form-input" type="date" id="recDate" value="${new Date().toISOString().split('T')[0]}">
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Notes</label>
+            <textarea class="form-input form-textarea" id="recNotes" placeholder="Clinical notes..."></textarea>
+          </div>
+          <div class="modal-actions">
+            <button type="button" class="btn btn-outline" onclick="closeModal()">Cancel</button>
+            <button type="submit" class="btn btn-primary" id="recSubmitBtn">Save Record</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  `;
+}
+
+async function submitRecord(e, patientId) {
+  e.preventDefault();
+  const btn = document.getElementById('recSubmitBtn');
+  btn.disabled = true; btn.textContent = 'Saving...';
+
+  const payload = {
+    patient: patientId,
+    diagnosis: document.getElementById('recDiagnosis').value,
+    record_type: document.getElementById('recType').value,
+    date: document.getElementById('recDate').value,
+    notes: document.getElementById('recNotes').value,
+  };
+
+  try {
+    const res = await api.apiPost('/records/', payload);
+    if (res.success) {
+      closeModal();
+      viewPatient(patientId);
+      return;
+    }
+    throw new Error();
+  } catch {
+    // Queue for offline sync
+    await api.sync.queue('create', 'records', null, payload);
+    closeModal();
+    viewPatient(patientId);
+  }
+}
+
+// ══════════════════════════════════════════════════════════════
+//  ADD PRESCRIPTION MODAL
+// ══════════════════════════════════════════════════════════════
+
+function showAddPrescriptionModal(patientId) {
+  const mc = document.getElementById('modalContainer');
+  mc.classList.remove('hidden');
+  mc.innerHTML = `
+    <div class="modal-overlay" onclick="closeModal(event)">
+      <div class="modal" onclick="event.stopPropagation()">
+        <div class="modal-title">New Prescription</div>
+        <form onsubmit="submitPrescription(event, '${patientId}')">
+          <div class="form-group">
+            <label class="form-label">Medicine</label>
+            <input class="form-input" id="rxMedicine" placeholder="Medicine name" required>
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label class="form-label">Dosage</label>
+              <input class="form-input" id="rxDosage" placeholder="e.g. 500mg">
+            </div>
+            <div class="form-group">
+              <label class="form-label">Duration</label>
+              <input class="form-input" id="rxDuration" placeholder="e.g. 7 days">
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Date</label>
+            <input class="form-input" type="date" id="rxDate" value="${new Date().toISOString().split('T')[0]}">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Notes</label>
+            <textarea class="form-input form-textarea" id="rxNotes" placeholder="Additional notes..."></textarea>
+          </div>
+          <div class="modal-actions">
+            <button type="button" class="btn btn-outline" onclick="closeModal()">Cancel</button>
+            <button type="submit" class="btn btn-primary" id="rxSubmitBtn">Save Prescription</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  `;
+}
+
+async function submitPrescription(e, patientId) {
+  e.preventDefault();
+  const btn = document.getElementById('rxSubmitBtn');
+  btn.disabled = true; btn.textContent = 'Saving...';
+
+  const payload = {
+    patient: patientId,
+    medicine: document.getElementById('rxMedicine').value,
+    dosage: document.getElementById('rxDosage').value,
+    duration: document.getElementById('rxDuration').value,
+    date: document.getElementById('rxDate').value,
+    notes: document.getElementById('rxNotes').value,
+  };
+
+  try {
+    const res = await api.apiPost('/prescriptions/', payload);
+    if (res.success) { closeModal(); viewPatient(patientId); return; }
+    throw new Error();
+  } catch {
+    await api.sync.queue('create', 'prescriptions', null, payload);
+    closeModal();
+    viewPatient(patientId);
+  }
+}
+
+function closeModal(e) {
+  if (e && e.target !== e.currentTarget) return;
+  document.getElementById('modalContainer').classList.add('hidden');
+  document.getElementById('modalContainer').innerHTML = '';
+}
+
+// ══════════════════════════════════════════════════════════════
+//  ASSIGN NFC MODAL
+// ══════════════════════════════════════════════════════════════
+
+function showAssignNfcModal(patientId, patientName) {
+  const mc = document.getElementById('modalContainer');
+  mc.classList.remove('hidden');
+  mc.innerHTML = `
+    <div class="modal-overlay" onclick="closeNfcModal(event)">
+      <div class="modal" style="text-align:center" onclick="event.stopPropagation()">
+        <div class="modal-title">Assign NFC to ${patientName}</div>
+        <div class="nfc-panel" style="margin:20px 0; cursor:default;">
+           <div class="nfc-panel-icon">&#128179;</div>
+           <div class="nfc-panel-text" id="nfcAssignStatus" style="font-size:16px;">Waiting for card tap...</div>
+           <div class="nfc-panel-sub" style="font-size:13px; margin-top:8px;">Place patient card on the NFC reader</div>
+        </div>
+        <div class="modal-actions" style="justify-content:center;">
+           <button type="button" class="btn btn-outline" onclick="closeNfcModal()">Cancel</button>
+        </div>
+      </div>
+    </div>
+  `;
+  
+  // Register one-time listener
+  window._nfcAssignUnsub = api.nfcHardware.onNFCCard(async (uid) => {
+      const statusEl = document.getElementById('nfcAssignStatus');
+      if (!statusEl) return;
+      statusEl.innerHTML = 'Assigning... <br><small style="color:var(--dim)">UID: ' + uid + '</small>';
+      try {
+         const res = await api.nfcHardware.assign(patientId, uid);
+         if (res.success) {
+            statusEl.innerHTML = '<span style="color:var(--accent)">Successfully assigned &#9989;</span>';
+            if (!window._nfcAssignedIds) window._nfcAssignedIds = new Set();
+            window._nfcAssignedIds.add(patientId);
+            setTimeout(() => {
+                closeNfcModal();
+                loadPatients(); // refresh table to show ✅
+            }, 1000);
+         } else {
+            statusEl.innerHTML = '<span style="color:var(--red)">' + (res.error || 'Failed to assign card') + '</span>';
+         }
+      } catch (err) {
+         statusEl.innerHTML = '<span style="color:var(--red)">Error occurred</span>';
+      }
+  });
+}
+
+function closeNfcModal(e) {
+  if (e && e.target !== e.currentTarget) return;
+  if (window._nfcAssignUnsub) { window._nfcAssignUnsub(); window._nfcAssignUnsub = null; }
+  document.getElementById('modalContainer').classList.add('hidden');
+  document.getElementById('modalContainer').innerHTML = '';
+}
+
+// ══════════════════════════════════════════════════════════════
+//  DOCTOR: APPOINTMENTS
+// ══════════════════════════════════════════════════════════════
+
+async function renderDoctorAppointments(el) {
+  const result = await fetchData('/appointments/', () => api.db.appointments(), null);
+  const appts = Array.isArray(result.data) ? result.data : [];
+
+  el.innerHTML = `
+    <div class="page-title">Appointments ${srcBadge(result.source)}</div>
+    ${appts.length === 0 ? '<div class="empty-state">No appointments found</div>' : `
+    <div class="card" style="padding:0; overflow:hidden;">
+      <table>
+        <thead><tr><th>Date</th><th>Time</th><th>Patient</th><th>Type</th><th>Status</th><th>Complaint</th></tr></thead>
+        <tbody>${appts.map(a => `
+          <tr>
+            <td class="td-muted">${formatDate(a.date)}</td>
+            <td>${a.time || '-'}</td>
+            <td>
+              <div class="td-name">${a.patient_name || '-'}</div>
+              <div class="td-muted">${a.patient_id_code || ''}</div>
+            </td>
+            <td>${a.appointment_type || '-'}</td>
+            <td>${statusBadge(a.status)}</td>
+            <td class="td-muted" style="max-width:180px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">${a.complaint || '-'}</td>
+          </tr>`).join('')}
+        </tbody>
+      </table>
+    </div>
+    <div style="font-size:12px; color:var(--dim);">${appts.length} appointment(s)</div>`}
+  `;
+}
+
+// ══════════════════════════════════════════════════════════════
+//  DOCTOR: RECORDS & NOTES (all records)
+// ══════════════════════════════════════════════════════════════
+
+async function renderDoctorRecords(el) {
+  const result = await fetchData('/records/', () => api.db.allRecords(), null);
+  const recs = Array.isArray(result.data) ? result.data : [];
+
+  el.innerHTML = `
+    <div class="page-title">Records & Notes ${srcBadge(result.source)}</div>
+    ${recs.length === 0 ? '<div class="empty-state">No records found</div>' : `
+    <div class="card" style="padding:0; overflow:hidden;">
+      <table>
+        <thead><tr><th>Date</th><th>Patient</th><th>Diagnosis</th><th>Type</th><th>Notes</th></tr></thead>
+        <tbody>${recs.map(r => `
+          <tr onclick="viewPatient('${r.patient}')" style="cursor:pointer;">
+            <td class="td-muted">${formatDate(r.date)}</td>
+            <td class="td-name">${r.patient_name || '-'}</td>
+            <td>${r.diagnosis || '-'}</td>
+            <td>${r.record_type || '-'}</td>
+            <td class="td-muted" style="max-width:200px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">${r.notes || '-'}</td>
+          </tr>`).join('')}
+        </tbody>
+      </table>
+    </div>
+    <div style="font-size:12px; color:var(--dim);">${recs.length} record(s)</div>`}
+  `;
+}
+
+// ══════════════════════════════════════════════════════════════
+//  DOCTOR: PRESCRIPTIONS (all)
+// ══════════════════════════════════════════════════════════════
+
+async function renderDoctorPrescriptions(el) {
+  const result = await fetchData('/prescriptions/', () => api.db.allPrescriptions(), null);
+  const rxs = Array.isArray(result.data) ? result.data : [];
+
+  el.innerHTML = `
+    <div class="page-title">Prescriptions ${srcBadge(result.source)}</div>
+    ${rxs.length === 0 ? '<div class="empty-state">No prescriptions found</div>' : `
+    <div class="card" style="padding:0; overflow:hidden;">
+      <table>
+        <thead><tr><th>Date</th><th>Patient</th><th>Medicine</th><th>Dosage</th><th>Duration</th><th>Status</th></tr></thead>
+        <tbody>${rxs.map(rx => `
+          <tr onclick="viewPatient('${rx.patient}')" style="cursor:pointer;">
+            <td class="td-muted">${formatDate(rx.date)}</td>
+            <td class="td-name">${rx.patient_name || '-'}</td>
+            <td>${rx.medicine || '-'}</td>
+            <td>${rx.dosage || '-'}</td>
+            <td>${rx.duration || '-'}</td>
+            <td>${statusBadge(rx.status)}</td>
+          </tr>`).join('')}
+        </tbody>
+      </table>
+    </div>
+    <div style="font-size:12px; color:var(--dim);">${rxs.length} prescription(s)</div>`}
+  `;
+}
+
+// ══════════════════════════════════════════════════════════════
+//  DOCTOR: NFC SCANNER
+// ══════════════════════════════════════════════════════════════
+
+async function renderNfcScanner(el) {
+  el.innerHTML = `
+    <div class="page-title">NFC Patient Lookup</div>
+
+    <div class="nfc-panel" onclick="triggerNfcScan()">
+      <div class="nfc-panel-icon">&#128179;</div>
+      <div class="nfc-panel-text">Tap to Scan NFC Card</div>
+      <div class="nfc-panel-sub">Place patient card on NFC reader</div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">Or Search Manually</div>
+      <div class="search-bar">
+        <span class="search-icon">&#128269;</span>
+        <input type="text" id="nfcManualSearch" placeholder="Enter Patient ID or ABHA ID..." onkeydown="if(event.key==='Enter') nfcManualLookup()">
+      </div>
+      <button class="btn btn-primary btn-sm" onclick="nfcManualLookup()">Look Up</button>
+    </div>
+
+    <div id="nfcResult"></div>
+  `;
+}
+
+async function triggerNfcScan() {
+  const resultEl = document.getElementById('nfcResult');
+  resultEl.innerHTML = '<div class="loading-text">Scanning NFC reader...</div>';
+
+  const scan = await api.nfc.scan();
+  if (!scan.success || !scan.data?.patient_id) {
+    resultEl.innerHTML = '<div class="card" style="border-left:4px solid var(--red);"><p style="font-size:14px; color:var(--red); font-weight:600;">NFC reader not detected or no card found. Try manual search.</p></div>';
+    return;
+  }
+
+  await nfcLookupPatient(scan.data.patient_id);
+}
+
+async function nfcManualLookup() {
+  const q = document.getElementById('nfcManualSearch')?.value?.trim();
+  if (!q) return;
+  await nfcLookupPatient(q);
+}
+
+async function nfcLookupPatient(patientId) {
+  const resultEl = document.getElementById('nfcResult');
+  resultEl.innerHTML = '<div class="loading-text">Looking up patient...</div>';
+
+  // Offline-first: local DB first, then API
+  let patient = null, source = 'none';
+
+  const local = await api.db.patient(patientId);
+  if (local) { patient = local; source = 'cache'; }
+
+  try {
+    const res = await api.apiGet(`/patients/${patientId}/`);
+    if (res.success) { patient = res.data; source = 'api'; api.db.cachePatients([patient]); }
+  } catch {}
+
+  if (!patient) {
+    // Try NFC service directly
+    const nfcRes = await api.nfc.patient(patientId);
+    if (nfcRes.success && nfcRes.data) { patient = nfcRes.data; source = 'nfc'; }
+  }
+
+  if (!patient) {
+    resultEl.innerHTML = '<div class="card" style="border-left:4px solid var(--amber);"><p style="font-size:14px; color:var(--amber); font-weight:600;">Patient not found for ID: ' + patientId + '</p></div>';
+    return;
+  }
+
+  resultEl.innerHTML = `
+    <div class="card" style="border-left:4px solid var(--accent);">
+      <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:12px;">
+        <div style="font-size:18px; font-weight:700;">${patient.full_name || 'Unknown'} ${srcBadge(source)}</div>
+        ${statusBadge(patient.status)}
+      </div>
+      <div style="display:grid; grid-template-columns:1fr 1fr; gap:0;">
+        <div class="detail-row"><div class="detail-label">ID</div><div class="detail-value">${patient.patient_id || patient.id}</div></div>
+        <div class="detail-row"><div class="detail-label">Age / Gender</div><div class="detail-value">${patient.age || '-'} / ${genderLabel(patient.gender)}</div></div>
+        <div class="detail-row"><div class="detail-label">Blood Group</div><div class="detail-value">${patient.blood_group || '-'}</div></div>
+        <div class="detail-row"><div class="detail-label">Phone</div><div class="detail-value">${patient.phone || '-'}</div></div>
+        <div class="detail-row"><div class="detail-label">Allergies</div><div class="detail-value">${patient.allergies || 'None'}</div></div>
+        <div class="detail-row"><div class="detail-label">ABHA ID</div><div class="detail-value">${patient.abha_id || '-'}</div></div>
+      </div>
+      <div style="margin-top:16px;">
+        <button class="btn btn-primary btn-sm" onclick="viewPatient('${patient.id}')">Open Full Profile</button>
+      </div>
+    </div>
+  `;
+}
+
+// ══════════════════════════════════════════════════════════════
+//  DOCTOR: CONSENT
+// ══════════════════════════════════════════════════════════════
+
+async function renderConsent(el) {
+  el.innerHTML = `
+    <div class="page-title">Consent Management</div>
+    <div class="card">
+      <div class="card-title">Check Patient Consent</div>
+      <div class="search-bar">
+        <span class="search-icon">&#128269;</span>
+        <input type="text" id="consentPatientId" placeholder="Enter Patient ID..." onkeydown="if(event.key==='Enter') checkConsent()">
+      </div>
+      <button class="btn btn-primary btn-sm" onclick="checkConsent()">Check Status</button>
+    </div>
+    <div id="consentResult"></div>
+  `;
+}
+
+async function checkConsent() {
+  const pid = document.getElementById('consentPatientId')?.value?.trim();
+  if (!pid) return;
+  const resultEl = document.getElementById('consentResult');
+  resultEl.innerHTML = '<div class="loading-text">Checking consent...</div>';
+
+  try {
+    const res = await api.apiGet(`/consent/${pid}/check/`);
+    if (res.success) {
+      const d = res.data;
+      resultEl.innerHTML = `
+        <div class="card" style="border-left:4px solid ${d.has_consent ? 'var(--accent)' : 'var(--amber)'};">
+          <div style="font-size:16px; font-weight:700; margin-bottom:12px;">
+            ${d.has_consent ? '&#9989; Consent Granted' : '&#9888; No Active Consent'}
+          </div>
+          ${d.consent ? `
+            <div class="detail-row"><div class="detail-label">Status</div><div class="detail-value">${d.consent.status}</div></div>
+            <div class="detail-row"><div class="detail-label">Granted At</div><div class="detail-value">${formatDate(d.consent.granted_at)}</div></div>
+            <div class="detail-row"><div class="detail-label">Via</div><div class="detail-value">${d.consent.granted_via || '-'}</div></div>
+          ` : '<p style="font-size:14px; color:var(--muted);">No consent record exists for this patient.</p>'}
+          ${!d.has_consent ? `<button class="btn btn-primary btn-sm" style="margin-top:12px;" onclick="requestConsent('${pid}')">Request Consent</button>` : ''}
+        </div>
+      `;
+    } else throw new Error();
+  } catch {
+    resultEl.innerHTML = '<div class="card"><p style="color:var(--red); font-weight:600;">Could not check consent. Server may be unreachable.</p></div>';
+  }
+}
+
+async function requestConsent(pid) {
+  try {
+    const res = await api.apiPost(`/consent/${pid}/grant/`, { consent_text: 'Patient grants access to medical records for treatment purposes.' });
+    if (res.success) { checkConsent(); return; }
+  } catch {}
+  alert('Failed to grant consent. Please try again.');
+}
+
+// ══════════════════════════════════════════════════════════════
+//  ADMIN: DASHBOARD
+// ══════════════════════════════════════════════════════════════
+
+async function renderAdminDashboard(el) {
+  const dash = await fetchCached('dashboard_admin', '/dashboard/admin/');
+  const d = dash.data || {};
+  const m = d.metrics || {};
+
+  el.innerHTML = `
+    <div class="page-title">${m.hospital_name || 'Hospital'} Dashboard ${srcBadge(dash.source)}</div>
+
+    <div class="stat-grid">
+      <div class="stat-card">
+        <div class="stat-label">Active Patients</div>
+        <div class="stat-value">${m.active_patients ?? 0}</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Doctors On Duty</div>
+        <div class="stat-value">${m.doctors_on_duty ?? 0}</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Total Billed</div>
+        <div class="stat-value">&#8377;${(m.total_billed || 0).toLocaleString()}</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">New Registrations</div>
+        <div class="stat-value">${m.new_registrations ?? 0}</div>
+      </div>
+    </div>
+
+    ${(d.doctors && d.doctors.length) ? `
+    <div class="card">
+      <div class="card-title">Doctors on Duty</div>
+      ${d.doctors.map(doc => `
+        <div class="waitlist-item">
+          <div>
+            <div class="waitlist-name">${doc.full_name}</div>
+            <div class="waitlist-meta">${doc.department || ''}</div>
+          </div>
+          ${statusBadge(doc.status)}
+        </div>`).join('')}
+    </div>` : ''}
+
+    ${(d.recent_patients && d.recent_patients.length) ? `
+    <div class="card">
+      <div class="card-title">Recent Patients</div>
+      ${d.recent_patients.map(p => `
+        <div class="waitlist-item">
+          <div>
+            <div class="waitlist-name">${p.full_name || p.patient_name || '-'}</div>
+            <div class="waitlist-meta">${p.patient_id || ''}</div>
+          </div>
+          <button class="btn btn-sm btn-outline" onclick="viewPatient('${p.id || p.patient_id}')">View</button>
+        </div>`).join('')}
+    </div>` : ''}
+  `;
+}
+
+// ══════════════════════════════════════════════════════════════
+//  ADMIN: PATIENTS
+// ══════════════════════════════════════════════════════════════
+
+async function renderAdminPatients(el) {
+  // Same as doctor patients, reuse
+  await renderDoctorPatients(el);
+}
+
+// ══════════════════════════════════════════════════════════════
+//  ADMIN: DOCTORS
+// ══════════════════════════════════════════════════════════════
+
+async function renderAdminDoctors(el) {
+  const result = await fetchData('/doctors/', () => api.db.doctors(), (d) => api.db.cacheDoctors(Array.isArray(d) ? d : []));
+  const docs = Array.isArray(result.data) ? result.data : [];
+
+  el.innerHTML = `
+    <div class="page-title">Doctor Management ${srcBadge(result.source)}</div>
+    ${docs.length === 0 ? '<div class="empty-state">No doctors found</div>' : `
+    <div class="card" style="padding:0; overflow:hidden;">
+      <table>
+        <thead><tr><th>Doctor</th><th>Department</th><th>Experience</th><th>Patients</th><th>Status</th></tr></thead>
+        <tbody>${docs.map(d => `
+          <tr>
+            <td>
+              <div class="td-name">${d.full_name || '-'}</div>
+              <div class="td-muted">${d.doctor_id || d.id}</div>
+            </td>
+            <td>${d.department || '-'}</td>
+            <td>${d.experience_years ? d.experience_years + ' yrs' : '-'}</td>
+            <td>${d.active_patient_count || 0}</td>
+            <td>${statusBadge(d.status)}</td>
+          </tr>`).join('')}
+        </tbody>
+      </table>
+    </div>
+    <div style="font-size:12px; color:var(--dim);">${docs.length} doctor(s)</div>`}
+  `;
+}
+
+// ══════════════════════════════════════════════════════════════
+//  ADMIN: BILLING
+// ══════════════════════════════════════════════════════════════
+
+async function renderAdminBilling(el) {
+  const [summary, receipts] = await Promise.all([
+    fetchCached('billing_summary', '/billing/summary/'),
+    fetchData('/billing/receipts/', () => api.db.receipts(), null),
+  ]);
+
+  const s = summary.data || {};
+  const rList = Array.isArray(receipts.data) ? receipts.data : [];
+
+  el.innerHTML = `
+    <div class="page-title">Billing & Receipts ${srcBadge(summary.source)}</div>
+
+    <div class="stat-grid">
+      <div class="stat-card">
+        <div class="stat-label">Total Billed</div>
+        <div class="stat-value">&#8377;${(s.total_billed || 0).toLocaleString()}</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Collected</div>
+        <div class="stat-value">&#8377;${(s.collected || 0).toLocaleString()}</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Outstanding</div>
+        <div class="stat-value">&#8377;${(s.outstanding || 0).toLocaleString()}</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Pending</div>
+        <div class="stat-value">${s.pending_count || 0}</div>
+      </div>
+    </div>
+
+    ${rList.length === 0 ? '<div class="empty-state">No receipts found</div>' : `
+    <div class="card" style="padding:0; overflow:hidden;">
+      <table>
+        <thead><tr><th>Receipt</th><th>Patient</th><th>Amount</th><th>Payment</th><th>Status</th><th>Date</th></tr></thead>
+        <tbody>${rList.map(r => `
+          <tr>
+            <td class="td-name">${r.receipt_number || r.id}</td>
+            <td>${r.patient_name || '-'}</td>
+            <td class="td-name">&#8377;${parseFloat(r.total_amount || 0).toLocaleString()}</td>
+            <td class="td-muted">${r.payment_mode || '-'}</td>
+            <td>${statusBadge(r.status)}</td>
+            <td class="td-muted">${formatDate(r.date || r.created_at)}</td>
+          </tr>`).join('')}
+        </tbody>
+      </table>
+    </div>
+    <div style="font-size:12px; color:var(--dim);">${rList.length} receipt(s)</div>`}
+  `;
+}
+
+// ══════════════════════════════════════════════════════════════
+//  ADMIN: OFFLINE DATA (stats + manual sync)
+// ══════════════════════════════════════════════════════════════
+
+async function renderOfflineData(el) {
+  const stats = await api.db.stats();
+  const count = await api.sync.count();
+  const online = await api.sync.isOnline();
+  const lastPull = await api.db.getCache('last_pull');
+
+  el.innerHTML = `
+    <div class="page-title">Offline Data Management</div>
+
+    <div class="stat-grid">
+      <div class="stat-card">
+        <div class="stat-label">Cached Patients</div>
+        <div class="stat-value">${stats?.patients ?? 0}</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Cached Doctors</div>
+        <div class="stat-value">${stats?.doctors ?? 0}</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Cached Appointments</div>
+        <div class="stat-value">${stats?.appointments ?? 0}</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Cached Records</div>
+        <div class="stat-value">${stats?.records ?? 0}</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Cached Prescriptions</div>
+        <div class="stat-value">${stats?.prescriptions ?? 0}</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Pending Sync Items</div>
+        <div class="stat-value">${count}</div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">Sync Status</div>
+      <div class="detail-row">
+        <div class="detail-label">Connection</div>
+        <div class="detail-value">${online ? '<span class="badge badge-green">Online</span>' : '<span class="badge badge-red">Offline</span>'}</div>
+      </div>
+      <div class="detail-row">
+        <div class="detail-label">Last Sync</div>
+        <div class="detail-value">${lastPull?.data?.time ? formatDate(lastPull.data.time) + ' ' + new Date(lastPull.data.time).toLocaleTimeString() : 'Never'}</div>
+      </div>
+      <div class="detail-row">
+        <div class="detail-label">Pending Changes</div>
+        <div class="detail-value">${count} item(s)</div>
+      </div>
+      <div style="margin-top:16px; display:flex; gap:10px;">
+        <button class="btn btn-primary btn-sm" onclick="doForcePull()">&#8595; Pull Data Now</button>
+        <button class="btn btn-outline btn-sm" onclick="doForcePush()">&#8593; Push Pending</button>
+      </div>
+    </div>
+  `;
+}
+
+async function doForcePull() {
+  const res = await api.sync.forcePull();
+  if (res?.success) alert('Data pulled successfully from server.');
+  else alert('Pull failed. Are you online?');
+  renderOfflineData(document.getElementById('content'));
+}
+
+async function doForcePush() {
+  const res = await api.sync.forcePush();
+  if (res?.success) alert(`Push complete. ${res.pushed || 0} item(s) synced.`);
+  else alert('Push failed. Are you online?');
+  renderOfflineData(document.getElementById('content'));
+}
+
+// ══════════════════════════════════════════════════════════════
+//  LOGOUT
+// ══════════════════════════════════════════════════════════════
+
+async function doLogout() {
+  sessionStorage.clear();
+  await api.logout();
+}
+
+</script>
+</body>
+</html>

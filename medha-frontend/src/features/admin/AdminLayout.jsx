@@ -6,14 +6,13 @@ import {
   UserPlus, 
   Stethoscope, 
   CreditCard, 
-  Settings, 
-  Bell, 
+  Settings,
+  Bell,
   Search,
   Menu,
   X,
   LogOut,
-  ChevronRight,
-  ShieldCheck
+  ChevronRight
 } from 'lucide-react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../auth/AuthContext';
@@ -33,7 +32,6 @@ const AdminSidebar = ({ isMobileOpen, setMobileOpen }) => {
     { id: 'registration', label: 'Register Patient', icon: UserPlus, path: '/admin/registration' },
     { id: 'billing', label: 'Billing & Finance', icon: CreditCard, path: '/admin/billing' },
     { id: 'reports', label: 'Clinical Reports', icon: BarChart3, path: '/admin/reports' },
-    { id: 'abdm', label: 'ABDM Consent', icon: ShieldCheck, path: '/admin/abdm' },
   ];
 
   const handleLogout = () => {

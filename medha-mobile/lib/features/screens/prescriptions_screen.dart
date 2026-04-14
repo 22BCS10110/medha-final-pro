@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:medha_mobile/core/theme/app_theme.dart';
+import 'package:medha_mobile/core/widgets/enhanced_card.dart';
 
 class PrescriptionsScreen extends StatefulWidget {
   const PrescriptionsScreen({super.key});
@@ -43,9 +43,12 @@ class _PrescriptionsScreenState extends State<PrescriptionsScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final tt = Theme.of(context).textTheme;
+    final cs = Theme.of(context).colorScheme;
+
     return Scaffold(
       appBar: AppBar(
-        title: Text("Prescriptions", style: GoogleFonts.manrope(fontWeight: FontWeight.w700)),
+        title: Text("Prescriptions", style: tt.titleLarge),
         centerTitle: true,
         backgroundColor: Colors.transparent,
         elevation: 0,
@@ -55,9 +58,15 @@ class _PrescriptionsScreenState extends State<PrescriptionsScreen> {
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  Icon(Icons.medication_rounded, size: 48, color: AppTheme.onSurface.withValues(alpha: 0.15)),
+                  Icon(Icons.medication_rounded, size: 48, color: cs.onSurface.withValues(alpha: 0.15)),
                   const SizedBox(height: 12),
-                  Text("No prescriptions found", style: GoogleFonts.plusJakartaSans(color: AppTheme.onSurface.withValues(alpha: 0.4), fontWeight: FontWeight.w600)),
+                  Text(
+                    "No prescriptions found",
+                    style: tt.bodyMedium?.copyWith(
+                      color: cs.onSurface.withValues(alpha: 0.4),
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
                 ],
               ),
             )
@@ -69,14 +78,10 @@ class _PrescriptionsScreenState extends State<PrescriptionsScreen> {
                 final meds = (data["medicines"] as List?) ?? [];
                 final first = meds.isNotEmpty ? (meds.first as Map) : {"name": "Medicine", "dosage": "-"};
                 final status = meds.isNotEmpty ? (meds.first as Map)["status"]?.toString() ?? "pending" : "pending";
-                final statusColor = status == "taken" ? const Color(0xFF43A047) : status == "missed" ? AppTheme.tertiary : AppTheme.primary;
-                return Container(
+                final statusColor = status == "taken" ? const Color(0xFF43A047) : status == "missed" ? AppTheme.error : AppTheme.primary;
+                return EnhancedCard(
                   margin: const EdgeInsets.only(bottom: 14),
                   padding: const EdgeInsets.all(18),
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(20),
-                  ),
                   child: Row(
                     children: [
                       Container(
@@ -92,9 +97,15 @@ class _PrescriptionsScreenState extends State<PrescriptionsScreen> {
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Text((first["name"] ?? "Medicine").toString(), style: GoogleFonts.manrope(fontWeight: FontWeight.w700, fontSize: 16, color: AppTheme.onSurface)),
+                            Text(
+                              (first["name"] ?? "Medicine").toString(),
+                              style: tt.titleSmall?.copyWith(fontWeight: FontWeight.w700),
+                            ),
                             const SizedBox(height: 4),
-                            Text("Dosage: ${(first["dosage"] ?? "-").toString()}", style: GoogleFonts.plusJakartaSans(fontWeight: FontWeight.w500, fontSize: 13, color: AppTheme.onSurface.withValues(alpha: 0.55))),
+                            Text(
+                              "Dosage: ${(first["dosage"] ?? "-").toString()}",
+                              style: tt.bodySmall?.copyWith(color: cs.onSurface.withValues(alpha: 0.55)),
+                            ),
                             const SizedBox(height: 8),
                             Container(
                               padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
@@ -102,7 +113,15 @@ class _PrescriptionsScreenState extends State<PrescriptionsScreen> {
                                 color: statusColor.withValues(alpha: 0.08),
                                 borderRadius: BorderRadius.circular(999),
                               ),
-                              child: Text(status.toUpperCase(), style: GoogleFonts.plusJakartaSans(fontSize: 10, fontWeight: FontWeight.w700, color: statusColor, letterSpacing: 0.5)),
+                              child: Text(
+                                status.toUpperCase(),
+                                style: tt.labelSmall?.copyWith(
+                                  fontWeight: FontWeight.w700,
+                                  color: statusColor,
+                                  letterSpacing: 0.5,
+                                  fontSize: 10,
+                                ),
+                              ),
                             ),
                           ],
                         ),
@@ -115,7 +134,7 @@ class _PrescriptionsScreenState extends State<PrescriptionsScreen> {
                           }
                           _updateStatus(data["id"], value);
                         },
-                        icon: Icon(Icons.more_vert_rounded, color: AppTheme.onSurface.withValues(alpha: 0.35)),
+                        icon: Icon(Icons.more_vert_rounded, color: cs.onSurface.withValues(alpha: 0.35)),
                         itemBuilder: (_) => const [
                           PopupMenuItem(value: "taken", child: Text("Mark Taken")),
                           PopupMenuItem(value: "missed", child: Text("Mark Missed")),
@@ -131,7 +150,7 @@ class _PrescriptionsScreenState extends State<PrescriptionsScreen> {
         onPressed: _addDemoPrescription,
         backgroundColor: AppTheme.primary,
         foregroundColor: Colors.white,
-        label: Text("Add Demo", style: GoogleFonts.plusJakartaSans(fontWeight: FontWeight.w700)),
+        label: Text("Add Demo", style: tt.titleSmall?.copyWith(fontWeight: FontWeight.w700, color: Colors.white)),
         icon: const Icon(Icons.add_rounded),
       ),
     );

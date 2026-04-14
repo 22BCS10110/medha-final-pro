@@ -78,9 +78,14 @@ SIMPLE_JWT = {
 GOOGLE_CLIENT_ID = os.environ.get('GOOGLE_CLIENT_ID', '')
 GOOGLE_CLIENT_SECRET = os.environ.get('GOOGLE_CLIENT_SECRET', '')
 
-# ═══ SUPABASE SYNC ═══
-SUPABASE_URL = os.environ.get('SUPABASE_URL', '')
-SUPABASE_SERVICE_KEY = os.environ.get('SUPABASE_SERVICE_KEY', '')
+# ═══ FIREBASE AUTH ═══
+# Path to the Firebase service account JSON. Used by
+# accounts/firebase_auth.py to initialize the Admin SDK lazily.
+FIREBASE_CREDENTIALS_PATH = os.environ.get(
+    'FIREBASE_CREDENTIALS_PATH',
+    str(BASE_DIR / 'firebase_credentials.json'),
+)
+
 ROOT_URLCONF = 'medha_backend.urls'
 
 TEMPLATES = [

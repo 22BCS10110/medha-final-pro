@@ -7,7 +7,7 @@ from django.contrib.auth import authenticate
 from django.conf import settings
 from .models import User
 from .serializers import UserSerializer, LoginSerializer
-from .supabase_auth import verify_supabase_token
+from .firebase_auth import verify_firebase_token
 
 import requests
 import logging
@@ -156,63 +156,67 @@ def me_view(request):
 
 @api_view(['POST'])
 @permission_classes([AllowAny])
-def supabase_google_login_view(request):
+def firebase_login_view(request):
     """
-    Mobile Google OAuth login via Supabase.
+    Firebase Authentication login (patient mobile app).
 
     Flow:
-    1. Flutter app signs in with Google via Supabase Auth
-    2. Flutter sends the Supabase access_token here
-    3. We verify the JWT using Supabase JWKS
-    4. Find or create a Django user
-    5. Return Django JWT tokens + is_profile_complete flag
+    1. Mobile app signs the user in via Firebase and gets an ID token.
+    2. Mobile app POSTs the ID token here.
+    3. We verify it via firebase-admin (`verify_firebase_token`).
+    4. Find or create a Django User matched by email (duplicates avoided).
+    5. Find or create a Patient profile linked to that User (first login
+       creates the patient; existing users are not duplicated).
+    6. Issue Django JWT tokens and return the mapping.
 
-    Request body: { "token": "<supabase_access_token>" }
+    Request body: { "token": "<firebase_id_token>" }
+
+    Response: {
+        "success": true,
+        "user_id": <int>,
+        "patient_id": "<MHD-xxxx>",
+        "tokens": { "access": ..., "refresh": ... },
+        "token": <access>,            # legacy alias
+        "user": { ...build_user_response... },
+        "is_profile_complete": <bool>,
+        "created": <bool>
+    }
     """
-    supabase_token = request.data.get('token')
-    if not supabase_token:
+    firebase_token = request.data.get('token')
+    if not firebase_token:
         return Response(
-            {'error': 'Supabase access token required'},
+            {'success': False, 'error': 'Firebase ID token required'},
             status=status.HTTP_400_BAD_REQUEST,
         )
 
-    # Verify the Supabase JWT
+    # ── 1. Verify ID token ──────────────────────────────────────────
     try:
-        payload = verify_supabase_token(supabase_token)
+        claims = verify_firebase_token(firebase_token)
     except Exception as e:
-        logger.warning('Supabase token verification failed: %s', e)
+        logger.warning('Firebase token verification failed: %s', e)
         return Response(
-            {'error': 'Invalid or expired Supabase token'},
+            {'success': False, 'error': f'Invalid Firebase token: {e}'},
             status=status.HTTP_401_UNAUTHORIZED,
         )
 
-    sub = payload.get('sub')
-    email = payload.get('email', '')
-    user_metadata = payload.get('user_metadata', {})
-    full_name = user_metadata.get('full_name', user_metadata.get('name', ''))
+    uid = claims.get('uid')
+    email = (claims.get('email') or '').strip().lower()
+    full_name = claims.get('name', '') or ''
 
     if not email:
         return Response(
-            {'error': 'Email not found in token'},
+            {'success': False, 'error': 'Email not found in Firebase token'},
             status=status.HTTP_400_BAD_REQUEST,
         )
 
-    # Find existing user by supabase_uid, then email
-    user = None
-    created = False
+    # TEMP debug
+    print("Firebase token verified:", email)
+    logger.info("Firebase token verified for %s (uid=%s)", email, uid)
 
-    if sub:
-        user = User.objects.filter(supabase_uid=sub).first()
-
+    # ── 2. Find or create Django User (match by email, avoid duplicates) ──
+    user = User.objects.filter(email__iexact=email).first()
+    user_created = False
     if not user:
-        user = User.objects.filter(email=email).first()
-        if user and sub:
-            # Link existing email-based user to their Supabase UID
-            user.supabase_uid = sub
-            user.save(update_fields=['supabase_uid'])
-
-    if not user:
-        # New user — create with unusable password
         username = email.split('@')[0]
         base_username = username
         counter = 1
@@ -227,20 +231,57 @@ def supabase_google_login_view(request):
             first_name=name_parts[0],
             last_name=name_parts[1] if len(name_parts) > 1 else '',
             role='patient',
-            supabase_uid=sub,
             is_profile_complete=False,
         )
         user.set_unusable_password()
         user.save()
-        created = True
+        user_created = True
 
+    # TEMP debug
+    print("User created/fetched:", user.id)
+    logger.info("User %s (id=%s) %s", user.email, user.id, 'created' if user_created else 'fetched')
+
+    # ── 3. Find or create Patient profile linked to that User ──────
+    from patients.models import Patient
+    from patients.utils import generate_patient_id
+
+    patient = Patient.objects.filter(user=user).first()
+    if not patient and email:
+        # Fall back to matching an orphan patient by email (pre-existing record)
+        patient = Patient.objects.filter(email__iexact=email, user__isnull=True).first()
+        if patient:
+            patient.user = user
+            patient.save(update_fields=['user'])
+
+    patient_created = False
+    if not patient:
+        patient = Patient.objects.create(
+            user=user,
+            patient_id=generate_patient_id(),
+            full_name=full_name or user.get_full_name() or user.username,
+            email=email,
+        )
+        patient_created = True
+
+    # TEMP debug
+    print("Patient created/fetched:", patient.id)
+    logger.info(
+        "Patient %s (id=%s, patient_id=%s) %s",
+        patient.full_name, patient.id, patient.patient_id,
+        'created' if patient_created else 'fetched',
+    )
+
+    # ── 4. Issue Django JWT ────────────────────────────────────────
     tokens = get_tokens_for_user(user)
     return Response({
+        'success': True,
+        'user_id': user.id,
+        'patient_id': patient.patient_id,
         'tokens': tokens,
-        'token': tokens['access'],
+        'token': tokens['access'],  # legacy alias for existing frontend
         'user': build_user_response(user),
         'is_profile_complete': user.is_profile_complete,
-        'created': created,
+        'created': user_created,
     })
 
 
@@ -295,7 +336,7 @@ def complete_profile_view(request):
 
     # Create Patient record
     from patients.models import Patient
-    from patients.utils import generate_patient_id, sync_patient_to_supabase
+    from patients.utils import generate_patient_id
 
     # Check if patient already exists for this user
     patient = Patient.objects.filter(user=user).first()
@@ -320,9 +361,6 @@ def complete_profile_view(request):
     user.phone = phone
     user.is_profile_complete = True
     user.save(update_fields=['first_name', 'last_name', 'phone', 'is_profile_complete'])
-
-    # Sync patient to Supabase in background
-    sync_patient_to_supabase(patient)
 
     return Response({
         'message': 'Profile completed successfully',

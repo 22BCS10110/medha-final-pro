@@ -33,7 +33,6 @@ const BillingAndReceipts = lazy(() => import("./features/admin/BillingAndReceipt
 const DoctorDashboard    = lazy(() => import("./features/doctor/DoctorDashboard"));
 const PatientDashboard   = lazy(() => import("./features/patient/PatientDashboard"));
 const NfcScanPage        = lazy(() => import("./features/nfc/NfcScanPage"));
-const ABDMPage           = lazy(() => import("./features/consent/ABDMPage"));
 const ChatPage           = lazy(() => import("./features/chat/ChatPage"));
 const LoginModal         = lazy(() => import("./auth/LoginModal"));
 
@@ -112,12 +111,6 @@ function App() {
                     <AdminOverview />
                   </ProtectedRoute>
                 } />
-                <Route path="/admin/abdm" element={
-                  <ProtectedRoute allowedRoles={['super_admin', 'hospital_admin', 'doctor']}>
-                    <ABDMPage />
-                  </ProtectedRoute>
-                } />
-
                 {/* Doctor Routes */}
                 <Route path="/doctor" element={
                   <ProtectedRoute allowedRoles={['doctor']}>

@@ -59,6 +59,14 @@
 				<string>io.supabase.medha</string>
 			</array>
 		</dict>
+		<dict>
+			<key>CFBundleTypeRole</key>
+			<string>Editor</string>
+			<key>CFBundleURLSchemes</key>
+			<array>
+				<string>com.googleusercontent.apps.361020649489-4tm4o784in6lqjs7cekbt6ql45fobb6e</string>
+			</array>
+		</dict>
 	</array>
 	<key>UIApplicationSupportsIndirectInputEvents</key>
 	<true/>

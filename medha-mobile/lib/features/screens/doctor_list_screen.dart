@@ -1,13 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:medha_mobile/core/theme/app_theme.dart';
 import 'package:medha_mobile/core/widgets/empty_state.dart';
 import 'package:medha_mobile/core/widgets/skeleton_loader.dart';
 import 'package:medha_mobile/core/widgets/enhanced_card.dart';
 import 'package:medha_mobile/features/home/home_repository.dart';
-import 'package:medha_mobile/l10n/app_localizations.dart';
+
 
 class DoctorListScreen extends ConsumerStatefulWidget {
   const DoctorListScreen({super.key});
@@ -30,22 +29,20 @@ class _DoctorListScreenState extends ConsumerState<DoctorListScreen> {
   @override
   Widget build(BuildContext context) {
     final doctorsAsync = ref.watch(doctorsProvider);
-    final l10n = AppLocalizations.of(context)!;
-    
+    final tt = Theme.of(context).textTheme;
+    final cs = Theme.of(context).colorScheme;
+
     return Scaffold(
       appBar: AppBar(
         leading: IconButton(
           icon: const Icon(Icons.arrow_back_ios_new_rounded, size: 20),
           onPressed: () => context.canPop() ? context.pop() : context.go("/home"),
         ),
-        title: Text(
-          l10n.doctors,
-          style: GoogleFonts.manrope(fontWeight: FontWeight.w800, fontSize: 22),
-        ),
-        backgroundColor: AppTheme.surface,
+        title: Text("Doctors", style: tt.titleLarge?.copyWith(fontWeight: FontWeight.w800)),
+        backgroundColor: cs.surface,
         elevation: 0,
       ),
-      backgroundColor: AppTheme.surface,
+      backgroundColor: cs.surface,
       body: Column(
         children: [
           // Search bar
@@ -57,9 +54,9 @@ class _DoctorListScreenState extends ConsumerState<DoctorListScreen> {
                 borderRadius: BorderRadius.circular(16),
                 boxShadow: [
                   BoxShadow(
-                    color: AppTheme.onSurface.withValues(alpha: 0.04),
-                    blurRadius: 10,
-                    offset: const Offset(0, 2),
+                    color: AppTheme.primary.withValues(alpha: 0.06),
+                    blurRadius: 12,
+                    offset: const Offset(0, 4),
                   ),
                 ],
               ),
@@ -67,15 +64,10 @@ class _DoctorListScreenState extends ConsumerState<DoctorListScreen> {
                 controller: _searchController,
                 onChanged: (value) => setState(() => _searchQuery = value.toLowerCase()),
                 decoration: InputDecoration(
-                  prefixIcon: const Icon(
-                    Icons.search_rounded,
-                    color: AppTheme.primary,
-                    size: 22,
-                  ),
+                  prefixIcon: const Icon(Icons.search_rounded, color: AppTheme.primary, size: 22),
                   hintText: "Search by name or specialty...",
-                  hintStyle: GoogleFonts.plusJakartaSans(
-                    color: AppTheme.onSurface.withValues(alpha: 0.35),
-                    fontWeight: FontWeight.w500,
+                  hintStyle: tt.bodyMedium?.copyWith(
+                    color: cs.onSurface.withValues(alpha: 0.35),
                   ),
                   suffixIcon: _searchQuery.isNotEmpty
                       ? IconButton(
@@ -87,27 +79,20 @@ class _DoctorListScreenState extends ConsumerState<DoctorListScreen> {
                         )
                       : null,
                   border: InputBorder.none,
-                  contentPadding: const EdgeInsets.symmetric(
-                    horizontal: 16,
-                    vertical: 16,
-                  ),
+                  contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
                 ),
               ),
             ),
           ),
-          
+
           // Specialty filter chips
           doctorsAsync.when(
             loading: () => const SizedBox.shrink(),
             error: (_, __) => const SizedBox.shrink(),
             data: (doctors) {
-              final specialties = doctors
-                  .map((d) => d.specialty)
-                  .toSet()
-                  .toList()..sort();
-              
+              final specialties = doctors.map((d) => d.specialty).toSet().toList()..sort();
               if (specialties.isEmpty) return const SizedBox.shrink();
-              
+
               return Container(
                 height: 50,
                 margin: const EdgeInsets.only(bottom: 16),
@@ -134,7 +119,7 @@ class _DoctorListScreenState extends ConsumerState<DoctorListScreen> {
               );
             },
           ),
-          
+
           // Doctor list
           Expanded(
             child: doctorsAsync.when(
@@ -152,13 +137,13 @@ class _DoctorListScreenState extends ConsumerState<DoctorListScreen> {
               ),
               data: (doctors) {
                 if (doctors.isEmpty) {
-                  return EmptyState(
+                  return const EmptyState(
                     icon: Icons.person_search_rounded,
                     title: 'No doctors available',
                     subtitle: 'Check back later for available doctors',
                   );
                 }
-                
+
                 // Apply filters
                 var filteredDoctors = doctors;
                 if (_searchQuery.isNotEmpty) {
@@ -172,21 +157,21 @@ class _DoctorListScreenState extends ConsumerState<DoctorListScreen> {
                       .where((d) => d.specialty == _selectedSpecialty)
                       .toList();
                 }
-                
+
                 if (filteredDoctors.isEmpty) {
-                  return EmptyState(
+                  return const EmptyState(
                     icon: Icons.search_off_rounded,
                     title: 'No results found',
                     subtitle: 'Try adjusting your search or filters',
                   );
                 }
-                
+
                 return RefreshIndicator(
                   onRefresh: () async {
                     ref.invalidate(doctorsProvider);
                     await ref.read(doctorsProvider.future);
                   },
-                  color: AppTheme.primary,
+                  color: cs.primary,
                   child: ListView.builder(
                     itemCount: filteredDoctors.length,
                     padding: const EdgeInsets.fromLTRB(20, 0, 20, 24),
@@ -212,29 +197,22 @@ class _FilterChip extends StatelessWidget {
   final String label;
   final bool isSelected;
   final VoidCallback onTap;
-  
-  const _FilterChip({
-    required this.label,
-    required this.isSelected,
-    required this.onTap,
-  });
+
+  const _FilterChip({required this.label, required this.isSelected, required this.onTap});
 
   @override
   Widget build(BuildContext context) {
+    final tt = Theme.of(context).textTheme;
     return GestureDetector(
       onTap: onTap,
       child: Container(
         margin: const EdgeInsets.only(right: 10),
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
         decoration: BoxDecoration(
-          color: isSelected
-              ? AppTheme.primary
-              : Colors.white,
+          color: isSelected ? AppTheme.primary : Colors.white,
           borderRadius: BorderRadius.circular(16),
           border: Border.all(
-            color: isSelected
-                ? AppTheme.primary
-                : AppTheme.outlineVariant.withValues(alpha: 0.5),
+            color: isSelected ? AppTheme.primary : AppTheme.outlineVariant.withValues(alpha: 0.5),
             width: 1.5,
           ),
           boxShadow: isSelected
@@ -249,8 +227,7 @@ class _FilterChip extends StatelessWidget {
         ),
         child: Text(
           label,
-          style: GoogleFonts.plusJakartaSans(
-            fontSize: 14,
+          style: tt.labelLarge?.copyWith(
             fontWeight: FontWeight.w700,
             color: isSelected ? Colors.white : AppTheme.onSurface,
           ),
@@ -263,14 +240,13 @@ class _FilterChip extends StatelessWidget {
 class _EnhancedDoctorCard extends StatelessWidget {
   final dynamic doctor;
   final VoidCallback onTap;
-  
-  const _EnhancedDoctorCard({
-    required this.doctor,
-    required this.onTap,
-  });
+
+  const _EnhancedDoctorCard({required this.doctor, required this.onTap});
 
   @override
   Widget build(BuildContext context) {
+    final tt = Theme.of(context).textTheme;
+    final cs = Theme.of(context).colorScheme;
     return EnhancedCard(
       margin: const EdgeInsets.only(bottom: 14),
       onTap: onTap,
@@ -281,12 +257,8 @@ class _EnhancedDoctorCard extends StatelessWidget {
             children: [
               CircleAvatar(
                 radius: 28,
-                backgroundColor: AppTheme.primary.withValues(alpha: 0.1),
-                child: const Icon(
-                  Icons.person_rounded,
-                  color: AppTheme.primary,
-                  size: 28,
-                ),
+                backgroundColor: cs.primary.withValues(alpha: 0.1),
+                child: Icon(Icons.person_rounded, color: cs.primary, size: 28),
               ),
               Positioned(
                 right: 0,
@@ -295,12 +267,9 @@ class _EnhancedDoctorCard extends StatelessWidget {
                   width: 14,
                   height: 14,
                   decoration: BoxDecoration(
-                    color: const Color(0xFF43A047),
+                    color: AppTheme.secondary,
                     shape: BoxShape.circle,
-                    border: Border.all(
-                      color: Colors.white,
-                      width: 2,
-                    ),
+                    border: Border.all(color: Colors.white, width: 2),
                   ),
                 ),
               ),
@@ -313,31 +282,19 @@ class _EnhancedDoctorCard extends StatelessWidget {
               children: [
                 Text(
                   doctor.name,
-                  style: GoogleFonts.manrope(
-                    fontWeight: FontWeight.w700,
-                    fontSize: 16,
-                    color: AppTheme.onSurface,
-                  ),
+                  style: tt.titleSmall?.copyWith(fontWeight: FontWeight.w700),
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                 ),
                 const SizedBox(height: 4),
                 Row(
                   children: [
-                    Icon(
-                      Icons.medical_services_rounded,
-                      size: 14,
-                      color: AppTheme.onSurface.withValues(alpha: 0.5),
-                    ),
+                    Icon(Icons.medical_services_rounded, size: 14, color: cs.onSurface.withValues(alpha: 0.5)),
                     const SizedBox(width: 4),
                     Expanded(
                       child: Text(
                         "${doctor.specialty} • ${doctor.experienceYears} yrs exp",
-                        style: GoogleFonts.plusJakartaSans(
-                          fontWeight: FontWeight.w500,
-                          fontSize: 13,
-                          color: AppTheme.onSurface.withValues(alpha: 0.55),
-                        ),
+                        style: tt.bodySmall?.copyWith(color: cs.onSurface.withValues(alpha: 0.55)),
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
                       ),
@@ -360,17 +317,12 @@ class _EnhancedDoctorCard extends StatelessWidget {
                 child: Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    const Icon(
-                      Icons.star_rounded,
-                      size: 14,
-                      color: Color(0xFFFB8C00),
-                    ),
+                    const Icon(Icons.star_rounded, size: 14, color: Color(0xFFFB8C00)),
                     const SizedBox(width: 4),
                     Text(
                       doctor.rating.toStringAsFixed(1),
-                      style: GoogleFonts.plusJakartaSans(
+                      style: tt.labelSmall?.copyWith(
                         fontWeight: FontWeight.w700,
-                        fontSize: 12,
                         color: const Color(0xFFFB8C00),
                       ),
                     ),
@@ -381,15 +333,15 @@ class _EnhancedDoctorCard extends StatelessWidget {
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                 decoration: BoxDecoration(
-                  color: const Color(0xFF43A047).withValues(alpha: 0.1),
+                  color: AppTheme.secondary.withValues(alpha: 0.1),
                   borderRadius: BorderRadius.circular(8),
                 ),
                 child: Text(
                   'Available',
-                  style: GoogleFonts.plusJakartaSans(
-                    fontSize: 10,
+                  style: tt.labelSmall?.copyWith(
                     fontWeight: FontWeight.w600,
-                    color: const Color(0xFF43A047),
+                    color: AppTheme.secondary,
+                    fontSize: 10,
                   ),
                 ),
               ),

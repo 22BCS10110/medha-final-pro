@@ -7,9 +7,24 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from django.utils import timezone
 
+from django.db.models import Q
+
 from .models import PatientConsent
 from .serializers import PatientConsentSerializer
 from patients.models import Patient
+
+
+def _resolve_patient(lookup):
+    """
+    Resolve a patient by either UUID (primary key) or patient_id
+    (human-readable PAT-XXXX). Returns the Patient or raises
+    Patient.DoesNotExist.
+    """
+    try:
+        return Patient.objects.get(Q(id=lookup) | Q(patient_id=lookup))
+    except ValueError:
+        # Invalid UUID string — try patient_id only
+        return Patient.objects.get(patient_id=lookup)
 
 
 @api_view(['GET'])
@@ -21,7 +36,7 @@ def check_consent(request, patient_id):
     Returns: {has_consent: bool, consent: {...} or null}
     """
     try:
-        patient = Patient.objects.get(patient_id=patient_id)
+        patient = _resolve_patient(patient_id)
     except Patient.DoesNotExist:
         return Response({'error': 'Patient not found'}, status=status.HTTP_404_NOT_FOUND)
 
@@ -47,7 +62,7 @@ def grant_consent(request, patient_id):
     Body: {"granted_via": "nfc"}
     """
     try:
-        patient = Patient.objects.get(patient_id=patient_id)
+        patient = _resolve_patient(patient_id)
     except Patient.DoesNotExist:
         return Response({'error': 'Patient not found'}, status=status.HTTP_404_NOT_FOUND)
 
@@ -83,7 +98,7 @@ def revoke_consent(request, patient_id):
     Body: {"reason": "Patient requested revocation"}
     """
     try:
-        patient = Patient.objects.get(patient_id=patient_id)
+        patient = _resolve_patient(patient_id)
     except Patient.DoesNotExist:
         return Response({'error': 'Patient not found'}, status=status.HTTP_404_NOT_FOUND)
 

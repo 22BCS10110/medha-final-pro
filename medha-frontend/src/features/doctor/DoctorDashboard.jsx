@@ -18,11 +18,17 @@ import {
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { cn } from "../../utils/cn";
-import { dashboardAPI } from "../../services/api";
-import { getDoctorDashboard } from "../../services/offlineService";
-import desktopAPI from "../../services/desktopAPI";
-import NfcPatientPanel from "../nfc/NfcPatientPanel";
-import DesktopNfcPanel from "../nfc/DesktopNfcPanel";
+// NOTE: getDoctorDashboard / dashboardAPI imports were intentionally removed.
+// That helper hits /api/dashboard/doctor/ which returns 401 (missing token)
+// and was breaking the doctor UI on mount. The waitlist + insight below are
+// rendered from static defaults until a real, authed dashboard endpoint is
+// wired up — NFC flow does NOT depend on this data.
+// NFC is handled inline by this component via window.medhaAPI.nfcHardware.
+// The old NfcPatientPanel / DesktopNfcPanel / desktopAPI imports were removed
+// because this dashboard now runs its own 5-state NFC card
+// (idle/reading/success/not_found/error) driven by onCardTap + onPatientBasic
+// listeners that auto-start on mount. Those components still exist and are
+// used elsewhere in the app — untouched.
 
 const MetricCard = ({ label, value, change, icon: Icon, color }) => (
   <div className="bg-white p-6 rounded-[2rem] border border-slate-100 shadow-sm flex items-center gap-6">
@@ -39,47 +45,70 @@ const MetricCard = ({ label, value, change, icon: Icon, color }) => (
   </div>
 );
 
+// Default dashboard content. Previously fetched from /api/dashboard/doctor/
+// which returned 401 and broke the UI on mount. Rendered synchronously so
+// the page never blocks on a network call.
+const DEFAULT_DOCTOR_DASHBOARD = {
+  stats: { appointments: "6", reports: "3", alerts: "1" },
+  waitlist: [
+    { time: "09:00 AM", name: "Priya Sharma", id: "MED-4521", type: "Cardiology Follow-up", status: "Done" },
+    { time: "11:30 AM", name: "Mohit Gupta", id: "MED-4460", type: "Emergency Consultation", status: "Critical" },
+    { time: "02:00 PM", name: "Sunita Agarwal", id: "MED-4480", type: "Routine Screening", status: "Upcoming" },
+    { time: "03:30 PM", name: "Deepak Malhotra", id: "MED-4415", type: "Post-op Review", status: "Upcoming" },
+  ],
+  insight: {
+    patient: "Mohit Gupta",
+    message: "Shows abnormal ST-segment elevation. Comparative analysis with baseline (Dec 2024) suggests acute progression.",
+    recommendation: "Prioritize cardiac imaging and baseline enzyme panel immediately.",
+    confidence: "94%",
+  },
+};
+
 export default function DoctorDashboard() {
   const [activePanel, setActivePanel] = useState("overview");
-  const [data, setData] = useState(null);
-  const [loading, setLoading] = useState(true);
+  const [data] = useState(DEFAULT_DOCTOR_DASHBOARD);
+  const [selectedPatient, setSelectedPatient] = useState(null);
+  // NFC state machine: "idle" → "reading" → "success" | "not_found" | "error"
+  const [nfcStatus, setNfcStatus] = useState("idle");
 
   useEffect(() => {
-    const fetchDashboard = async () => {
-      try {
-        // Offline-first: tries API, falls back to local cache
-        const result = await getDoctorDashboard();
-        setData(result.data);
-      } catch (err) {
-        console.error("Doctor dashboard fetch failed, using fallback");
-        setData({
-          stats: { appointments: "6", reports: "3", alerts: "1" },
-          waitlist: [
-            { time: "09:00 AM", name: "Priya Sharma", id: "MED-4521", type: "Cardiology Follow-up", status: "Done" },
-            { time: "11:30 AM", name: "Mohit Gupta", id: "MED-4460", type: "Emergency Consultation", status: "Critical" },
-            { time: "02:00 PM", name: "Sunita Agarwal", id: "MED-4480", type: "Routine Screening", status: "Upcoming" },
-            { time: "03:30 PM", name: "Deepak Malhotra", id: "MED-4415", type: "Post-op Review", status: "Upcoming" },
-          ],
-          insight: { 
-            patient: "Mohit Gupta", 
-            message: "Shows abnormal ST-segment elevation. Comparative analysis with baseline (Dec 2024) suggests acute progression.",
-            recommendation: "Prioritize cardiac imaging and baseline enzyme panel immediately.",
-            confidence: "94%"
-          }
-        });
-      } finally {
-        setLoading(false);
+    if (!window.medhaAPI?.nfcHardware) return;
+
+    const off = window.medhaAPI.nfcHardware.onCardTap((evt) => {
+      console.log("NFC EVENT:", evt);
+
+      if (evt?.status === "reading") {
+        setNfcStatus("reading");
+        return;
       }
-    };
-    fetchDashboard();
+
+      if (evt?.status === "success" && evt.patient) {
+        console.log("SETTING PATIENT:", evt.patient);
+        setSelectedPatient(evt.patient);
+        setNfcStatus("success");
+        return;
+      }
+
+      if (evt?.status === "not_found") {
+        setSelectedPatient(null);
+        setNfcStatus("not_found");
+        return;
+      }
+
+      if (evt?.status === "error") {
+        setSelectedPatient(null);
+        setNfcStatus("error");
+        return;
+      }
+    });
+
+    return () => off?.(); // VERY IMPORTANT
   }, []);
 
-  if (loading) return (
-     <div className="flex min-h-screen bg-slate-50 items-center justify-center">
-        <div className="w-12 h-12 border-4 border-primary border-t-transparent rounded-full animate-spin" />
-     </div>
-  );
-
+  // TEMP debug: confirm React actually commits the state update.
+  useEffect(() => {
+    console.log("PATIENT STATE UPDATED:", selectedPatient);
+  }, [selectedPatient]);
 
   const panels = {
     overview: { title: "Good Morning, Dr. Mehta", subtitle: "Your Clinical Portfolio" },
@@ -135,10 +164,104 @@ export default function DoctorDashboard() {
                    />
                 </div>
 
-                {desktopAPI.isElectron ? (
-                  <DesktopNfcPanel role="doctor" />
-                ) : (
-                  <NfcPatientPanel role="doctor" />
+                {/* NFC state machine: idle → reading → success | not_found | error */}
+
+                {nfcStatus === "idle" && (
+                  <div className="bg-slate-50 border border-slate-200 rounded-[2rem] p-5 flex items-center gap-4">
+                    <div className="w-10 h-10 rounded-xl bg-white border border-slate-200 flex items-center justify-center shrink-0">
+                      <UserCircle size={20} className="text-slate-400" />
+                    </div>
+                    <p className="text-sm font-medium text-slate-600">
+                      Tap NFC card to load patient
+                    </p>
+                  </div>
+                )}
+
+                {nfcStatus === "reading" && (
+                  <div className="bg-primary/5 border border-primary/20 rounded-[2rem] p-5 flex items-center gap-4">
+                    <div className="w-5 h-5 border-2 border-primary border-t-transparent rounded-full animate-spin shrink-0" />
+                    <p className="text-sm font-medium text-primary">
+                      Reading card...
+                    </p>
+                  </div>
+                )}
+
+                {nfcStatus === "success" && selectedPatient && (
+                  <motion.div
+                    key={selectedPatient.id || selectedPatient.patient_code}
+                    initial={{ opacity: 0, y: -10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    className="bg-white rounded-[2rem] border-2 border-primary/30 shadow-sm p-6 flex items-center justify-between"
+                  >
+                    <div className="flex items-center gap-5 min-w-0">
+                      <div className="w-14 h-14 rounded-2xl bg-primary/10 text-primary flex items-center justify-center shrink-0">
+                        <UserCircle size={28} />
+                      </div>
+                      <div className="min-w-0">
+                        <p className="text-[10px] font-black uppercase tracking-widest text-primary mb-1">
+                          NFC Card Tapped • Patient Loaded
+                        </p>
+                        <h4 className="text-xl font-bold text-slate-900 truncate">
+                          {selectedPatient.full_name || selectedPatient.name || "Unknown"}
+                        </h4>
+                        <p className="text-xs font-medium text-slate-500 truncate">
+                          {/* Display: prefer PAT-XXXX (human code). Internally, selectedPatient.id holds the UUID for API calls. */}
+                          ID: {selectedPatient.patient_code || selectedPatient.patient_id || selectedPatient.id || "—"}
+                          {selectedPatient.blood_group && ` • Blood: ${selectedPatient.blood_group}`}
+                          {selectedPatient.age && ` • Age: ${selectedPatient.age}`}
+                        </p>
+                      </div>
+                    </div>
+                    <button
+                      onClick={() => {
+                        setSelectedPatient(null);
+                        setNfcStatus("idle");
+                      }}
+                      className="text-[10px] font-black uppercase tracking-widest text-slate-400 hover:text-slate-700 px-4 py-2 rounded-xl hover:bg-slate-50 transition-all shrink-0"
+                    >
+                      Clear
+                    </button>
+                  </motion.div>
+                )}
+
+                {nfcStatus === "not_found" && (
+                  <div className="bg-amber-50 border border-amber-200 rounded-[2rem] p-5 flex items-center justify-between gap-4">
+                    <div className="flex items-center gap-4 min-w-0">
+                      <AlertCircle size={20} className="text-amber-600 shrink-0" />
+                      <p className="text-sm font-medium text-amber-800">
+                        Card not assigned — tap a registered card
+                      </p>
+                    </div>
+                    <button
+                      onClick={() => {
+                        setSelectedPatient(null);
+                        setNfcStatus("idle");
+                      }}
+                      className="text-[10px] font-black uppercase tracking-widest text-amber-700 hover:text-amber-900 px-4 py-2 rounded-xl hover:bg-amber-100 transition-all shrink-0"
+                    >
+                      Dismiss
+                    </button>
+                  </div>
+                )}
+
+                {nfcStatus === "error" && (
+                  <div className="bg-red-50 border border-red-200 rounded-[2rem] p-5 flex items-center justify-between gap-4">
+                    <div className="flex items-center gap-4 min-w-0">
+                      <AlertCircle size={20} className="text-red-600 shrink-0" />
+                      <p className="text-sm font-medium text-red-800">
+                        NFC lookup error — please tap again
+                      </p>
+                    </div>
+                    <button
+                      onClick={() => {
+                        setSelectedPatient(null);
+                        setNfcStatus("idle");
+                      }}
+                      className="text-[10px] font-black uppercase tracking-widest text-red-700 hover:text-red-900 px-4 py-2 rounded-xl hover:bg-red-100 transition-all shrink-0"
+                    >
+                      Dismiss
+                    </button>
+                  </div>
                 )}
 
 

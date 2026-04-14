@@ -13,10 +13,12 @@ const apiMethods = {
 
   // Local database (offline reads)
   db: {
-    patients:      () => ipcRenderer.invoke('db:patients:all'),
-    patient:       (id) => ipcRenderer.invoke('db:patients:get', id),
-    searchPatients:(q) => ipcRenderer.invoke('db:patients:search', q),
-    cachePatients: (list) => ipcRenderer.invoke('db:patients:upsert', list),
+    patients:         () => ipcRenderer.invoke('db:patients:all'),
+    patient:          (id) => ipcRenderer.invoke('db:patients:get', id),
+    searchPatients:   (q) => ipcRenderer.invoke('db:patients:search', q),
+    cachePatients:    (list) => ipcRenderer.invoke('db:patients:upsert', list),
+    /** Offline direct lookup by NFC UID — hits local nfc_uid_map only, no API fallback */
+    getPatientByUID:  (uid) => ipcRenderer.invoke('db:patients:byNfcUid', uid),
 
     doctors:       () => ipcRenderer.invoke('db:doctors:all'),
     cacheDoctors:  (list) => ipcRenderer.invoke('db:doctors:upsert', list),
@@ -71,7 +73,10 @@ const apiMethods = {
 
     /** Listen for card tap (uid, readerName, status, patient, source, error) */
     onCardTap: (cb) => {
-      const handler = (_e, data) => cb(data);
+      const handler = (_e, data) => {
+        console.log('[PRELOAD] Received NFC event:', data);
+        cb(data);
+      };
       ipcRenderer.on('nfc:card-tap', handler);
       return () => ipcRenderer.removeListener('nfc:card-tap', handler);
     },

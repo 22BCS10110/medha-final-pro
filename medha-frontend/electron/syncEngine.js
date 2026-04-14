@@ -74,9 +74,15 @@ async function pull() {
   if (busy || !token) return;
   busy = true;
   emit('syncing');
+  console.log('Sync pull started');
 
   const pulls = [
-    ['/patients/', d => db.upsertPatients(arr(d))],
+    ['/patients/', d => {
+      const patients = arr(d);
+      console.log(`Patients fetched from backend: ${patients.length}`);
+      db.upsertPatients(patients);
+      console.log('Stored in local DB');
+    }],
     ['/doctors/', d => db.upsertDoctors(arr(d))],
     ['/appointments/', d => db.upsertAppointments(arr(d))],
     ['/records/', d => db.upsertRecords(arr(d))],
@@ -99,6 +105,7 @@ async function pull() {
   }
 
   console.log(`[Sync] Pull: ${ok}/${pulls.length} ok`);
+  console.log('Sync pull completed');
   db.setCache('last_pull', { time: new Date().toISOString() });
   busy = false;
   emit('idle');

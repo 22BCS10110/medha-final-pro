@@ -1,0 +1,433 @@
+{
+  "info": {
+    "_postman_id": "f5c95a6a-8e5f-4d1f-9c0e-20dc2d7f0a2b",
+    "name": "Medha Backend API (Local)",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Auth",
+      "item": [
+        {
+          "name": "Login (Token)",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"username\": \"{{username}}\",\n  \"password\": \"{{password}}\"\n}\n"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/auth/login/",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "auth", "login", ""]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('200 OK', function () { pm.response.to.have.status(200); });",
+                  "const data = pm.response.json();",
+                  "pm.test('token present', function () { pm.expect(data.token).to.be.a('string'); });",
+                  "pm.environment.set('token', data.token);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Me",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Token {{token}}" }],
+            "url": {
+              "raw": "{{baseUrl}}/api/auth/me/",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "auth", "me", ""]
+            }
+          }
+        },
+        {
+          "name": "Logout",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Authorization", "value": "Token {{token}}" }],
+            "url": {
+              "raw": "{{baseUrl}}/api/auth/logout/",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "auth", "logout", ""]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Core CRUD (ViewSets)",
+      "item": [
+        {
+          "name": "Doctors - Create",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"doctor_id\": \"DOC-{{$timestamp}}\",\n  \"full_name\": \"Dr. Test Doctor\",\n  \"department\": \"General Medicine\",\n  \"status\": \"on_duty\",\n  \"hospital_name\": \"City Hospital\"\n}\n"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/doctors/",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "doctors", ""]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('201 Created', function () { pm.response.to.have.status(201); });",
+                  "const data = pm.response.json();",
+                  "pm.environment.set('doctorPk', String(data.id));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Doctors - List",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/api/doctors/",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "doctors", ""]
+            }
+          }
+        },
+        {
+          "name": "Patients - Create",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"patient_id\": \"MHD-{{$timestamp}}\",\n  \"full_name\": \"Test Patient\",\n  \"gender\": \"M\",\n  \"phone\": \"9999999999\",\n  \"status\": \"active\",\n  \"hospital_name\": \"City Hospital\",\n  \"assigned_doctor\": {{doctorPk}}\n}\n"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/patients/",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "patients", ""]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('201 Created', function () { pm.response.to.have.status(201); });",
+                  "const data = pm.response.json();",
+                  "pm.environment.set('patientPk', String(data.id));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Patients - Search",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/api/patients/search/?q=Test",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "patients", "search", ""],
+              "query": [{ "key": "q", "value": "Test" }]
+            }
+          }
+        },
+        {
+          "name": "Appointments - Create",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"doctor\": {{doctorPk}},\n  \"patient\": {{patientPk}},\n  \"date\": \"2026-03-31\",\n  \"time\": \"10:30:00\",\n  \"appointment_type\": \"new\",\n  \"status\": \"upcoming\",\n  \"complaint\": \"Fever\"\n}\n"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/appointments/",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "appointments", ""]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('201 Created', function () { pm.response.to.have.status(201); });",
+                  "const data = pm.response.json();",
+                  "pm.environment.set('appointmentPk', String(data.id));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Appointments - List (filter by doctor)",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/api/appointments/?doctor={{doctorPk}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "appointments", ""],
+              "query": [{ "key": "doctor", "value": "{{doctorPk}}" }]
+            }
+          }
+        },
+        {
+          "name": "Records - Create",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"patient\": {{patientPk}},\n  \"doctor\": {{doctorPk}},\n  \"date\": \"2026-03-31\",\n  \"diagnosis\": \"Viral fever\",\n  \"record_type\": \"routine\",\n  \"notes\": \"Hydrate and rest\",\n  \"attachments\": []\n}\n"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/records/",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "records", ""]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('201 Created', function () { pm.response.to.have.status(201); });",
+                  "const data = pm.response.json();",
+                  "pm.environment.set('recordPk', String(data.id));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Prescriptions - Create",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"patient\": {{patientPk}},\n  \"doctor\": {{doctorPk}},\n  \"medicine\": \"Paracetamol 500mg\",\n  \"dosage\": \"1-0-1\",\n  \"duration\": \"3 days\",\n  \"status\": \"active\",\n  \"notes\": \"After food\",\n  \"ddi_alerts\": []\n}\n"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/prescriptions/",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "prescriptions", ""]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('201 Created', function () { pm.response.to.have.status(201); });",
+                  "const data = pm.response.json();",
+                  "pm.environment.set('prescriptionPk', String(data.id));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Vitals - Create",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"patient\": {{patientPk}},\n  \"blood_pressure\": \"120/80\",\n  \"heart_rate\": 72,\n  \"spo2\": 98,\n  \"temperature\": 98.4,\n  \"weight\": 70\n}\n"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/vitals/",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "vitals", ""]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('201 Created', function () { pm.response.to.have.status(201); });",
+                  "const data = pm.response.json();",
+                  "pm.environment.set('vitalPk', String(data.id));"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Billing",
+      "item": [
+        {
+          "name": "Receipts - Create",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"receipt_number\": \"RCP-{{$timestamp}}\",\n  \"patient\": {{patientPk}},\n  \"doctor\": {{doctorPk}},\n  \"items\": [\n    {\"name\": \"Consultation\", \"amount\": 500}\n  ],\n  \"total_amount\": \"500.00\",\n  \"payment_mode\": \"upi\",\n  \"status\": \"paid\"\n}\n"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/billing/receipts/",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "billing", "receipts", ""]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('201 Created', function () { pm.response.to.have.status(201); });",
+                  "const data = pm.response.json();",
+                  "pm.environment.set('receiptPk', String(data.id));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Billing Summary",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/api/billing/summary/",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "billing", "summary", ""]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Contact",
+      "item": [
+        {
+          "name": "Submit Enquiry",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"hospital_name\": \"Demo Hospital\",\n  \"contact_person\": \"Rohit\",\n  \"email\": \"rohit@example.com\",\n  \"phone\": \"9999999999\",\n  \"hospital_type\": \"Clinic\",\n  \"beds\": \"10\",\n  \"plan\": \"Starter\",\n  \"message\": \"Interested in demo\"\n}\n"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/contact/enquiry/",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "contact", "enquiry", ""]
+            }
+          }
+        },
+        {
+          "name": "List Enquiries",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/api/contact/enquiries/",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "contact", "enquiries", ""]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Dashboards / Reports / Settings",
+      "item": [
+        {
+          "name": "Admin Dashboard",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/api/dashboard/admin/",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "dashboard", "admin", ""]
+            }
+          }
+        },
+        {
+          "name": "Doctor Dashboard",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/api/dashboard/doctor/",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "dashboard", "doctor", ""]
+            }
+          }
+        },
+        {
+          "name": "Patient Dashboard",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/api/dashboard/patient/",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "dashboard", "patient", ""]
+            }
+          }
+        },
+        {
+          "name": "Reports",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/api/reports/",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "reports", ""]
+            }
+          }
+        },
+        {
+          "name": "Hospital Settings (GET)",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/api/hospital/settings/",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "hospital", "settings", ""]
+            }
+          }
+        },
+        {
+          "name": "Hospital Settings (PUT)",
+          "request": {
+            "method": "PUT",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"hospital_name\": \"City Hospital\"\n}\n" },
+            "url": {
+              "raw": "{{baseUrl}}/api/hospital/settings/",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "hospital", "settings", ""]
+            }
+          }
+        }
+      ]
+    }
+  ]
+}
+

@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:medha_mobile/core/theme/app_theme.dart';
 import 'package:medha_mobile/core/models/domain_models.dart';
+import 'package:medha_mobile/core/widgets/enhanced_card.dart';
 import 'package:medha_mobile/features/home/home_repository.dart';
 
 class DoctorProfileScreen extends ConsumerStatefulWidget {
@@ -24,13 +24,16 @@ class _DoctorProfileScreenState extends ConsumerState<DoctorProfileScreen> {
   @override
   Widget build(BuildContext context) {
     final d = widget.doctor;
+    final tt = Theme.of(context).textTheme;
+    final cs = Theme.of(context).colorScheme;
+
     return Scaffold(
       appBar: AppBar(
         leading: IconButton(
           icon: const Icon(Icons.arrow_back_ios_new_rounded),
           onPressed: () => context.canPop() ? context.pop() : context.go("/doctors"),
         ),
-        title: Text("Doctor Profile", style: GoogleFonts.manrope(fontWeight: FontWeight.w700)),
+        title: Text("Doctor Profile", style: tt.titleLarge),
         backgroundColor: Colors.transparent,
         elevation: 0,
       ),
@@ -38,16 +41,7 @@ class _DoctorProfileScreenState extends ConsumerState<DoctorProfileScreen> {
         padding: const EdgeInsets.fromLTRB(20, 8, 20, 24),
         children: [
           // Doctor hero card
-          Container(
-            padding: const EdgeInsets.all(24),
-            decoration: BoxDecoration(
-              gradient: const LinearGradient(
-                colors: [AppTheme.primary, AppTheme.primaryContainer],
-                begin: Alignment.topLeft,
-                end: Alignment.bottomRight,
-              ),
-              borderRadius: BorderRadius.circular(24),
-            ),
+          GradientCard(
             child: Row(
               children: [
                 CircleAvatar(
@@ -62,14 +56,14 @@ class _DoctorProfileScreenState extends ConsumerState<DoctorProfileScreen> {
                     children: [
                       Text(
                         d.name,
-                        style: GoogleFonts.manrope(color: Colors.white, fontSize: 20, fontWeight: FontWeight.w800),
+                        style: tt.titleLarge?.copyWith(color: Colors.white, fontWeight: FontWeight.w800),
                         maxLines: 2,
                         overflow: TextOverflow.ellipsis,
                       ),
                       const SizedBox(height: 6),
                       Text(
                         "${d.specialty} • ${d.experienceYears} yrs",
-                        style: GoogleFonts.plusJakartaSans(color: Colors.white.withValues(alpha: 0.82), fontWeight: FontWeight.w600, fontSize: 13),
+                        style: tt.bodySmall?.copyWith(color: Colors.white.withValues(alpha: 0.82), fontWeight: FontWeight.w600),
                       ),
                       const SizedBox(height: 6),
                       Container(
@@ -80,7 +74,7 @@ class _DoctorProfileScreenState extends ConsumerState<DoctorProfileScreen> {
                         ),
                         child: Text(
                           "⭐ ${d.rating.toStringAsFixed(1)}",
-                          style: GoogleFonts.plusJakartaSans(color: Colors.white, fontWeight: FontWeight.w700, fontSize: 12),
+                          style: tt.labelSmall?.copyWith(color: Colors.white, fontWeight: FontWeight.w700),
                         ),
                       ),
                     ],
@@ -90,38 +84,33 @@ class _DoctorProfileScreenState extends ConsumerState<DoctorProfileScreen> {
             ),
           ),
           const SizedBox(height: 16),
+
           // About
-          Container(
+          EnhancedCard(
             padding: const EdgeInsets.all(20),
-            decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.circular(20),
-            ),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text("About", style: GoogleFonts.manrope(fontWeight: FontWeight.w800, fontSize: 16, color: AppTheme.onSurface)),
+                Text("About", style: tt.titleSmall?.copyWith(fontWeight: FontWeight.w800)),
                 const SizedBox(height: 8),
                 Text(
                   d.about.isEmpty ? "Experienced specialist with patient-focused care." : d.about,
-                  style: GoogleFonts.plusJakartaSans(fontWeight: FontWeight.w500, color: AppTheme.onSurface.withValues(alpha: 0.65), fontSize: 14, height: 1.6),
+                  style: tt.bodyMedium?.copyWith(color: cs.onSurface.withValues(alpha: 0.65), height: 1.6),
                 ),
               ],
             ),
           ),
           const SizedBox(height: 16),
+
           // Appointment selection
-          Container(
+          EnhancedCard(
             padding: const EdgeInsets.all(20),
-            decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.circular(20),
-            ),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text("Book Appointment", style: GoogleFonts.manrope(fontWeight: FontWeight.w800, fontSize: 16, color: AppTheme.onSurface)),
+                Text("Book Appointment", style: tt.titleSmall?.copyWith(fontWeight: FontWeight.w800)),
                 const SizedBox(height: 16),
+
                 // Date picker
                 GestureDetector(
                   onTap: () async {
@@ -145,16 +134,16 @@ class _DoctorProfileScreenState extends ConsumerState<DoctorProfileScreen> {
                         const SizedBox(width: 12),
                         Text(
                           "${selectedDate.year}-${selectedDate.month.toString().padLeft(2, '0')}-${selectedDate.day.toString().padLeft(2, '0')}",
-                          style: GoogleFonts.plusJakartaSans(fontWeight: FontWeight.w700, fontSize: 15, color: AppTheme.onSurface),
+                          style: tt.titleSmall?.copyWith(fontWeight: FontWeight.w700),
                         ),
                         const Spacer(),
-                        Icon(Icons.edit_calendar_rounded, size: 18, color: AppTheme.onSurface.withValues(alpha: 0.35)),
+                        Icon(Icons.edit_calendar_rounded, size: 18, color: cs.onSurface.withValues(alpha: 0.35)),
                       ],
                     ),
                   ),
                 ),
                 const SizedBox(height: 16),
-                Text("Time Slots", style: GoogleFonts.plusJakartaSans(fontWeight: FontWeight.w700, fontSize: 14, color: AppTheme.onSurface)),
+                Text("Time Slots", style: tt.bodyMedium?.copyWith(fontWeight: FontWeight.w700)),
                 const SizedBox(height: 10),
                 Wrap(
                   spacing: 10,
@@ -167,15 +156,14 @@ class _DoctorProfileScreenState extends ConsumerState<DoctorProfileScreen> {
                         duration: const Duration(milliseconds: 200),
                         padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 10),
                         decoration: BoxDecoration(
-                          color: isSelected ? AppTheme.primary : AppTheme.surfaceContainerLow,
+                          color: isSelected ? cs.primary : AppTheme.surfaceContainerLow,
                           borderRadius: BorderRadius.circular(999),
                         ),
                         child: Text(
                           s,
-                          style: GoogleFonts.plusJakartaSans(
+                          style: tt.labelLarge?.copyWith(
                             fontWeight: FontWeight.w700,
-                            fontSize: 14,
-                            color: isSelected ? Colors.white : AppTheme.onSurface.withValues(alpha: 0.7),
+                            color: isSelected ? Colors.white : cs.onSurface.withValues(alpha: 0.7),
                           ),
                         ),
                       ),
@@ -183,8 +171,9 @@ class _DoctorProfileScreenState extends ConsumerState<DoctorProfileScreen> {
                   }).toList(),
                 ),
                 const SizedBox(height: 16),
-                Text("Mode", style: GoogleFonts.plusJakartaSans(fontWeight: FontWeight.w700, fontSize: 14, color: AppTheme.onSurface)),
+                Text("Mode", style: tt.bodyMedium?.copyWith(fontWeight: FontWeight.w700)),
                 const SizedBox(height: 10),
+
                 // Segmented toggle
                 Container(
                   decoration: BoxDecoration(
@@ -203,6 +192,7 @@ class _DoctorProfileScreenState extends ConsumerState<DoctorProfileScreen> {
             ),
           ),
           const SizedBox(height: 20),
+
           // Confirm button
           FilledButton(
             onPressed: () async {
@@ -224,13 +214,13 @@ class _DoctorProfileScreenState extends ConsumerState<DoctorProfileScreen> {
               });
             },
             style: FilledButton.styleFrom(
-              backgroundColor: AppTheme.primary,
+              backgroundColor: cs.primary,
               foregroundColor: Colors.white,
               minimumSize: const Size.fromHeight(56),
-              shape: const StadiumBorder(),
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
               elevation: 0,
             ),
-            child: Text("Confirm Appointment", style: GoogleFonts.plusJakartaSans(fontWeight: FontWeight.w700, fontSize: 16)),
+            child: Text("Confirm Appointment", style: tt.titleSmall?.copyWith(fontWeight: FontWeight.w700, color: Colors.white)),
           ),
         ],
       ),
@@ -247,6 +237,7 @@ class _ModeChip extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final tt = Theme.of(context).textTheme;
     return GestureDetector(
       onTap: onTap,
       child: AnimatedContainer(
@@ -255,14 +246,22 @@ class _ModeChip extends StatelessWidget {
         decoration: BoxDecoration(
           color: selected ? Colors.white : Colors.transparent,
           borderRadius: BorderRadius.circular(10),
-          boxShadow: selected ? [BoxShadow(color: Colors.black.withValues(alpha: 0.04), blurRadius: 8, offset: const Offset(0, 2))] : null,
+          boxShadow: selected
+              ? [BoxShadow(color: AppTheme.primary.withValues(alpha: 0.06), blurRadius: 8, offset: const Offset(0, 2))]
+              : null,
         ),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Icon(icon, size: 18, color: selected ? AppTheme.primary : AppTheme.onSurface.withValues(alpha: 0.5)),
             const SizedBox(width: 6),
-            Text(label, style: GoogleFonts.plusJakartaSans(fontWeight: FontWeight.w700, fontSize: 14, color: selected ? AppTheme.primary : AppTheme.onSurface.withValues(alpha: 0.5))),
+            Text(
+              label,
+              style: tt.labelLarge?.copyWith(
+                fontWeight: FontWeight.w700,
+                color: selected ? AppTheme.primary : AppTheme.onSurface.withValues(alpha: 0.5),
+              ),
+            ),
           ],
         ),
       ),

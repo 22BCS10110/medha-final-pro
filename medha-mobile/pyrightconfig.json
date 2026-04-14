@@ -1,0 +1,20 @@
+{
+    "venvPath": "/Users/rsevil/Downloads/medha project/medha-backend",
+    "venv": "venv",
+    "executionEnvironments": [
+        {
+            "root": "medha-backend",
+            "pythonVersion": "3.14",
+            "extraPaths": [
+                ".",
+                "venv/lib/python3.14/site-packages"
+            ]
+        }
+    ],
+    "exclude": [
+        "**/node_modules",
+        "**/__pycache__",
+        "medha-backend/venv"
+    ]
+}
+

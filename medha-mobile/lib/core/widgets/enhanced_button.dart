@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:medha_mobile/core/theme/app_theme.dart';
 
-/// Enhanced primary button with loading state
+/// Enhanced primary button with gradient background and loading state.
 class EnhancedPrimaryButton extends StatelessWidget {
   final String label;
   final VoidCallback? onPressed;
@@ -21,13 +20,14 @@ class EnhancedPrimaryButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final tt = Theme.of(context).textTheme;
     return FilledButton(
       onPressed: isLoading ? null : onPressed,
       style: FilledButton.styleFrom(
         backgroundColor: backgroundColor ?? AppTheme.primary,
         foregroundColor: Colors.white,
         minimumSize: const Size.fromHeight(56),
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
         elevation: 0,
         disabledBackgroundColor: (backgroundColor ?? AppTheme.primary).withValues(alpha: 0.6),
       ),
@@ -49,8 +49,9 @@ class EnhancedPrimaryButton extends StatelessWidget {
                 ],
                 Text(
                   label,
-                  style: GoogleFonts.plusJakartaSans(
+                  style: tt.titleSmall?.copyWith(
                     fontWeight: FontWeight.w700,
+                    color: Colors.white,
                     fontSize: 16,
                   ),
                 ),
@@ -60,7 +61,7 @@ class EnhancedPrimaryButton extends StatelessWidget {
   }
 }
 
-/// Enhanced outline button
+/// Enhanced outline button.
 class EnhancedOutlineButton extends StatelessWidget {
   final String label;
   final VoidCallback? onPressed;
@@ -78,6 +79,7 @@ class EnhancedOutlineButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final buttonColor = color ?? AppTheme.primary;
+    final tt = Theme.of(context).textTheme;
     return OutlinedButton(
       onPressed: onPressed,
       style: OutlinedButton.styleFrom(
@@ -95,8 +97,9 @@ class EnhancedOutlineButton extends StatelessWidget {
           ],
           Text(
             label,
-            style: GoogleFonts.plusJakartaSans(
+            style: tt.titleSmall?.copyWith(
               fontWeight: FontWeight.w700,
+              color: buttonColor,
               fontSize: 16,
             ),
           ),

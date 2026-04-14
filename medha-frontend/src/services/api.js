@@ -153,13 +153,6 @@ export const dashboardAPI = {
   patient: () => api.get("/dashboard/patient/"),
 };
 
-// ═══ CONSENT ═══
-export const consentAPI = {
-  check: (patientId) => api.get(`/consent/${patientId}/check/`),
-  grant: (patientId, data) => api.post(`/consent/${patientId}/grant/`, data),
-  revoke: (patientId, data) => api.post(`/consent/${patientId}/revoke/`, data),
-};
-
 // ═══ CHAT ═══
 export const chatAPI = {
   listRooms: () => api.get("/chat/rooms/"),

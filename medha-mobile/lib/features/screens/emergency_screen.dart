@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:medha_mobile/core/theme/app_theme.dart';
+import 'package:medha_mobile/core/widgets/enhanced_card.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class EmergencyScreen extends StatelessWidget {
@@ -8,9 +8,12 @@ class EmergencyScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final tt = Theme.of(context).textTheme;
+    final cs = Theme.of(context).colorScheme;
+
     return Scaffold(
       appBar: AppBar(
-        title: Text("Emergency", style: GoogleFonts.manrope(fontWeight: FontWeight.w700)),
+        title: Text("Emergency", style: tt.titleLarge),
         centerTitle: true,
         backgroundColor: Colors.transparent,
         elevation: 0,
@@ -22,12 +25,19 @@ class EmergencyScreen extends StatelessWidget {
           Container(
             padding: const EdgeInsets.all(28),
             decoration: BoxDecoration(
-              gradient: const LinearGradient(
-                colors: [Color(0xFFB71C1C), AppTheme.tertiary],
+              gradient: LinearGradient(
+                colors: [cs.error, AppTheme.error.withValues(alpha: 0.8)],
                 begin: Alignment.topLeft,
                 end: Alignment.bottomRight,
               ),
               borderRadius: BorderRadius.circular(24),
+              boxShadow: [
+                BoxShadow(
+                  color: cs.error.withValues(alpha: 0.3),
+                  blurRadius: 20,
+                  offset: const Offset(0, 8),
+                ),
+              ],
             ),
             child: Column(
               children: [
@@ -42,13 +52,13 @@ class EmergencyScreen extends StatelessWidget {
                 const SizedBox(height: 18),
                 Text(
                   "Emergency Assistance",
-                  style: GoogleFonts.manrope(color: Colors.white, fontSize: 22, fontWeight: FontWeight.w800),
+                  style: tt.titleLarge?.copyWith(color: Colors.white, fontWeight: FontWeight.w800),
                 ),
                 const SizedBox(height: 8),
                 Text(
                   "Press the button below for immediate\nmedical response.",
                   textAlign: TextAlign.center,
-                  style: GoogleFonts.plusJakartaSans(color: Colors.white.withValues(alpha: 0.82), fontSize: 14, fontWeight: FontWeight.w500, height: 1.5),
+                  style: tt.bodySmall?.copyWith(color: Colors.white.withValues(alpha: 0.82), height: 1.5),
                 ),
                 const SizedBox(height: 24),
                 SizedBox(
@@ -57,7 +67,7 @@ class EmergencyScreen extends StatelessWidget {
                   child: ElevatedButton.icon(
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Colors.white,
-                      foregroundColor: AppTheme.tertiary,
+                      foregroundColor: cs.error,
                       shape: const StadiumBorder(),
                       elevation: 0,
                     ),
@@ -66,35 +76,33 @@ class EmergencyScreen extends StatelessWidget {
                       await launchUrl(uri);
                     },
                     icon: const Icon(Icons.call_rounded),
-                    label: Text("Call Ambulance • 108", style: GoogleFonts.plusJakartaSans(fontWeight: FontWeight.w700, fontSize: 16)),
+                    label: Text("Call Ambulance • 108", style: tt.titleSmall?.copyWith(fontWeight: FontWeight.w700, color: cs.error)),
                   ),
                 ),
               ],
             ),
           ),
           const SizedBox(height: 20),
+
           // Nearby hospitals
-          Text("Nearby Hospitals", style: GoogleFonts.manrope(fontSize: 18, fontWeight: FontWeight.w800, color: AppTheme.onSurface)),
+          Text("Nearby Hospitals", style: tt.titleMedium?.copyWith(fontWeight: FontWeight.w800)),
           const SizedBox(height: 12),
           _HospitalTile(name: "City General Hospital", address: "Main Road, City Center", distance: "1.2 km"),
           const SizedBox(height: 12),
           _HospitalTile(name: "District Medical Center", address: "Hospital Road, District", distance: "3.5 km"),
           const SizedBox(height: 20),
+
           // Medical ID
-          Container(
+          EnhancedCard(
             padding: const EdgeInsets.all(20),
-            decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.circular(20),
-            ),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Row(
                   children: [
-                    Icon(Icons.badge_rounded, color: AppTheme.primary, size: 22),
+                    const Icon(Icons.badge_rounded, color: AppTheme.primary, size: 22),
                     const SizedBox(width: 10),
-                    Text("Medical ID", style: GoogleFonts.manrope(fontWeight: FontWeight.w800, fontSize: 16, color: AppTheme.onSurface)),
+                    Text("Medical ID", style: tt.titleSmall?.copyWith(fontWeight: FontWeight.w800)),
                   ],
                 ),
                 const SizedBox(height: 12),
@@ -105,41 +113,44 @@ class EmergencyScreen extends StatelessWidget {
             ),
           ),
           const SizedBox(height: 14),
+
           // Location sharing
-          Container(
+          EnhancedCard(
             padding: const EdgeInsets.all(20),
-            decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.circular(20),
-            ),
             child: Row(
               children: [
                 Container(
                   padding: const EdgeInsets.all(10),
                   decoration: BoxDecoration(
-                    color: const Color(0xFF43A047).withValues(alpha: 0.1),
+                    color: AppTheme.secondary.withValues(alpha: 0.1),
                     borderRadius: BorderRadius.circular(12),
                   ),
-                  child: const Icon(Icons.location_on_rounded, color: Color(0xFF43A047), size: 22),
+                  child: const Icon(Icons.location_on_rounded, color: AppTheme.secondary, size: 22),
                 ),
                 const SizedBox(width: 14),
                 Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text("Live Location Sharing", style: GoogleFonts.plusJakartaSans(fontWeight: FontWeight.w700, fontSize: 14, color: AppTheme.onSurface)),
+                      Text("Live Location Sharing", style: tt.titleSmall?.copyWith(fontWeight: FontWeight.w700)),
                       const SizedBox(height: 3),
-                      Text("Your coordinates are shared\nwith emergency contacts.", style: GoogleFonts.plusJakartaSans(fontWeight: FontWeight.w500, fontSize: 12, color: AppTheme.onSurface.withValues(alpha: 0.5), height: 1.4)),
+                      Text(
+                        "Your coordinates are shared\nwith emergency contacts.",
+                        style: tt.labelSmall?.copyWith(color: cs.onSurface.withValues(alpha: 0.5), height: 1.4),
+                      ),
                     ],
                   ),
                 ),
                 Container(
                   padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
                   decoration: BoxDecoration(
-                    color: const Color(0xFF43A047).withValues(alpha: 0.1),
+                    color: AppTheme.secondary.withValues(alpha: 0.1),
                     borderRadius: BorderRadius.circular(999),
                   ),
-                  child: Text("Active", style: GoogleFonts.plusJakartaSans(fontSize: 11, fontWeight: FontWeight.w700, color: const Color(0xFF43A047))),
+                  child: Text(
+                    "Active",
+                    style: tt.labelSmall?.copyWith(fontWeight: FontWeight.w700, color: AppTheme.secondary),
+                  ),
                 ),
               ],
             ),
@@ -158,30 +169,27 @@ class _HospitalTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
+    final tt = Theme.of(context).textTheme;
+    return EnhancedCard(
       padding: const EdgeInsets.all(18),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(18),
-      ),
       child: Row(
         children: [
           Container(
             padding: const EdgeInsets.all(10),
             decoration: BoxDecoration(
-              color: AppTheme.tertiary.withValues(alpha: 0.08),
+              color: AppTheme.error.withValues(alpha: 0.08),
               borderRadius: BorderRadius.circular(12),
             ),
-            child: const Icon(Icons.local_hospital_rounded, color: AppTheme.tertiary, size: 22),
+            child: const Icon(Icons.local_hospital_rounded, color: AppTheme.error, size: 22),
           ),
           const SizedBox(width: 14),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(name, style: GoogleFonts.manrope(fontWeight: FontWeight.w700, fontSize: 15, color: AppTheme.onSurface)),
+                Text(name, style: tt.titleSmall?.copyWith(fontWeight: FontWeight.w700)),
                 const SizedBox(height: 3),
-                Text(address, style: GoogleFonts.plusJakartaSans(fontWeight: FontWeight.w500, fontSize: 12, color: AppTheme.onSurface.withValues(alpha: 0.5))),
+                Text(address, style: tt.labelSmall?.copyWith(color: AppTheme.onSurfaceVariant)),
               ],
             ),
           ),
@@ -191,7 +199,7 @@ class _HospitalTile extends StatelessWidget {
               color: AppTheme.primary.withValues(alpha: 0.08),
               borderRadius: BorderRadius.circular(999),
             ),
-            child: Text(distance, style: GoogleFonts.plusJakartaSans(fontSize: 11, fontWeight: FontWeight.w700, color: AppTheme.primary)),
+            child: Text(distance, style: tt.labelSmall?.copyWith(fontWeight: FontWeight.w700, color: AppTheme.primary)),
           ),
         ],
       ),
@@ -206,11 +214,12 @@ class _InfoRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final tt = Theme.of(context).textTheme;
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        Text(label, style: GoogleFonts.plusJakartaSans(fontWeight: FontWeight.w500, fontSize: 13, color: AppTheme.onSurface.withValues(alpha: 0.55))),
-        Text(value, style: GoogleFonts.plusJakartaSans(fontWeight: FontWeight.w700, fontSize: 13, color: AppTheme.onSurface)),
+        Text(label, style: tt.bodySmall?.copyWith(color: AppTheme.onSurfaceVariant)),
+        Text(value, style: tt.bodySmall?.copyWith(fontWeight: FontWeight.w700)),
       ],
     );
   }

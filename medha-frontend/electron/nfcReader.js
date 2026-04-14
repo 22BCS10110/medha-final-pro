@@ -20,6 +20,13 @@ const DESFIRE_AID = [0x12, 0x34, 0x56]; // Application ID
 const DESFIRE_SELECT_APP = Buffer.from([0x90, 0x5A, 0x00, 0x00, 0x03, ...DESFIRE_AID, 0x00]);
 // Read from File 01, offset 0, length 0 (read all)
 const DESFIRE_READ_FILE = Buffer.from([0x90, 0xBD, 0x00, 0x00, 0x07, 0x01, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00]);
+// Select master application (AID 000000) — required before CreateApplication
+const DESFIRE_SELECT_MASTER = Buffer.from([0x90, 0x5A, 0x00, 0x00, 0x03, 0x00, 0x00, 0x00, 0x00]);
+// Create application: AID 0x123456, KeySettings 0x0F (free access), NumKeys 0x01
+const DESFIRE_CREATE_APP = Buffer.from([0x90, 0xCA, 0x00, 0x00, 0x05, ...DESFIRE_AID, 0x0F, 0x01, 0x00]);
+// Create StdDataFile: FileNo 0x01, CommSettings 0x00 (plain), AccessRights 0xEEEE (free R/W),
+// FileSize 128 bytes (0x80 0x00 0x00 LSB-first)
+const DESFIRE_CREATE_FILE = Buffer.from([0x90, 0xCD, 0x00, 0x00, 0x07, 0x01, 0x00, 0xEE, 0xEE, 0x80, 0x00, 0x00, 0x00]);
 
 /**
  * Build a DESFire WriteData APDU for File 01.
@@ -79,8 +86,14 @@ function parseDesFireData(response) {
 
 let NFC;
 try {
-  // nfc-pcsc is an optional native dependency — gracefully handle if missing
-  NFC = (await import('nfc-pcsc')).default;
+  // nfc-pcsc is an optional native dependency — gracefully handle if missing.
+  // nfc-pcsc exports `NFC` as a named export (CJS): module.exports = { NFC, ... }
+  // Under Node ESM interop this shows up as both `mod.NFC` and `mod.default.NFC`.
+  const mod = await import('nfc-pcsc');
+  NFC = mod.NFC || mod.default?.NFC || mod.default;
+  if (!NFC || typeof NFC !== 'function') {
+    throw new Error('nfc-pcsc loaded but NFC class not found on exports');
+  }
 } catch (e) {
   console.log('[NFC-DEBUG] Import error:', e.message);
   NFC = null;
@@ -162,10 +175,37 @@ export function createNfcReader() {
       const str = `${data.id}|${data.name}|${data.blood}`;
       const dataBuffer = Buffer.from(str, 'utf8');
 
-      // Step 1: Select DESFire application
-      const selectResp = await reader.transmit(DESFIRE_SELECT_APP, 256);
+      // Step 1: Try to select the application. If it doesn't exist, create it.
+      let selectResp = await reader.transmit(DESFIRE_SELECT_APP, 256);
       if (!isDesFireSuccess(selectResp)) {
-        return { success: false, error: 'DESFire app not found (AID 0x123456). Card may not be provisioned.' };
+        console.log('[NFC-DESFire] AID not found — provisioning application...');
+
+        // Must be on master app (AID 000000) to create a new application
+        const masterResp = await reader.transmit(DESFIRE_SELECT_MASTER, 256);
+        if (!isDesFireSuccess(masterResp)) {
+          return { success: false, error: 'Cannot select master application on card' };
+        }
+
+        // Create application 0x123456 with free access (key settings 0x0F, 1 key)
+        const createAppResp = await reader.transmit(DESFIRE_CREATE_APP, 256);
+        if (!isDesFireSuccess(createAppResp)) {
+          return { success: false, error: 'Failed to create DESFire application (card may require auth or be locked)' };
+        }
+
+        // Re-select the newly created app
+        selectResp = await reader.transmit(DESFIRE_SELECT_APP, 256);
+        if (!isDesFireSuccess(selectResp)) {
+          return { success: false, error: 'Failed to select newly created application' };
+        }
+
+        // Create File 01 (standard data file, 128 bytes, free R/W)
+        const createFileResp = await reader.transmit(DESFIRE_CREATE_FILE, 256);
+        if (!isDesFireSuccess(createFileResp)) {
+          // If file already exists the card returns an error — continue anyway
+          console.log('[NFC-DESFire] Create file returned non-success (may already exist) — continuing');
+        } else {
+          console.log('[NFC-DESFire] File 01 created');
+        }
       }
 
       // Step 2: Write data to file 01
@@ -226,49 +266,120 @@ export function createNfcReader() {
 
       nfc.on('reader', (reader) => {
         console.log("✅ READER CONNECTED:", reader.name);
-        
+
+        // 🔥 VERY IMPORTANT: disable nfc-pcsc auto-processing.
+        // Default (true) makes the library try to SELECT an AID on every ISO
+        // 14443-4 tag and throw "AID was not set" if none is configured. We do
+        // our own DESFire SELECT/READ/WRITE in readDesfire/writeDesfire, so we
+        // need raw mode — otherwise the error interrupts flow before our card
+        // handler runs.
+        reader.autoProcessing = false;
+
         reader.on('card', (card) => {
           console.log("🔥 CARD DETECTED:", card.uid);
         });
 
         reader.on('error', (err) => {
-          console.log("❌ NFC ERROR:", err.message);
+          const msg = err?.message || '';
+          // Ignore the expected "AID was not set" error — nfc-pcsc tries to
+          // auto-process ISO 14443-4 tags and errors when no AID is configured.
+          // We handle DESFire selection manually, so this is harmless noise.
+          if (msg.includes('AID was not set')) return;
+          console.log("❌ NFC ERROR:", msg);
         });
       });
 
       nfc.on('reader', (reader) => {
         const name = reader.name || 'Unknown Reader';
         console.log(`[NFC] Reader connected: ${name}`);
+
+        // 🔥 Force raw mode — disables ISO 14443-4 auto-SELECT inside nfc-pcsc.
+        // We handle DESFire SELECT/READ/WRITE ourselves via reader.transmit().
+        // Idempotent with the debug block above; safe to set twice.
+        reader.autoProcessing = false;
+
         emitter._readers.set(name, reader);
         emitter.emit('reader:connect', name);
 
         reader.on('card', async (card) => {
-          const uid = card.uid?.toUpperCase() || '';
-          console.log(`[NFC] Card tapped — UID: ${uid} (reader: ${name})`);
-
-          // Handle pending write operation
-          if (emitter._writePending) {
-            const { data, resolve } = emitter._writePending;
-            emitter._writePending = null;
-            const result = await emitter.writeDesfire(reader, data);
-            resolve(result);
-            if (result.success) {
-              emitter.emit('card:write-success', data, name);
-            } else {
-              emitter.emit('card:write-error', result.error, name);
+          // OUTER try/catch — catches reader-level hard errors (sync throws,
+          // emit errors, anything unexpected) so the write fallback still runs.
+          let uid = '';
+          try {
+            // Manual UID fetch — required because autoProcessing=false means
+            // nfc-pcsc no longer populates card.uid for us. PC/SC-compliant
+            // pseudo-APDU FF CA 00 00 00 returns the UID bytes followed by SW.
+            try {
+              const response = await reader.transmit(
+                Buffer.from([0xff, 0xca, 0x00, 0x00, 0x00]), // GET UID
+                40
+              );
+              uid = response.slice(0, -2).toString('hex').toUpperCase();
+            } catch (e) {
+              console.log('[NFC] UID read failed:', e.message);
             }
-            return; // Don't process as a read when writing
+            console.log(`[NFC] Card tapped — UID: ${uid || '(unknown)'} (reader: ${name})`);
+
+            // 1. Try reading DESFire first — inner try/catch so a read failure
+            //    never stops execution before the write fallback.
+            let desfire = null;
+            try {
+              desfire = await emitter.readDesfire(reader);
+            } catch (e) {
+              console.log('[NFC] Read failed safely:', e.message);
+            }
+
+            if (desfire) {
+              console.log('[NFC] DESFire read success');
+              emitter.emit('card:desfire', desfire, uid, name);
+            } else {
+              // Read failed (no AID, empty, bad format, or non-DESFire card).
+              // If a write is pending, FORCE WRITE HERE.
+              console.log('[NFC] DESFire read failed — checking for pending write');
+              if (emitter._writePending) {
+                const { data, resolve } = emitter._writePending;
+                emitter._writePending = null;
+                console.log('[NFC] Proceeding to WRITE (read failure → write fallback)');
+                const result = await emitter.writeDesfire(reader, data);
+                resolve(result);
+                if (result.success) {
+                  emitter.emit('card:write-success', data, name);
+                } else {
+                  emitter.emit('card:write-error', result.error, name);
+                }
+              }
+            }
+          } catch (err) {
+            console.log('[NFC] HARD ERROR CAUGHT at reader level:', err.message);
+
+            // STILL TRY WRITE EVEN IF OUTER ERROR — recovery path
+            if (emitter._writePending) {
+              const { data, resolve } = emitter._writePending;
+              emitter._writePending = null;
+              console.log('[NFC] Recovering → forcing WRITE');
+              try {
+                const result = await emitter.writeDesfire(reader, data);
+                resolve(result);
+                if (result.success) {
+                  emitter.emit('card:write-success', data, name);
+                } else {
+                  emitter.emit('card:write-error', result.error, name);
+                }
+              } catch (e) {
+                console.log('[NFC] Write also failed:', e.message);
+                resolve({ success: false, error: e.message });
+                emitter.emit('card:write-error', e.message, name);
+              }
+            }
           }
 
-          // Attempt DESFire read first
-          const desfire = await emitter.readDesfire(reader);
-          if (desfire) {
-            emitter.emit('card:desfire', desfire, uid, name);
-          }
-
-          // Always emit UID (fallback path + existing functionality)
+          // Always emit UID — preserves existing UID fallback + scan panel lookup.
+          // Runs regardless of whether read/write succeeded, failed, or threw.
           if (uid) {
+            console.log(`[NFC] 📤 Emitting card:uid → ${uid}`);
             emitter.emit('card:uid', uid, name);
+          } else {
+            console.log('[NFC] ⚠️ No UID to emit — card event ends here');
           }
         });
 
@@ -277,7 +388,20 @@ export function createNfcReader() {
         });
 
         reader.on('error', (err) => {
-          console.error(`[NFC] Reader error (${name}):`, err.message);
+          const msg = err?.message || '';
+
+          // IGNORE expected "AID was not set" error — nfc-pcsc's auto-reader
+          // tries to process ISO 14443-4 tags automatically and errors when
+          // no AID was configured on the reader. We handle DESFire SELECT APP
+          // manually in readDesfire/writeDesfire, so this is expected noise.
+          // Letting it through would fire 'card:error' → 'nfc:error' IPC →
+          // renderer treats it as fatal and write fallback never completes.
+          if (msg.includes('AID was not set')) {
+            console.log('[NFC] Ignoring missing AID (expected for new/unprovisioned cards)');
+            return;
+          }
+
+          console.error(`[NFC] Reader error (${name}):`, msg);
           emitter.emit('card:error', err, name);
         });
 

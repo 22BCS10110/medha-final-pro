@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
 import 'package:medha_mobile/core/theme/app_theme.dart';
 import 'package:medha_mobile/core/widgets/empty_state.dart';
@@ -15,9 +14,11 @@ class AppointmentsScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final appointmentsAsync = ref.watch(appointmentsProvider("guest_patient"));
-    
+    final tt = Theme.of(context).textTheme;
+    final cs = Theme.of(context).colorScheme;
+
     return Scaffold(
-      backgroundColor: AppTheme.surface,
+      backgroundColor: cs.surface,
       body: SafeArea(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -30,26 +31,20 @@ class AppointmentsScreen extends ConsumerWidget {
                 children: [
                   Text(
                     "My Appointments",
-                    style: GoogleFonts.manrope(
-                      fontSize: 28,
-                      fontWeight: FontWeight.w800,
-                      color: AppTheme.onSurface,
-                    ),
+                    style: tt.headlineMedium?.copyWith(fontWeight: FontWeight.w800),
                   ),
                   const SizedBox(height: 6),
                   Text(
                     "Manage your health appointments",
-                    style: GoogleFonts.plusJakartaSans(
-                      fontSize: 14,
-                      fontWeight: FontWeight.w500,
-                      color: AppTheme.onSurface.withValues(alpha: 0.5),
+                    style: tt.bodyMedium?.copyWith(
+                      color: cs.onSurface.withValues(alpha: 0.5),
                     ),
                   ),
                 ],
               ),
             ),
             const SizedBox(height: 20),
-            
+
             // Appointments list
             Expanded(
               child: appointmentsAsync.when(
@@ -67,23 +62,20 @@ class AppointmentsScreen extends ConsumerWidget {
                 ),
                 data: (appointments) {
                   if (appointments.isEmpty) {
-                    return EmptyState(
+                    return const EmptyState(
                       icon: Icons.event_busy_rounded,
                       title: 'No appointments yet',
                       subtitle: 'Book your first appointment to get started',
                       actionLabel: 'Book Appointment',
-                      onAction: () {
-                        // Navigate to doctor list
-                      },
                     );
                   }
-                  
+
                   return RefreshIndicator(
                     onRefresh: () async {
                       ref.invalidate(appointmentsProvider("guest_patient"));
                       await ref.read(appointmentsProvider("guest_patient").future);
                     },
-                    color: AppTheme.primary,
+                    color: cs.primary,
                     child: ListView.builder(
                       itemCount: appointments.length,
                       padding: const EdgeInsets.fromLTRB(20, 0, 20, 24),
@@ -117,7 +109,7 @@ class AppointmentsScreen extends ConsumerWidget {
 class _EnhancedAppointmentCard extends StatelessWidget {
   final dynamic appointment;
   final Function(String) onStatusChange;
-  
+
   const _EnhancedAppointmentCard({
     required this.appointment,
     required this.onStatusChange,
@@ -125,28 +117,24 @@ class _EnhancedAppointmentCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final tt = Theme.of(context).textTheme;
+    final cs = Theme.of(context).colorScheme;
     final isCompleted = appointment.status == "completed";
     final isCancelled = appointment.status == "cancelled";
-    final isPending = appointment.status == "pending" || appointment.status == "scheduled";
-    
+
     Color statusColor;
-    IconData statusIcon;
-    
     if (isCompleted) {
-      statusColor = const Color(0xFF43A047);
-      statusIcon = Icons.check_circle_rounded;
+      statusColor = AppTheme.secondary;
     } else if (isCancelled) {
-      statusColor = AppTheme.tertiary;
-      statusIcon = Icons.cancel_rounded;
+      statusColor = AppTheme.error;
     } else {
-      statusColor = AppTheme.primary;
-      statusIcon = Icons.schedule_rounded;
+      statusColor = cs.primary;
     }
-    
+
     final dateTime = appointment.scheduledAt.toLocal();
     final formattedDate = DateFormat('MMM dd, yyyy').format(dateTime);
     final formattedTime = DateFormat('hh:mm a').format(dateTime);
-    
+
     return EnhancedCard(
       margin: const EdgeInsets.only(bottom: 14),
       child: Column(
@@ -155,7 +143,6 @@ class _EnhancedAppointmentCard extends StatelessWidget {
           Row(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // Doctor avatar
               Container(
                 padding: const EdgeInsets.all(14),
                 decoration: BoxDecoration(
@@ -175,11 +162,7 @@ class _EnhancedAppointmentCard extends StatelessWidget {
                   children: [
                     Text(
                       appointment.doctorId,
-                      style: GoogleFonts.manrope(
-                        fontWeight: FontWeight.w700,
-                        fontSize: 16,
-                        color: AppTheme.onSurface,
-                      ),
+                      style: tt.titleSmall?.copyWith(fontWeight: FontWeight.w700),
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
                     ),
@@ -189,15 +172,13 @@ class _EnhancedAppointmentCard extends StatelessWidget {
                         Icon(
                           Icons.videocam_rounded,
                           size: 14,
-                          color: AppTheme.onSurface.withValues(alpha: 0.5),
+                          color: cs.onSurface.withValues(alpha: 0.5),
                         ),
                         const SizedBox(width: 4),
                         Text(
                           appointment.mode,
-                          style: GoogleFonts.plusJakartaSans(
-                            fontWeight: FontWeight.w500,
-                            fontSize: 13,
-                            color: AppTheme.onSurface.withValues(alpha: 0.55),
+                          style: tt.bodySmall?.copyWith(
+                            color: cs.onSurface.withValues(alpha: 0.55),
                           ),
                         ),
                       ],
@@ -210,7 +191,7 @@ class _EnhancedAppointmentCard extends StatelessWidget {
                   onSelected: onStatusChange,
                   icon: Icon(
                     Icons.more_vert_rounded,
-                    color: AppTheme.onSurface.withValues(alpha: 0.35),
+                    color: cs.onSurface.withValues(alpha: 0.35),
                   ),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(16),
@@ -241,7 +222,7 @@ class _EnhancedAppointmentCard extends StatelessWidget {
             ],
           ),
           const SizedBox(height: 14),
-          
+
           // Date and time info
           Container(
             padding: const EdgeInsets.all(14),
@@ -254,19 +235,11 @@ class _EnhancedAppointmentCard extends StatelessWidget {
                 Expanded(
                   child: Row(
                     children: [
-                      Icon(
-                        Icons.calendar_today_rounded,
-                        size: 16,
-                        color: AppTheme.primary,
-                      ),
+                      Icon(Icons.calendar_today_rounded, size: 16, color: cs.primary),
                       const SizedBox(width: 8),
                       Text(
                         formattedDate,
-                        style: GoogleFonts.plusJakartaSans(
-                          fontWeight: FontWeight.w600,
-                          fontSize: 13,
-                          color: AppTheme.onSurface,
-                        ),
+                        style: tt.bodySmall?.copyWith(fontWeight: FontWeight.w600),
                       ),
                     ],
                   ),
@@ -280,19 +253,11 @@ class _EnhancedAppointmentCard extends StatelessWidget {
                 Expanded(
                   child: Row(
                     children: [
-                      Icon(
-                        Icons.access_time_rounded,
-                        size: 16,
-                        color: AppTheme.primary,
-                      ),
+                      Icon(Icons.access_time_rounded, size: 16, color: cs.primary),
                       const SizedBox(width: 8),
                       Text(
                         formattedTime,
-                        style: GoogleFonts.plusJakartaSans(
-                          fontWeight: FontWeight.w600,
-                          fontSize: 13,
-                          color: AppTheme.onSurface,
-                        ),
+                        style: tt.bodySmall?.copyWith(fontWeight: FontWeight.w600),
                       ),
                     ],
                   ),
@@ -301,7 +266,7 @@ class _EnhancedAppointmentCard extends StatelessWidget {
             ),
           ),
           const SizedBox(height: 12),
-          
+
           // Status badge
           StatusBadge(status: appointment.status),
         ],

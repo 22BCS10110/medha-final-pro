@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:medha_mobile/core/services/reminder_service.dart';
 import 'package:medha_mobile/core/theme/app_theme.dart';
+import 'package:medha_mobile/core/widgets/enhanced_card.dart';
 
 class MedicineRemindersScreen extends StatefulWidget {
   const MedicineRemindersScreen({super.key});
@@ -23,9 +23,12 @@ class _MedicineRemindersScreenState extends State<MedicineRemindersScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final tt = Theme.of(context).textTheme;
+    final cs = Theme.of(context).colorScheme;
+
     return Scaffold(
       appBar: AppBar(
-        title: Text("Medicine Reminders", style: GoogleFonts.manrope(fontWeight: FontWeight.w700)),
+        title: Text("Medicine Reminders", style: tt.titleLarge),
         centerTitle: true,
         backgroundColor: Colors.transparent,
         elevation: 0,
@@ -34,12 +37,8 @@ class _MedicineRemindersScreenState extends State<MedicineRemindersScreen> {
         padding: const EdgeInsets.fromLTRB(20, 12, 20, 24),
         child: ListView(
           children: [
-            Container(
+            EnhancedCard(
               padding: const EdgeInsets.all(24),
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(24),
-              ),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -54,7 +53,7 @@ class _MedicineRemindersScreenState extends State<MedicineRemindersScreen> {
                         child: const Icon(Icons.alarm_rounded, color: AppTheme.primary, size: 22),
                       ),
                       const SizedBox(width: 12),
-                      Text("Set Your Reminder", style: GoogleFonts.manrope(fontWeight: FontWeight.w800, fontSize: 18, color: AppTheme.onSurface)),
+                      Text("Set Your Reminder", style: tt.titleMedium?.copyWith(fontWeight: FontWeight.w800)),
                     ],
                   ),
                   const SizedBox(height: 20),
@@ -89,13 +88,13 @@ class _MedicineRemindersScreenState extends State<MedicineRemindersScreen> {
                           Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              Text("Reminder Time", style: GoogleFonts.plusJakartaSans(fontWeight: FontWeight.w600, fontSize: 12, color: AppTheme.onSurface.withValues(alpha: 0.5))),
+                              Text("Reminder Time", style: tt.bodySmall?.copyWith(fontWeight: FontWeight.w600, color: cs.onSurface.withValues(alpha: 0.5))),
                               const SizedBox(height: 2),
-                              Text(time.format(context), style: GoogleFonts.manrope(fontWeight: FontWeight.w800, fontSize: 18, color: AppTheme.onSurface)),
+                              Text(time.format(context), style: tt.titleLarge?.copyWith(fontWeight: FontWeight.w800)),
                             ],
                           ),
                           const Spacer(),
-                          Icon(Icons.edit_rounded, size: 18, color: AppTheme.onSurface.withValues(alpha: 0.35)),
+                          Icon(Icons.edit_rounded, size: 18, color: cs.onSurface.withValues(alpha: 0.35)),
                         ],
                       ),
                     ),
@@ -121,7 +120,7 @@ class _MedicineRemindersScreenState extends State<MedicineRemindersScreen> {
                       shape: const StadiumBorder(),
                       elevation: 0,
                     ),
-                    child: Text("Set Reminder", style: GoogleFonts.plusJakartaSans(fontWeight: FontWeight.w700, fontSize: 16)),
+                    child: Text("Set Reminder", style: tt.titleSmall?.copyWith(fontWeight: FontWeight.w700, color: Colors.white)),
                   ),
                 ],
               ),

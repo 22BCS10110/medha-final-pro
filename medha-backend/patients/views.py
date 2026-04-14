@@ -26,6 +26,24 @@ class PatientViewSet(HospitalDataFilterMixin, viewsets.ModelViewSet):
             return [permissions.IsAuthenticated()]
         return [permissions.IsAuthenticated()]
 
+    def get_object(self):
+        """
+        Resolve detail lookups by either UUID (primary key) or patient_id
+        (human-readable PAT-XXXX code). This lets the frontend hit
+        /api/patients/<uuid>/ and /api/patients/PAT-4054/ interchangeably.
+        """
+        from django.shortcuts import get_object_or_404
+        queryset = self.filter_queryset(self.get_queryset())
+        lookup = self.kwargs.get(self.lookup_field or 'pk')
+        # Try UUID PK first, fall back to patient_id. Using Q() in a single
+        # query avoids two round-trips and handles invalid-UUID strings cleanly.
+        try:
+            obj = queryset.get(Q(id=lookup) | Q(patient_id=lookup))
+        except (Patient.DoesNotExist, ValueError):
+            obj = get_object_or_404(queryset, patient_id=lookup)
+        self.check_object_permissions(self.request, obj)
+        return obj
+
     def get_queryset(self):
         user = self.request.user
         if not user.is_authenticated:
@@ -44,7 +62,7 @@ class PatientViewSet(HospitalDataFilterMixin, viewsets.ModelViewSet):
         return Patient.objects.all()
 
     def perform_create(self, serializer):
-        from patients.utils import generate_patient_id, sync_patient_to_supabase
+        from patients.utils import generate_patient_id
         from hospitals.models import Hospital
         from django.utils import timezone
 
@@ -68,9 +86,6 @@ class PatientViewSet(HospitalDataFilterMixin, viewsets.ModelViewSet):
                 )
             except Hospital.DoesNotExist:
                 pass
-
-        # Mirror new patient to Supabase (non-blocking)
-        sync_patient_to_supabase(patient)
 
     @action(detail=False, methods=['get'])
     def search(self, request):

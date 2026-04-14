@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:medha_mobile/core/theme/app_theme.dart';
 
-/// Enhanced card with better shadows and hover effect
+/// Enhanced card with cloud shadows tinted with primary color (Stitch spec).
 class EnhancedCard extends StatelessWidget {
   final Widget child;
   final VoidCallback? onTap;
@@ -22,7 +22,7 @@ class EnhancedCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final radius = borderRadius ?? BorderRadius.circular(20);
+    final radius = borderRadius ?? BorderRadius.circular(16); // lg per Stitch
     
     return Container(
       margin: margin,
@@ -30,14 +30,15 @@ class EnhancedCard extends StatelessWidget {
         borderRadius: radius,
         boxShadow: [
           BoxShadow(
-            color: AppTheme.onSurface.withValues(alpha: 0.04),
-            blurRadius: 10,
-            offset: const Offset(0, 2),
+            // Cloud shadow tinted with primary, never black
+            color: AppTheme.primary.withValues(alpha: 0.06),
+            blurRadius: 32,
+            offset: const Offset(0, 12),
           ),
         ],
       ),
       child: Material(
-        color: backgroundColor ?? Colors.white,
+        color: backgroundColor ?? Theme.of(context).cardColor,
         borderRadius: radius,
         child: onTap != null
             ? InkWell(
@@ -57,7 +58,7 @@ class EnhancedCard extends StatelessWidget {
   }
 }
 
-/// Gradient card for hero sections
+/// Gradient card for hero sections with signature texture (Stitch spec).
 class GradientCard extends StatelessWidget {
   final Widget child;
   final List<Color>? gradientColors;
@@ -80,6 +81,7 @@ class GradientCard extends StatelessWidget {
       margin: margin,
       padding: padding ?? const EdgeInsets.all(20),
       decoration: BoxDecoration(
+        // 135° gradient from primary to primaryContainer — "lit-from-within" polish
         gradient: LinearGradient(
           colors: gradientColors ?? [
             AppTheme.primary,
@@ -92,7 +94,7 @@ class GradientCard extends StatelessWidget {
         boxShadow: [
           BoxShadow(
             color: (gradientColors?.first ?? AppTheme.primary)
-                .withValues(alpha: 0.3),
+                .withValues(alpha: 0.25),
             blurRadius: 20,
             offset: const Offset(0, 8),
           ),

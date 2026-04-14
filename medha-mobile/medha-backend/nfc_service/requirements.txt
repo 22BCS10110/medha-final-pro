@@ -1,0 +1,8 @@
+fastapi
+uvicorn[standard]
+python-jose[cryptography]
+pydantic
+nfcpy
+requests
+python-multipart
+

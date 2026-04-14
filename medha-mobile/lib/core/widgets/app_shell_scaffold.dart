@@ -1,55 +1,45 @@
 import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:medha_mobile/core/theme/app_theme.dart';
 
 class AppShellScaffold extends StatelessWidget {
-  final Widget child;
-  const AppShellScaffold({super.key, required this.child});
-
-  static const _tabs = ["/home", "/appointments", "/chat", "/profile"];
-
-  int _indexForLocation(String location) {
-    if (location.startsWith("/appointments")) return 1;
-    if (location.startsWith("/chat")) return 2;
-    if (location.startsWith("/profile")) return 3;
-    return 0;
-  }
+  final StatefulNavigationShell navigationShell;
+  const AppShellScaffold({super.key, required this.navigationShell});
 
   @override
   Widget build(BuildContext context) {
-    final location = GoRouterState.of(context).matchedLocation;
-    final selected = _indexForLocation(location);
+    final cs = Theme.of(context).colorScheme;
+    final selected = navigationShell.currentIndex;
     return Scaffold(
-      body: child,
+      body: navigationShell,
       bottomNavigationBar: SafeArea(
         child: Padding(
           padding: const EdgeInsets.fromLTRB(20, 0, 20, 14),
           child: ClipRRect(
             borderRadius: BorderRadius.circular(24),
             child: BackdropFilter(
-              filter: ImageFilter.blur(sigmaX: 24, sigmaY: 24),
+              filter: ImageFilter.blur(sigmaX: 20, sigmaY: 20),
               child: Container(
                 height: 72,
                 decoration: BoxDecoration(
-                  color: AppTheme.surface.withValues(alpha: 0.85),
+                  color: cs.surface.withValues(alpha: 0.88),
                   borderRadius: BorderRadius.circular(24),
                   boxShadow: [
                     BoxShadow(
-                      color: const Color(0xFF191C1D).withValues(alpha: 0.06),
-                      blurRadius: 24,
-                      offset: const Offset(0, 8),
+                      color: cs.primary.withValues(alpha: 0.06),
+                      blurRadius: 32,
+                      offset: const Offset(0, 12),
                     ),
                   ],
                 ),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceAround,
                   children: [
-                    _NavItem(icon: Icons.home_rounded, label: "Home", index: 0, selected: selected, onTap: () => context.go(_tabs[0])),
-                    _NavItem(icon: Icons.event_note_rounded, label: "Bookings", index: 1, selected: selected, onTap: () => context.go(_tabs[1])),
-                    _NavItem(icon: Icons.description_rounded, label: "Records", index: 2, selected: selected, onTap: () => context.go(_tabs[2])),
-                    _NavItem(icon: Icons.person_rounded, label: "Profile", index: 3, selected: selected, onTap: () => context.go(_tabs[3])),
+                    _NavItem(icon: Icons.home_rounded, label: "Home", index: 0, selected: selected, onTap: () => navigationShell.goBranch(0)),
+                    _NavItem(icon: Icons.event_note_rounded, label: "Bookings", index: 1, selected: selected, onTap: () => navigationShell.goBranch(1)),
+                    _NavItem(icon: Icons.chat_rounded, label: "Chat", index: 2, selected: selected, onTap: () => navigationShell.goBranch(2)),
+                    _NavItem(icon: Icons.person_rounded, label: "Profile", index: 3, selected: selected, onTap: () => navigationShell.goBranch(3)),
                   ],
                 ),
               ),
@@ -72,6 +62,8 @@ class _NavItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final isActive = selected == index;
+    final tt = Theme.of(context).textTheme;
+    final cs = Theme.of(context).colorScheme;
     return GestureDetector(
       onTap: onTap,
       behavior: HitTestBehavior.opaque,
@@ -79,20 +71,24 @@ class _NavItem extends StatelessWidget {
         duration: const Duration(milliseconds: 200),
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
         decoration: BoxDecoration(
-          color: isActive ? AppTheme.primary.withValues(alpha: 0.08) : Colors.transparent,
+          color: isActive ? cs.primary.withValues(alpha: 0.12) : Colors.transparent,
           borderRadius: BorderRadius.circular(16),
         ),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Icon(icon, color: isActive ? AppTheme.primary : AppTheme.onSurface.withValues(alpha: 0.35), size: 24),
+            Icon(
+              icon,
+              color: isActive ? cs.primary : cs.onSurface.withValues(alpha: 0.35),
+              size: 24,
+            ),
             const SizedBox(height: 4),
             Text(
               label,
-              style: GoogleFonts.plusJakartaSans(
-                fontSize: 11,
+              style: tt.labelSmall?.copyWith(
                 fontWeight: isActive ? FontWeight.w700 : FontWeight.w500,
-                color: isActive ? AppTheme.primary : AppTheme.onSurface.withValues(alpha: 0.35),
+                color: isActive ? cs.primary : cs.onSurface.withValues(alpha: 0.35),
+                fontSize: 11,
               ),
             ),
           ],

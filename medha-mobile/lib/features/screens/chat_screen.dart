@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:medha_mobile/core/theme/app_theme.dart';
 
 class ChatScreen extends StatefulWidget {
@@ -24,11 +23,11 @@ class _ChatScreenState extends State<ChatScreen> {
   Future<void> _send() async {
     final value = _text.text.trim();
     if (value.isEmpty) return;
-    
+
     if (!_messages.containsKey(roomId)) {
       _messages[roomId] = [];
     }
-    
+
     setState(() {
       _messages[roomId]!.insert(0, {
         "text": value,
@@ -42,7 +41,9 @@ class _ChatScreenState extends State<ChatScreen> {
   @override
   Widget build(BuildContext context) {
     final messages = _messages[roomId] ?? [];
-    
+    final tt = Theme.of(context).textTheme;
+    final cs = Theme.of(context).colorScheme;
+
     return Scaffold(
       body: SafeArea(
         child: Column(
@@ -50,9 +51,10 @@ class _ChatScreenState extends State<ChatScreen> {
           children: [
             Padding(
               padding: const EdgeInsets.fromLTRB(20, 20, 20, 0),
-              child: Text("Chat", style: GoogleFonts.manrope(fontSize: 26, fontWeight: FontWeight.w800, color: AppTheme.onSurface)),
+              child: Text("Chat", style: tt.headlineMedium?.copyWith(fontWeight: FontWeight.w800)),
             ),
             const SizedBox(height: 14),
+
             // Channel chips
             SizedBox(
               height: 48,
@@ -69,20 +71,28 @@ class _ChatScreenState extends State<ChatScreen> {
                         duration: const Duration(milliseconds: 200),
                         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
                         decoration: BoxDecoration(
-                          color: selected ? AppTheme.primary : Colors.white,
+                          color: selected ? cs.primary : Colors.white,
                           borderRadius: BorderRadius.circular(999),
+                          boxShadow: selected
+                              ? [
+                                  BoxShadow(
+                                    color: cs.primary.withValues(alpha: 0.2),
+                                    blurRadius: 8,
+                                    offset: const Offset(0, 2),
+                                  ),
+                                ]
+                              : null,
                         ),
                         child: Row(
                           mainAxisSize: MainAxisSize.min,
                           children: [
-                            Icon(r.$3, size: 18, color: selected ? Colors.white : AppTheme.onSurface.withValues(alpha: 0.5)),
+                            Icon(r.$3, size: 18, color: selected ? Colors.white : cs.onSurface.withValues(alpha: 0.5)),
                             const SizedBox(width: 8),
                             Text(
                               r.$2,
-                              style: GoogleFonts.plusJakartaSans(
+                              style: tt.labelLarge?.copyWith(
                                 fontWeight: FontWeight.w700,
-                                fontSize: 13,
-                                color: selected ? Colors.white : AppTheme.onSurface.withValues(alpha: 0.6),
+                                color: selected ? Colors.white : cs.onSurface.withValues(alpha: 0.6),
                               ),
                             ),
                           ],
@@ -94,6 +104,7 @@ class _ChatScreenState extends State<ChatScreen> {
               ),
             ),
             const SizedBox(height: 10),
+
             // Messages
             Expanded(
               child: messages.isEmpty
@@ -101,9 +112,15 @@ class _ChatScreenState extends State<ChatScreen> {
                       child: Column(
                         mainAxisSize: MainAxisSize.min,
                         children: [
-                          Icon(Icons.chat_bubble_outline_rounded, size: 48, color: AppTheme.onSurface.withValues(alpha: 0.15)),
+                          Icon(Icons.chat_bubble_outline_rounded, size: 48, color: cs.onSurface.withValues(alpha: 0.15)),
                           const SizedBox(height: 12),
-                          Text("No messages yet", style: GoogleFonts.plusJakartaSans(color: AppTheme.onSurface.withValues(alpha: 0.4), fontWeight: FontWeight.w600)),
+                          Text(
+                            "No messages yet",
+                            style: tt.bodyMedium?.copyWith(
+                              color: cs.onSurface.withValues(alpha: 0.4),
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
                         ],
                       ),
                     )
@@ -120,20 +137,25 @@ class _ChatScreenState extends State<ChatScreen> {
                             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
                             constraints: BoxConstraints(maxWidth: MediaQuery.of(context).size.width * 0.72),
                             decoration: BoxDecoration(
-                              color: mine ? AppTheme.primary : Colors.white,
+                              color: mine ? cs.primary : Colors.white,
                               borderRadius: BorderRadius.only(
                                 topLeft: const Radius.circular(18),
                                 topRight: const Radius.circular(18),
                                 bottomLeft: mine ? const Radius.circular(18) : const Radius.circular(4),
                                 bottomRight: mine ? const Radius.circular(4) : const Radius.circular(18),
                               ),
+                              boxShadow: [
+                                BoxShadow(
+                                  color: AppTheme.primary.withValues(alpha: 0.06),
+                                  blurRadius: 8,
+                                  offset: const Offset(0, 2),
+                                ),
+                              ],
                             ),
                             child: Text(
                               messages[i]["text"] ?? "",
-                              style: GoogleFonts.plusJakartaSans(
-                                color: mine ? Colors.white : AppTheme.onSurface,
-                                fontWeight: FontWeight.w500,
-                                fontSize: 14,
+                              style: tt.bodyMedium?.copyWith(
+                                color: mine ? Colors.white : cs.onSurface,
                               ),
                             ),
                           ),
@@ -141,12 +163,19 @@ class _ChatScreenState extends State<ChatScreen> {
                       },
                     ),
             ),
+
             // Input bar
             Container(
               padding: const EdgeInsets.fromLTRB(20, 12, 12, 12),
               decoration: BoxDecoration(
                 color: Colors.white,
-                boxShadow: [BoxShadow(color: Colors.black.withValues(alpha: 0.04), blurRadius: 10, offset: const Offset(0, -4))],
+                boxShadow: [
+                  BoxShadow(
+                    color: AppTheme.primary.withValues(alpha: 0.06),
+                    blurRadius: 12,
+                    offset: const Offset(0, -4),
+                  ),
+                ],
               ),
               child: Row(
                 children: [
@@ -161,7 +190,9 @@ class _ChatScreenState extends State<ChatScreen> {
                         controller: _text,
                         decoration: InputDecoration(
                           hintText: "Type message...",
-                          hintStyle: GoogleFonts.plusJakartaSans(color: AppTheme.onSurface.withValues(alpha: 0.35)),
+                          hintStyle: tt.bodyMedium?.copyWith(
+                            color: cs.onSurface.withValues(alpha: 0.35),
+                          ),
                           border: InputBorder.none,
                           contentPadding: const EdgeInsets.symmetric(vertical: 14),
                         ),
@@ -170,7 +201,7 @@ class _ChatScreenState extends State<ChatScreen> {
                   ),
                   const SizedBox(width: 10),
                   Material(
-                    color: AppTheme.primary,
+                    color: cs.primary,
                     borderRadius: BorderRadius.circular(999),
                     child: InkWell(
                       borderRadius: BorderRadius.circular(999),

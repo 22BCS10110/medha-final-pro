@@ -1,19 +1,42 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'dart:io';
 import 'package:medha_mobile/core/router/app_router.dart';
-import 'package:medha_mobile/core/services/supabase_client.dart';
 import 'package:medha_mobile/core/theme/app_theme.dart';
-import 'package:medha_mobile/features/settings/app_settings_controller.dart';
-import 'package:medha_mobile/l10n/app_localizations.dart';
 
 Future<void> main() async {
-  WidgetsFlutterBinding.ensureInitialized();
-  
-  // Initialize Supabase for authentication
-  await SupabaseClient.initialize();
-  
-  runApp(const ProviderScope(child: MedhaApp()));
+  try {
+    WidgetsFlutterBinding.ensureInitialized();
+    debugPrint("🚀 APP START: WidgetsFlutterBinding initialized");
+
+    // Initialize Firebase — the sole auth provider for the patient app.
+    debugPrint("🔥 FIREBASE: Starting initialization...");
+    if (Platform.isIOS) {
+      await Firebase.initializeApp(
+        options: const FirebaseOptions(
+          apiKey: 'AIzaSyAFewV2O7O-xkucoez7KTrwV_68KIXdQtg',
+          appId: '1:361020649489:ios:078d1a7c876385618ec1b0',
+          messagingSenderId: '361020649489',
+          projectId: 'medha-health-app',
+          iosClientId: '361020649489-4tm4o784in6lqjs7cekbt6ql45fobb6e.apps.googleusercontent.com',
+          iosBundleId: 'com.medha.health.patient',
+        ),
+      );
+    } else {
+      // For Android, uses google-services.json automatically.
+      await Firebase.initializeApp();
+    }
+    debugPrint("🔥 FIREBASE: Initialization complete");
+
+    debugPrint("🏗️ APP: Running runApp()");
+    runApp(const ProviderScope(child: MedhaApp()));
+  } catch (e, stack) {
+    print("❌ CRITICAL ERROR IN MAIN: $e");
+    print(stack);
+    // Even if it fails, try to show something so the app isn't just a white screen
+    runApp(MaterialApp(home: Scaffold(body: Center(child: Text("Error: $e")))));
+  }
 }
 
 class MedhaApp extends ConsumerWidget {
@@ -21,24 +44,12 @@ class MedhaApp extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final locale = ref.watch(appLocaleProvider);
     final router = ref.watch(appRouterProvider);
-    final themeMode = ref.watch(appThemeModeProvider);
 
     return MaterialApp.router(
       title: "Medha Health",
       debugShowCheckedModeBanner: false,
       theme: AppTheme.lightTheme,
-      darkTheme: AppTheme.darkTheme,
-      themeMode: themeMode,
-      locale: locale,
-      supportedLocales: const [Locale("en"), Locale("hi")],
-      localizationsDelegates: const [
-        AppLocalizations.delegate,
-        GlobalMaterialLocalizations.delegate,
-        GlobalWidgetsLocalizations.delegate,
-        GlobalCupertinoLocalizations.delegate,
-      ],
       routerConfig: router,
     );
   }

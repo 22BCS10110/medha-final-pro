@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:medha_mobile/core/theme/app_theme.dart';
 
 /// Enhanced empty state with icon and message
@@ -21,6 +20,7 @@ class EmptyState extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final tt = Theme.of(context).textTheme;
     return Center(
       child: Padding(
         padding: const EdgeInsets.all(40),
@@ -40,26 +40,24 @@ class EmptyState extends StatelessWidget {
               ),
             ),
             const SizedBox(height: 24),
-            Text(
-              title,
-              style: GoogleFonts.manrope(
-                fontSize: 20,
-                fontWeight: FontWeight.w700,
-                color: AppTheme.onSurface,
-              ),
-              textAlign: TextAlign.center,
-            ),
-            if (subtitle != null) ...[
-              const SizedBox(height: 8),
               Text(
-                subtitle!,
-                style: GoogleFonts.plusJakartaSans(
-                  fontSize: 14,
-                  fontWeight: FontWeight.w500,
-                  color: AppTheme.onSurface.withValues(alpha: 0.6),
+                title,
+                style: tt.titleLarge?.copyWith(
+                  fontWeight: FontWeight.w700,
+                  color: AppTheme.onSurface,
                 ),
                 textAlign: TextAlign.center,
               ),
+            if (subtitle != null) ...[
+              const SizedBox(height: 8),
+                Text(
+                  subtitle!,
+                  style: tt.bodySmall?.copyWith(
+                    fontWeight: FontWeight.w500,
+                    color: AppTheme.onSurface.withValues(alpha: 0.6),
+                  ),
+                  textAlign: TextAlign.center,
+                ),
             ],
             if (actionLabel != null && onAction != null) ...[
               const SizedBox(height: 24),
@@ -68,7 +66,7 @@ class EmptyState extends StatelessWidget {
                 icon: const Icon(Icons.add_rounded, size: 20),
                 label: Text(
                   actionLabel!,
-                  style: GoogleFonts.plusJakartaSans(
+                  style: tt.titleSmall?.copyWith(
                     fontWeight: FontWeight.w700,
                   ),
                 ),

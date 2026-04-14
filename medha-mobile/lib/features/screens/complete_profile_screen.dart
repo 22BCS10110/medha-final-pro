@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
 import 'package:medha_mobile/core/services/medha_api_provider.dart';
 import 'package:medha_mobile/core/theme/app_theme.dart';
 import 'package:medha_mobile/core/widgets/enhanced_button.dart';
+import 'package:medha_mobile/core/widgets/enhanced_card.dart';
 
 class CompleteProfileScreen extends ConsumerStatefulWidget {
   const CompleteProfileScreen({super.key});
@@ -85,8 +85,11 @@ class _CompleteProfileScreenState extends ConsumerState<CompleteProfileScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final tt = Theme.of(context).textTheme;
+    final cs = Theme.of(context).colorScheme;
+
     return Scaffold(
-      backgroundColor: AppTheme.surface,
+      backgroundColor: cs.surface,
       body: SafeArea(
         child: SingleChildScrollView(
           padding: const EdgeInsets.fromLTRB(24, 36, 24, 24),
@@ -96,23 +99,8 @@ class _CompleteProfileScreenState extends ConsumerState<CompleteProfileScreen> {
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
                 // Header
-                Container(
+                GradientCard(
                   padding: const EdgeInsets.all(24),
-                  decoration: BoxDecoration(
-                    gradient: const LinearGradient(
-                      colors: [AppTheme.primary, AppTheme.primaryContainer],
-                      begin: Alignment.topLeft,
-                      end: Alignment.bottomRight,
-                    ),
-                    borderRadius: BorderRadius.circular(24),
-                    boxShadow: [
-                      BoxShadow(
-                        color: AppTheme.primary.withValues(alpha: 0.3),
-                        blurRadius: 20,
-                        offset: const Offset(0, 8),
-                      ),
-                    ],
-                  ),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
@@ -127,9 +115,8 @@ class _CompleteProfileScreenState extends ConsumerState<CompleteProfileScreen> {
                       const SizedBox(height: 16),
                       Text(
                         "Complete Your\nProfile",
-                        style: GoogleFonts.manrope(
+                        style: tt.headlineMedium?.copyWith(
                           color: Colors.white,
-                          fontSize: 26,
                           fontWeight: FontWeight.w800,
                           height: 1.2,
                         ),
@@ -137,9 +124,8 @@ class _CompleteProfileScreenState extends ConsumerState<CompleteProfileScreen> {
                       const SizedBox(height: 8),
                       Text(
                         "We need a few details to set up your\npatient account",
-                        style: GoogleFonts.plusJakartaSans(
+                        style: tt.bodySmall?.copyWith(
                           color: Colors.white.withValues(alpha: 0.85),
-                          fontSize: 14,
                           fontWeight: FontWeight.w500,
                           height: 1.5,
                         ),
@@ -150,19 +136,8 @@ class _CompleteProfileScreenState extends ConsumerState<CompleteProfileScreen> {
                 const SizedBox(height: 24),
 
                 // Form card
-                Container(
+                EnhancedCard(
                   padding: const EdgeInsets.all(24),
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(24),
-                    boxShadow: [
-                      BoxShadow(
-                        color: AppTheme.onSurface.withValues(alpha: 0.04),
-                        blurRadius: 10,
-                        offset: const Offset(0, 2),
-                      ),
-                    ],
-                  ),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [
@@ -177,13 +152,12 @@ class _CompleteProfileScreenState extends ConsumerState<CompleteProfileScreen> {
                           ),
                           child: Row(
                             children: [
-                              Icon(Icons.error_outline_rounded, size: 20, color: AppTheme.tertiary),
+                              const Icon(Icons.error_outline_rounded, size: 20, color: AppTheme.tertiary),
                               const SizedBox(width: 10),
                               Expanded(
                                 child: Text(
                                   _errorMessage!,
-                                  style: GoogleFonts.plusJakartaSans(
-                                    fontSize: 13,
+                                  style: tt.bodySmall?.copyWith(
                                     fontWeight: FontWeight.w600,
                                     color: AppTheme.tertiary,
                                   ),
@@ -200,7 +174,7 @@ class _CompleteProfileScreenState extends ConsumerState<CompleteProfileScreen> {
                         controller: _fullName,
                         textCapitalization: TextCapitalization.words,
                         validator: (v) => (v == null || v.trim().isEmpty) ? 'Please enter your full name' : null,
-                        decoration: _inputDecoration(hint: "Full Name", icon: Icons.badge_outlined),
+                        decoration: const InputDecoration(hintText: "Full Name", prefixIcon: Icon(Icons.badge_outlined, size: 20)),
                       ),
                       const SizedBox(height: 14),
 
@@ -213,17 +187,16 @@ class _CompleteProfileScreenState extends ConsumerState<CompleteProfileScreen> {
                           if (v.trim().length < 10) return 'Enter a valid phone number';
                           return null;
                         },
-                        decoration: _inputDecoration(hint: "Phone Number", icon: Icons.phone_outlined),
+                        decoration: const InputDecoration(hintText: "Phone Number", prefixIcon: Icon(Icons.phone_outlined, size: 20)),
                       ),
                       const SizedBox(height: 14),
 
                       // Gender selector
                       Text(
                         "Gender",
-                        style: GoogleFonts.plusJakartaSans(
-                          fontSize: 13,
+                        style: tt.bodySmall?.copyWith(
                           fontWeight: FontWeight.w600,
-                          color: AppTheme.onSurface.withValues(alpha: 0.7),
+                          color: cs.onSurface.withValues(alpha: 0.7),
                         ),
                       ),
                       const SizedBox(height: 8),
@@ -243,11 +216,11 @@ class _CompleteProfileScreenState extends ConsumerState<CompleteProfileScreen> {
                         onTap: _pickDate,
                         child: AbsorbPointer(
                           child: TextFormField(
-                            decoration: _inputDecoration(
-                              hint: _dateOfBirth != null
+                            decoration: InputDecoration(
+                              hintText: _dateOfBirth != null
                                   ? DateFormat('dd MMM yyyy').format(_dateOfBirth!)
                                   : "Date of Birth",
-                              icon: Icons.calendar_today_outlined,
+                              prefixIcon: const Icon(Icons.calendar_today_outlined, size: 20),
                             ),
                           ),
                         ),
@@ -271,24 +244,6 @@ class _CompleteProfileScreenState extends ConsumerState<CompleteProfileScreen> {
       ),
     );
   }
-
-  InputDecoration _inputDecoration({required String hint, required IconData icon}) {
-    return InputDecoration(
-      hintText: hint,
-      prefixIcon: Icon(icon, size: 20),
-      filled: true,
-      fillColor: AppTheme.surfaceContainerHighest.withValues(alpha: 0.5),
-      border: OutlineInputBorder(borderRadius: BorderRadius.circular(14), borderSide: BorderSide.none),
-      focusedBorder: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(14),
-        borderSide: const BorderSide(color: AppTheme.primary, width: 2),
-      ),
-      errorBorder: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(14),
-        borderSide: BorderSide(color: AppTheme.tertiary.withValues(alpha: 0.5)),
-      ),
-    );
-  }
 }
 
 class _GenderChip extends StatelessWidget {
@@ -306,6 +261,8 @@ class _GenderChip extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final tt = Theme.of(context).textTheme;
+    final cs = Theme.of(context).colorScheme;
     return Expanded(
       child: GestureDetector(
         onTap: onTap,
@@ -313,17 +270,16 @@ class _GenderChip extends StatelessWidget {
           duration: const Duration(milliseconds: 200),
           padding: const EdgeInsets.symmetric(vertical: 14),
           decoration: BoxDecoration(
-            color: selected ? AppTheme.primary : AppTheme.surfaceContainerHighest.withValues(alpha: 0.5),
+            color: selected ? cs.primary : AppTheme.surfaceContainerHighest.withValues(alpha: 0.5),
             borderRadius: BorderRadius.circular(12),
-            border: selected ? null : Border.all(color: AppTheme.onSurface.withValues(alpha: 0.1)),
+            border: selected ? null : Border.all(color: cs.onSurface.withValues(alpha: 0.1)),
           ),
           child: Center(
             child: Text(
               label,
-              style: GoogleFonts.plusJakartaSans(
+              style: tt.bodySmall?.copyWith(
                 fontWeight: FontWeight.w700,
-                fontSize: 14,
-                color: selected ? Colors.white : AppTheme.onSurface.withValues(alpha: 0.6),
+                color: selected ? Colors.white : cs.onSurface.withValues(alpha: 0.6),
               ),
             ),
           ),

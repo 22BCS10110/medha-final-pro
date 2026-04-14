@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:medha_mobile/core/theme/app_theme.dart';
 
 /// Enhanced status badge with icon
@@ -15,6 +14,7 @@ class StatusBadge extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final tt = Theme.of(context).textTheme;
     final config = _getStatusConfig(status.toLowerCase());
     
     return Container(
@@ -36,15 +36,14 @@ class StatusBadge extends StatelessWidget {
             color: config.color,
           ),
           const SizedBox(width: 6),
-          Text(
-            status.toUpperCase(),
-            style: GoogleFonts.plusJakartaSans(
-              color: config.color,
-              fontWeight: FontWeight.w700,
-              fontSize: 11,
-              letterSpacing: 0.5,
+            Text(
+              status.toUpperCase(),
+              style: tt.labelSmall?.copyWith(
+                color: config.color,
+                fontWeight: FontWeight.w700,
+                letterSpacing: 0.5,
+              ),
             ),
-          ),
         ],
       ),
     );

@@ -16,7 +16,6 @@ import {
   UserCircle,
   LogOut,
   ChevronRight,
-  ShieldCheck,
   Fingerprint
 } from "lucide-react";
 
@@ -51,12 +50,6 @@ export default function Sidebar({ role, activePanel, onPanelChange }) {
         { id: "settings", icon: Settings, text: "Settings" },
       ],
     },
-    {
-      label: "ABDM",
-      items: [
-        { id: "abdm", icon: ShieldCheck, text: "Consent Manager", link: "/admin/abdm", badge: "ABDM" },
-      ],
-    },
   ];
 
   const doctorSections = [
@@ -78,12 +71,6 @@ export default function Sidebar({ role, activePanel, onPanelChange }) {
     {
       label: "Account",
       items: [{ id: "profile", icon: UserCircle, text: "My Profile" }],
-    },
-    {
-      label: "ABDM",
-      items: [
-        { id: "abdm", icon: ShieldCheck, text: "Consent Manager", link: "/admin/abdm", badge: "ABDM" },
-      ],
     },
   ];
 

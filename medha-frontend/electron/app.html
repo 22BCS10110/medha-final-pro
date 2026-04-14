@@ -392,7 +392,6 @@ const doctorNav = [
   { id: 'doctor-prescriptions', icon: '&#128138;', label: 'Prescriptions' },
   { section: 'Tools' },
   { id: 'doctor-nfc', icon: '&#128179;', label: 'NFC Scanner' },
-  { id: 'doctor-consent', icon: '&#9989;', label: 'Consent' },
 ];
 
 const adminNav = [
@@ -442,7 +441,6 @@ function navigateTo(page) {
     'doctor-records': renderDoctorRecords,
     'doctor-prescriptions': renderDoctorPrescriptions,
     'doctor-nfc': renderNfcScanner,
-    'doctor-consent': renderConsent,
     'admin-dashboard': renderAdminDashboard,
     'admin-patients': renderAdminPatients,
     'admin-doctors': renderAdminDoctors,
@@ -559,6 +557,7 @@ function formatDate(d) {
 
 async function renderDoctorDashboard(el) {
   const dash = await fetchCached('dashboard_doctor', '/dashboard/doctor/');
+  console.log('Dashboard data:', dash);
   const d = dash.data || {};
   const stats = d.stats || {};
   const waitlist = d.waitlist || [];
@@ -1163,19 +1162,59 @@ async function renderNfcScanner(el) {
   `;
 }
 
+// async function triggerNfcScan() {
+//   const resultEl = document.getElementById('nfcResult');
+//   resultEl.innerHTML = '<div class="loading-text">Scanning NFC reader...</div>';
+
+//   const scan = await api.nfc.scan();
+//   if (!scan.success || !scan.data?.patient_id) {
+//     resultEl.innerHTML = '<div class="card" style="border-left:4px solid var(--red);"><p style="font-size:14px; color:var(--red); font-weight:600;">NFC reader not detected or no card found. Try manual search.</p></div>';
+//     return;
+//   }
+
+//   await nfcLookupPatient(scan.data.patient_id);
+// }
 async function triggerNfcScan() {
   const resultEl = document.getElementById('nfcResult');
-  resultEl.innerHTML = '<div class="loading-text">Scanning NFC reader...</div>';
 
-  const scan = await api.nfc.scan();
-  if (!scan.success || !scan.data?.patient_id) {
-    resultEl.innerHTML = '<div class="card" style="border-left:4px solid var(--red);"><p style="font-size:14px; color:var(--red); font-weight:600;">NFC reader not detected or no card found. Try manual search.</p></div>';
-    return;
-  }
+  resultEl.innerHTML = `
+    <div class="loading-text">
+      Waiting for NFC card... Tap card on reader
+    </div>
+  `;
 
-  await nfcLookupPatient(scan.data.patient_id);
+  // Register ONE-TIME listener
+  const off = api.nfcHardware.onCardTap(async (evt) => {
+    if (evt?.status === "success" && evt.patient) {
+      off?.(); // remove listener after success
+      await nfcLookupPatient(evt.patient.id || evt.patient.patient_id);
+      return;
+    }
+
+    if (evt?.status === "not_found") {
+      off?.();
+      resultEl.innerHTML = `
+        <div class="card" style="border-left:4px solid var(--amber);">
+          <p style="font-size:14px; color:var(--amber); font-weight:600;">
+            Patient not found for scanned card.
+          </p>
+        </div>
+      `;
+      return;
+    }
+
+    if (evt?.status === "error") {
+      off?.();
+      resultEl.innerHTML = `
+        <div class="card" style="border-left:4px solid var(--red);">
+          <p style="font-size:14px; color:var(--red); font-weight:600;">
+            NFC read error. Try again.
+          </p>
+        </div>
+      `;
+    }
+  });
 }
-
 async function nfcManualLookup() {
   const q = document.getElementById('nfcManualSearch')?.value?.trim();
   if (!q) return;
@@ -1229,61 +1268,7 @@ async function nfcLookupPatient(patientId) {
   `;
 }
 
-// ══════════════════════════════════════════════════════════════
-//  DOCTOR: CONSENT
-// ══════════════════════════════════════════════════════════════
 
-async function renderConsent(el) {
-  el.innerHTML = `
-    <div class="page-title">Consent Management</div>
-    <div class="card">
-      <div class="card-title">Check Patient Consent</div>
-      <div class="search-bar">
-        <span class="search-icon">&#128269;</span>
-        <input type="text" id="consentPatientId" placeholder="Enter Patient ID..." onkeydown="if(event.key==='Enter') checkConsent()">
-      </div>
-      <button class="btn btn-primary btn-sm" onclick="checkConsent()">Check Status</button>
-    </div>
-    <div id="consentResult"></div>
-  `;
-}
-
-async function checkConsent() {
-  const pid = document.getElementById('consentPatientId')?.value?.trim();
-  if (!pid) return;
-  const resultEl = document.getElementById('consentResult');
-  resultEl.innerHTML = '<div class="loading-text">Checking consent...</div>';
-
-  try {
-    const res = await api.apiGet(`/consent/${pid}/check/`);
-    if (res.success) {
-      const d = res.data;
-      resultEl.innerHTML = `
-        <div class="card" style="border-left:4px solid ${d.has_consent ? 'var(--accent)' : 'var(--amber)'};">
-          <div style="font-size:16px; font-weight:700; margin-bottom:12px;">
-            ${d.has_consent ? '&#9989; Consent Granted' : '&#9888; No Active Consent'}
-          </div>
-          ${d.consent ? `
-            <div class="detail-row"><div class="detail-label">Status</div><div class="detail-value">${d.consent.status}</div></div>
-            <div class="detail-row"><div class="detail-label">Granted At</div><div class="detail-value">${formatDate(d.consent.granted_at)}</div></div>
-            <div class="detail-row"><div class="detail-label">Via</div><div class="detail-value">${d.consent.granted_via || '-'}</div></div>
-          ` : '<p style="font-size:14px; color:var(--muted);">No consent record exists for this patient.</p>'}
-          ${!d.has_consent ? `<button class="btn btn-primary btn-sm" style="margin-top:12px;" onclick="requestConsent('${pid}')">Request Consent</button>` : ''}
-        </div>
-      `;
-    } else throw new Error();
-  } catch {
-    resultEl.innerHTML = '<div class="card"><p style="color:var(--red); font-weight:600;">Could not check consent. Server may be unreachable.</p></div>';
-  }
-}
-
-async function requestConsent(pid) {
-  try {
-    const res = await api.apiPost(`/consent/${pid}/grant/`, { consent_text: 'Patient grants access to medical records for treatment purposes.' });
-    if (res.success) { checkConsent(); return; }
-  } catch {}
-  alert('Failed to grant consent. Please try again.');
-}
 
 // ══════════════════════════════════════════════════════════════
 //  ADMIN: DASHBOARD

@@ -111,15 +111,21 @@ async function initNfc() {
     });
 
     nfcReader.on('card:uid', async (uid, readerName) => {
+      console.log(`[Main] 📥 card:uid received → ${uid}`);
+
       // 1. Fire raw UID immediately — for assign mode and any listener that just needs the UID
+      console.log('[Main] 📤 IPC → nfc:raw-uid');
       sendToRenderer('nfc:raw-uid', { uid, readerName });
 
       // 2. Fire scanning state on the card-tap channel for the scan panel
+      console.log('[Main] 📤 IPC → nfc:card-tap (reading)');
       sendToRenderer('nfc:card-tap', { uid, readerName, status: 'reading' });
 
       // 3. Offline-first patient lookup (for the scan panel only)
       try {
         const patient = await resolvePatientByNfcUid(uid);
+        console.log(`[Main] ✅ resolvePatientByNfcUid success (source: ${patient.source})`);
+        console.log('[Main] 📤 IPC → nfc:card-tap (success)');
         sendToRenderer('nfc:card-tap', {
           uid,
           readerName,
@@ -128,12 +134,21 @@ async function initNfc() {
           source: patient.source,
         });
       } catch (err) {
+        console.log(`[Main] ❌ resolvePatientByNfcUid failed: ${err.message}`);
+        console.log('[Main] 📤 IPC → nfc:card-tap (not_found)');
         sendToRenderer('nfc:card-tap', {
           uid,
           readerName,
           status: 'not_found',
           error: err.message || 'Patient not found',
         });
+      }
+
+      // Also check if the renderer window is actually alive to receive these
+      if (!mainWindow || mainWindow.isDestroyed()) {
+        console.log('[Main] ⚠️ mainWindow not available — IPC messages dropped!');
+      } else if (!mainWindow.webContents) {
+        console.log('[Main] ⚠️ webContents not available — IPC messages dropped!');
       }
     });
 
@@ -334,8 +349,28 @@ function registerHandlers() {
 
   // ── Offline DB ──
   ipcMain.handle('db:patients:all', () => database?.getAllPatients() || []);
-  ipcMain.handle('db:patients:get', (_e, id) => database?.getPatient(id) || null);
+  ipcMain.handle('db:patients:get', (_e, id) => {
+    const row = database?.getPatient(id);
+    if (!row) return null;
+    // Normalize: expose `patient_code` alias alongside `id` (UUID) + `patient_id` (PAT code)
+    return { ...row, patient_code: row.patient_id };
+  });
   ipcMain.handle('db:patients:search', (_e, q) => database?.searchPatients(q) || []);
+  ipcMain.handle('db:patients:byNfcUid', (_e, uid) => {
+    if (!database || !uid) return null;
+    const row = database.getPatientByNfcUid(uid.toUpperCase());
+    if (!row) return null;
+    // Normalize ID fields for the renderer:
+    //   row.id         = UUID (primary key)    → USE FOR API CALLS
+    //   row.patient_id = PAT-XXXX display code → show to humans
+    // We expose both and add `patient_code` as an explicit alias so
+    // renderer code never has to guess which `patient_id` it's getting.
+    return {
+      ...row,
+      patient_code: row.patient_id,  // human-readable PAT code
+      // row.id stays as UUID — use this for API URLs
+    };
+  });
   
   ipcMain.handle('db:patients:upsert', (_, patient) => {
     if (!db) {

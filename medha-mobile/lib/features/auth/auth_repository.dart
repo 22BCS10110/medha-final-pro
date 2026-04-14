@@ -1,5 +1,7 @@
-import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:medha_mobile/core/services/medha_api.dart';
 import 'package:medha_mobile/core/services/medha_api_provider.dart';
 
@@ -8,8 +10,29 @@ final authRepositoryProvider = Provider<AuthRepository>((ref) {
 });
 
 final authStateProvider = StreamProvider<User?>((ref) {
-  return Supabase.instance.client.auth.onAuthStateChange.map((event) => event.session?.user);
+  return FirebaseAuth.instance.authStateChanges();
 });
+
+final guestProvider = StateNotifierProvider<GuestNotifier, bool>((ref) {
+  return GuestNotifier();
+});
+
+class GuestNotifier extends StateNotifier<bool> {
+  GuestNotifier() : super(false) {
+    _loadGuestState();
+  }
+
+  Future<void> _loadGuestState() async {
+    final prefs = await SharedPreferences.getInstance();
+    state = prefs.getBool('is_guest') ?? false;
+  }
+
+  Future<void> setGuest(bool isGuest) async {
+    state = isGuest;
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setBool('is_guest', isGuest);
+  }
+}
 
 /// Result from Google sign-in + Django token exchange.
 class GoogleSignInResult {
@@ -25,32 +48,40 @@ class GoogleSignInResult {
 }
 
 class AuthRepository {
-  final SupabaseClient _client = Supabase.instance.client;
   final MedhaApi medhaApi;
 
   AuthRepository({required this.medhaApi});
 
-  /// Sign in with Google via Supabase, then exchange token with Django.
+  /// Sign in with Google via Firebase, then exchange ID token with Django.
   ///
   /// Returns [GoogleSignInResult] so the caller can decide whether to
   /// navigate to home or the complete-profile screen.
   Future<GoogleSignInResult> signInWithGoogle() async {
-    // 1. Trigger Google sign-in via Supabase native OAuth
-    final response = await _client.auth.signInWithOAuth(
-      OAuthProvider.google,
-      redirectTo: 'io.supabase.medha://login-callback/',
-      authScreenLaunchMode: LaunchMode.externalApplication,
-    );
-
-    if (!response) {
+    final GoogleSignInAccount? googleUser = await GoogleSignIn(
+      clientId: '361020649489-4tm4o784in6lqjs7cekbt6ql45fobb6e.apps.googleusercontent.com',
+    ).signIn();
+    if (googleUser == null) {
       throw Exception('Google sign-in was cancelled');
     }
 
-    // 2. Wait for the auth state to update with the session
-    final session = await _waitForSession();
+    final googleAuth = await googleUser.authentication;
+    final credential = GoogleAuthProvider.credential(
+      accessToken: googleAuth.accessToken,
+      idToken: googleAuth.idToken,
+    );
 
-    // 3. Exchange Supabase token with Django backend
-    final data = await medhaApi.exchangeSupabaseToken(session.accessToken);
+    final userCredential =
+        await FirebaseAuth.instance.signInWithCredential(credential);
+
+    final idToken = await userCredential.user?.getIdToken();
+    if (idToken == null) throw Exception('Failed to get Firebase token');
+
+    // TEMP debug
+    // ignore: avoid_print
+    print('Firebase login success');
+
+    // Exchange Firebase ID token with Django backend
+    final data = await medhaApi.exchangeFirebaseToken(idToken);
 
     return GoogleSignInResult(
       isNewUser: data['created'] == true,
@@ -59,61 +90,29 @@ class AuthRepository {
     );
   }
 
-  /// Wait for Supabase auth state to have a valid session after OAuth redirect.
-  Future<Session> _waitForSession() async {
-    // If session already exists, return it
-    final existing = _client.auth.currentSession;
-    if (existing != null) return existing;
-
-    // Listen for auth state changes (OAuth redirect will trigger this)
-    final completer = await _client.auth.onAuthStateChange
-        .where((event) => event.session != null)
-        .first;
-
-    if (completer.session == null) {
-      throw Exception('Failed to get session after Google sign-in');
-    }
-    return completer.session!;
-  }
-
   Future<void> signIn(String email, String password) async {
-    await _client.auth.signInWithPassword(email: email, password: password);
+    await FirebaseAuth.instance.signInWithEmailAndPassword(email: email, password: password);
   }
 
-  Future<void> signUp(String email, String password) async {
-    await _client.auth.signUp(email: email, password: password);
+  Future<void> signUp(String email, String password, {String? name, String? phone}) async {
+    final userCredential = await FirebaseAuth.instance.createUserWithEmailAndPassword(
+      email: email,
+      password: password,
+    );
+    
+    // Attempt to update profile name
+    if (name != null && name.isNotEmpty) {
+      await userCredential.user?.updateDisplayName(name);
+    }
   }
 
   Future<void> signOut() async {
     await medhaApi.clearToken();
-    await _client.auth.signOut();
+    await GoogleSignIn().signOut();
+    await FirebaseAuth.instance.signOut();
   }
 
-  Future<void> sendOtp({
-    required String phoneNumber,
-    required void Function(String verificationId) onCodeSent,
-    required void Function(String message) onError,
-  }) async {
-    try {
-      await _client.auth.signInWithOtp(phone: phoneNumber);
-      onCodeSent(phoneNumber);
-    } catch (e) {
-      onError(e.toString());
-    }
-  }
-
-  Future<void> verifyOtp({
-    required String phone,
-    required String token,
-  }) async {
-    await _client.auth.verifyOTP(
-      phone: phone,
-      token: token,
-      type: OtpType.sms,
-    );
-  }
-
-  String? getCurrentToken() {
-    return _client.auth.currentSession?.accessToken;
+  Future<String?> getCurrentToken() async {
+    return await FirebaseAuth.instance.currentUser?.getIdToken();
   }
 }

@@ -1,9 +1,6 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useAuth } from "../../auth/AuthContext";
-import ConsentModal from "../consent/ConsentModal";
-import { Nfc, Search, User, Heart, AlertCircle, ShieldCheck } from "lucide-react";
-
-const API_BASE = import.meta.env.VITE_API_URL || "http://127.0.0.1:8000";
+import { Nfc, Search, User, Heart, AlertCircle } from "lucide-react";
 
 export default function NfcScanPage() {
   const { user } = useAuth();
@@ -11,7 +8,9 @@ export default function NfcScanPage() {
   const [patient, setPatient] = useState(null);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
-  const [showConsent, setShowConsent] = useState(false);
+  // NFC state machine: "waiting" → "reading" → "success" | "not_found" | "error"
+  // Starts in "waiting" because the listener auto-arms on mount.
+  const [nfcStatus, setNfcStatus] = useState("waiting");
 
   const fetchPatient = async (id) => {
     if (!id.trim()) return;
@@ -19,16 +18,21 @@ export default function NfcScanPage() {
     setError("");
     setPatient(null);
     try {
-      const res = await fetch(`${API_BASE}/api/patients/nfc-scan/?id=${encodeURIComponent(id)}`);
-      const data = await res.json();
-      if (res.ok) {
-        setPatient(data);
-        // Check if consent is needed (one-time consent after first NFC scan)
-        if (data.consent?.needs_consent) {
-          setShowConsent(true);
-        }
+      // Use Electron IPC proxy (handles base URL + auth token). Falls back
+      // to raw fetch only when running in plain browser (no window.medhaAPI).
+      let data;
+      if (window.medhaAPI?.apiGet) {
+        data = await window.medhaAPI.apiGet(`/patients/nfc-scan/?id=${encodeURIComponent(id)}`);
       } else {
-        setError(data.error || "Patient not found");
+        const API_BASE = import.meta.env.VITE_API_URL || "http://127.0.0.1:8000";
+        const res = await fetch(`${API_BASE}/api/patients/nfc-scan/?id=${encodeURIComponent(id)}`);
+        data = await res.json();
+        if (!res.ok) throw new Error(data?.error || "Patient not found");
+      }
+      if (data?.error) {
+        setError(data.error);
+      } else {
+        setPatient(data);
       }
     } catch (e) {
       setError("Network error: " + e.message);
@@ -37,19 +41,95 @@ export default function NfcScanPage() {
     }
   };
 
+  // ── Auto-scan: continuous NFC listener ───────────────────────────
+  // Runs for the lifetime of the page. Each card tap:
+  //   UID → local DB (getPatientByUID) → UUID → backend hydrate (apiGet)
+  // Never removes the listener until unmount, no button required.
+  useEffect(() => {
+    console.log("[NFC] AUTO START ACTIVE (NfcScanPage)");
+    console.log("medhaAPI:", window.medhaAPI);
+
+    let off;
+
+    // 🔥 DELAY attach — give preload + contextBridge time to fully inject
+    // window.medhaAPI before subscribing. Safety net for cold page load.
+    const timer = setTimeout(() => {
+      console.log("[NFC] Initialising listener...");
+
+      if (!window.medhaAPI?.nfcHardware) {
+        console.error("[NFC] medhaAPI not ready");
+        return;
+      }
+
+      off = window.medhaAPI.nfcHardware.onCardTap(async (evt) => {
+        console.log("🔥 [FRONTEND NFC EVENT]:", evt);
+        console.log("[NFC EVENT RECEIVED]:", evt);
+      console.log("[NFC] Status:", evt?.status);
+      console.log("[NFC] UID:", evt?.uid);
+      console.log("[NFC] Patient:", evt?.patient);
+
+      setError("");
+
+      // ✅ CASE 1 — Backend already resolved the patient
+      if (evt?.status === "success" && evt.patient) {
+        console.log("[NFC] Patient from backend:", evt.patient);
+        const p = evt.patient;
+        setPatient({
+          ...p,
+          patient_code: p.patient_code || p.patient_id || p.id,
+        });
+        setNfcStatus("success");
+        return;
+      }
+
+      // ✅ CASE 2 — UID fallback
+      const uid = evt?.uid;
+      if (!uid) return;
+
+      setNfcStatus("reading");
+
+      try {
+        const local = await window.medhaAPI.db.getPatientByUID(uid);
+        console.log("Patient:", local);
+
+        if (!local) {
+          setPatient(null);
+          setNfcStatus("not_found");
+          return;
+        }
+
+        // Show local record immediately so the UI is responsive offline.
+        setPatient(local);
+        setNfcStatus("success");
+
+        // Hydrate from backend using UUID — NOT patient_code.
+        try {
+          const full = await window.medhaAPI.apiGet(`/patients/${local.id}/`);
+          if (full && !full.error) {
+            setPatient({
+              ...full,
+              patient_code: full.patient_code || full.patient_id || local.patient_code,
+            });
+          }
+        } catch (apiErr) {
+          console.warn("[NFC] Backend hydrate failed, keeping local record:", apiErr);
+        }
+      } catch (err) {
+        console.error("[NFC] DB lookup failed:", err);
+        setNfcStatus("error");
+      }
+      });
+    }, 500);
+
+    return () => {
+      clearTimeout(timer);
+      off?.();
+    };
+  }, []);
+
   const handleSubmit = (e) => {
     e.preventDefault();
     fetchPatient(patientId);
-  };
-
-  const handleConsented = () => {
-    // Update local state to reflect consent was granted
-    if (patient) {
-      setPatient({
-        ...patient,
-        consent: { has_consent: true, needs_consent: false, status: 'granted' },
-      });
-    }
   };
 
   return (
@@ -86,6 +166,26 @@ export default function NfcScanPage() {
           </button>
         </form>
 
+        {/* NFC auto-scan status — always mounted, never hidden behind a button */}
+        {nfcStatus === "waiting" && !patient && (
+          <div className="flex items-center gap-2 p-4 bg-slate-50 border border-slate-200 rounded-xl text-slate-600 mb-4">
+            <Nfc size={18} className="text-slate-400 animate-pulse" />
+            <span className="font-medium text-sm">Waiting for NFC card...</span>
+          </div>
+        )}
+        {nfcStatus === "reading" && (
+          <div className="flex items-center gap-2 p-4 bg-primary/5 border border-primary/20 rounded-xl text-primary mb-4">
+            <div className="w-4 h-4 border-2 border-primary border-t-transparent rounded-full animate-spin" />
+            <span className="font-medium text-sm">Reading card...</span>
+          </div>
+        )}
+        {nfcStatus === "not_found" && (
+          <div className="flex items-center gap-2 p-4 bg-amber-50 border border-amber-200 rounded-xl text-amber-700 mb-4">
+            <AlertCircle size={18} />
+            <span className="font-medium text-sm">Card not assigned</span>
+          </div>
+        )}
+
         {error && (
           <div className="flex items-center gap-2 p-4 bg-red-50 rounded-xl text-red-600 mb-6">
             <AlertCircle size={18} />
@@ -96,24 +196,13 @@ export default function NfcScanPage() {
         {patient && (
           <div className="bg-white rounded-2xl border border-slate-200 overflow-hidden">
             {/* Patient Header */}
-            <div className="p-6 border-b border-slate-100 flex items-center justify-between">
-              <div className="flex items-center gap-4">
-                <div className="w-14 h-14 rounded-2xl bg-primary/10 flex items-center justify-center">
-                  <User size={28} className="text-primary" />
-                </div>
-                <div>
-                  <h2 className="text-xl font-bold text-slate-900">{patient.full_name}</h2>
-                  <p className="text-sm text-slate-500">{patient.patient_id}</p>
-                </div>
+            <div className="p-6 border-b border-slate-100 flex items-center gap-4">
+              <div className="w-14 h-14 rounded-2xl bg-primary/10 flex items-center justify-center">
+                <User size={28} className="text-primary" />
               </div>
-              {/* Consent Badge */}
-              <div className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-bold ${
-                patient.consent?.has_consent
-                  ? "bg-emerald-50 text-emerald-700"
-                  : "bg-amber-50 text-amber-700"
-              }`}>
-                <ShieldCheck size={14} />
-                {patient.consent?.has_consent ? "Consent Granted" : "Consent Pending"}
+              <div>
+                <h2 className="text-xl font-bold text-slate-900">{patient.full_name}</h2>
+                <p className="text-sm text-slate-500">{patient.patient_id}</p>
               </div>
             </div>
 
@@ -165,14 +254,6 @@ export default function NfcScanPage() {
           </div>
         )}
 
-        {/* Consent Modal */}
-        <ConsentModal
-          isOpen={showConsent}
-          onClose={() => setShowConsent(false)}
-          patientId={patient?.patient_id}
-          patientName={patient?.full_name}
-          onConsented={handleConsented}
-        />
       </div>
     </div>
   );
