@@ -36,7 +36,7 @@ const About = () => {
                animate={{ opacity: 1, y: 0 }}
                className="text-5xl md:text-7xl font-display font-bold text-slate-900 mb-8 tracking-tight"
              >
-               About <span className="bg-clip-text text-transparent bg-gradient-to-r from-primary via-secondary to-primary bg-[length:200%_auto] animate-shimmer italic">Medhā Health</span>
+               About <span className="bg-clip-text text-transparent bg-gradient-to-r from-primary via-secondary to-primary bg-[length:200%_auto] animate-shimmer italic">Medha Health</span>
              </motion.h1>
              
              <motion.div

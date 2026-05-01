@@ -178,7 +178,7 @@ class _AuthScreenState extends ConsumerState<AuthScreen> with TickerProviderStat
                         ),
                         const SizedBox(height: 20),
                         Text(
-                          "Welcome to\nMedha Health",
+                          "Welcome to\nMedha Health Intelligance",
                           style: GoogleFonts.manrope(
                             color: Colors.white,
                             fontSize: 28,

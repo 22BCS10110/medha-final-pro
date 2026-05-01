@@ -1,12 +1,17 @@
 """
 Django settings for medha_backend project.
-Medhā Health Intelligence Platform — Backend Configuration
+Medha Health Intelligence Platform — Backend Configuration
 """
 
 import os
 from pathlib import Path
+import dj_database_url
+from dotenv import load_dotenv
 
 BASE_DIR = Path(__file__).resolve().parent.parent
+
+# Load environment variables from .env file
+load_dotenv(BASE_DIR / '.env')
 
 SECRET_KEY = 'django-insecure-e^dx&yhjm@f7p8(m#w(zwi!5=-uu94g5@*4&v&a6xp2li35c7+'
 
@@ -37,6 +42,8 @@ INSTALLED_APPS = [
     'abdm_simulator',  # ABDM Simulation Module (Demo/Pilot)
     'consent',          # One-time patient consent system
     'chat',             # Doctor-patient real-time chat
+    'notifications',    # In-app notification system
+    'patient_uploads',  # Patient file uploads (reports, prescription PDFs)
 ]
 
 # ═══ MIDDLEWARE ═══
@@ -105,13 +112,19 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'medha_backend.wsgi.application'
 
-# ═══ DATABASE (SQLITE) ═══
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+# ═══ DATABASE (POSTGRES / SQLITE) ═══
+DATABASE_URL = os.environ.get('DATABASE_URL')
+if DATABASE_URL:
+    DATABASES = {
+        'default': dj_database_url.parse(DATABASE_URL)
     }
-}
+else:
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.sqlite3',
+            'NAME': BASE_DIR / 'db.sqlite3',
+        }
+    }
 
 # ═══ AUTH ═══
 AUTH_USER_MODEL = 'accounts.User'

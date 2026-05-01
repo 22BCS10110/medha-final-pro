@@ -1,19 +1,20 @@
 {
   "name": "medha-health-desktop",
-  "productName": "Medha Health",
+  "productName": "Medha Health Intelligance",
   "private": true,
   "version": "1.0.0",
-  "description": "Medha Health Desktop Application for Doctors and Admins",
-  "author": "Medha Health",
+  "description": "Medha Health Intelligance Desktop Application for Doctors and Admins",
+  "author": "Medha Health Intelligance",
   "type": "module",
   "main": "electron/main.js",
   "scripts": {
     "dev": "vite",
-    "electron": "electron ."
+    "electron": "electron .",
+    "postinstall": "electron-rebuild -f -w better-sqlite3"
   },
   "build": {
     "appId": "com.medha.health",
-    "productName": "Medha Health",
+    "productName": "Medha Health Intelligance",
     "directories": {
       "output": "dist-electron"
     },
@@ -50,6 +51,7 @@
     }
   },
   "dependencies": {
+    "@emailjs/browser": "^4.4.1",
     "@supabase/supabase-js": "^2.101.1",
     "axios": "^1.13.6",
     "better-sqlite3": "^11.7.0",
@@ -74,6 +76,7 @@
     "cross-env": "^10.1.0",
     "electron": "^28.3.3",
     "electron-builder": "^24.9.1",
+    "electron-rebuild": "^3.2.9",
     "electron-updater": "^6.1.7",
     "eslint": "^9.39.4",
     "eslint-plugin-react-hooks": "^7.0.1",

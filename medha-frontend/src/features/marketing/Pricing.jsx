@@ -3,8 +3,10 @@ import Layout from '../../components/layout/Layout';
 import { motion } from 'framer-motion';
 import { ArrowRight, Bed, Building, Calculator, CheckCircle2 } from 'lucide-react';
 import { cn } from '../../utils/cn';
+import ComingSoonModal from '../../components/ui/ComingSoonModal';
 
 const Pricing = () => {
+  const [comingSoon, setComingSoon] = useState(false);
   const [beds, setBeds] = useState(100);
   const pricePerBed = 500;
   const annualCost = beds * pricePerBed;
@@ -31,6 +33,7 @@ const Pricing = () => {
 
   return (
     <Layout>
+      <ComingSoonModal open={comingSoon} onClose={() => setComingSoon(false)} />
       <div className="pt-32 pb-24 px-6 bg-white min-h-[95vh] font-sans">
         
         {/* Background Decor */}
@@ -131,10 +134,10 @@ const Pricing = () => {
                 <p className="text-sm font-bold uppercase tracking-[0.2em] text-slate-400 mb-6">Estimated Annual Cost</p>
                 <div className="mb-4">
                   <span className="text-5xl md:text-6xl font-display font-black text-slate-900 tracking-tight transition-all">
-                    {formattedCost}
+                    Coming Soon
                   </span>
                 </div>
-                <p className="text-sm text-slate-500 font-medium mb-auto">Billed annually at ₹{pricePerBed} per bed.</p>
+                <p className="text-sm text-slate-500 font-medium mb-auto">Pricing details will be announced soon.</p>
                 
                 <div className="mt-8 pt-6 border-t border-slate-200/60">
                    <p className="text-xs font-bold text-slate-400 uppercase tracking-widest">
@@ -153,11 +156,11 @@ const Pricing = () => {
             transition={{ delay: 0.4 }}
             className="flex flex-col sm:flex-row items-center justify-center gap-6"
           >
-            <button className="w-full sm:w-auto bg-primary text-white px-10 py-5 rounded-2xl font-bold text-lg shadow-xl shadow-primary/20 hover:shadow-primary/40 hover:-translate-y-1 transition-all flex items-center justify-center gap-3 group">
+            <button onClick={() => setComingSoon(true)} className="w-full sm:w-auto bg-primary text-white px-10 py-5 rounded-2xl font-bold text-lg shadow-xl shadow-primary/20 hover:shadow-primary/40 hover:-translate-y-1 transition-all flex items-center justify-center gap-3 group">
               Request Demo
               <ArrowRight size={20} className="group-hover:translate-x-1 transition-transform" />
             </button>
-            <button className="w-full sm:w-auto bg-white text-slate-900 border-2 border-slate-100 px-10 py-5 rounded-2xl font-bold text-lg hover:border-slate-300 hover:bg-slate-50 transition-all">
+            <button onClick={() => setComingSoon(true)} className="w-full sm:w-auto bg-white text-slate-900 border-2 border-slate-100 px-10 py-5 rounded-2xl font-bold text-lg hover:border-slate-300 hover:bg-slate-50 transition-all">
               Contact Sales
             </button>
           </motion.div>

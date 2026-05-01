@@ -1,5 +1,5 @@
 /**
- * Medha Health — Local SQLite Database
+ * Medha Health Intelligance — Local SQLite Database
  *
  * Offline-first storage for patients, appointments, records, prescriptions.
  * Uses better-sqlite3 (already rebuilt for Electron).

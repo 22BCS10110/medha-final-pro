@@ -1,4 +1,4 @@
-# Medha Health System - API Documentation
+# Medha Health Intelligance System - API Documentation
 
 ## Base URL
 ```

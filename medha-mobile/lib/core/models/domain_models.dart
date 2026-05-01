@@ -1,4 +1,4 @@
-/// User roles in the Medha Health system.
+/// User roles in the Medha Health Intelligance system.
 enum UserRole { patient, doctor, admin }
 
 class AppUser {

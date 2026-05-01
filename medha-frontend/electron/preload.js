@@ -5,6 +5,7 @@ const apiMethods = {
   login: (username, password) => ipcRenderer.invoke('auth:login', { username, password }),
   logout: () => ipcRenderer.invoke('auth:logout'),
   navigateToApp: (user, tokens) => ipcRenderer.invoke('navigate:app', { user, tokens }),
+  setAuthToken: (token) => ipcRenderer.invoke('auth:set-token', token),
 
   // API proxy (online requests to backend)
   apiGet: (endpoint) => ipcRenderer.invoke('api:get', endpoint),

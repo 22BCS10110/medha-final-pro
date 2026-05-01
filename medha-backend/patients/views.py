@@ -35,12 +35,12 @@ class PatientViewSet(HospitalDataFilterMixin, viewsets.ModelViewSet):
         from django.shortcuts import get_object_or_404
         queryset = self.filter_queryset(self.get_queryset())
         lookup = self.kwargs.get(self.lookup_field or 'pk')
-        # Try UUID PK first, fall back to patient_id. Using Q() in a single
-        # query avoids two round-trips and handles invalid-UUID strings cleanly.
         try:
-            obj = queryset.get(Q(id=lookup) | Q(patient_id=lookup))
-        except (Patient.DoesNotExist, ValueError):
-            obj = get_object_or_404(queryset, patient_id=lookup)
+            obj = queryset.get_by_id_or_code(lookup)
+        except Patient.DoesNotExist:
+            from django.http import Http404
+            raise Http404(f"Patient with ID/Code '{lookup}' not found.")
+        
         self.check_object_permissions(self.request, obj)
         return obj
 
@@ -57,8 +57,17 @@ class PatientViewSet(HospitalDataFilterMixin, viewsets.ModelViewSet):
         if user.role == 'patient':
             return Patient.objects.filter(user=user)
 
-        # Hospital admin and doctors see all patients (patients are global)
-        # But they can filter by patients who have visited their hospital
+        # Doctors ONLY see their assigned patients (strict enforcement)
+        if user.role == 'doctor':
+            return Patient.objects.filter(assigned_doctor__email=user.email)
+
+        # Hospital Admin sees patients in their hospital (by visit or doctor assignment)
+        if user.role == 'hospital_admin' and hasattr(user, 'hospital') and user.hospital:
+            return Patient.objects.filter(
+                Q(hospital_visits__hospital=user.hospital) |
+                Q(assigned_doctor__hospital=user.hospital)
+            ).distinct()
+
         return Patient.objects.all()
 
     def perform_create(self, serializer):
@@ -403,6 +412,84 @@ def assign_nfc_card(request):
             'full_name': patient.full_name,
         }
     }, status=status.HTTP_200_OK)
+
+
+@api_view(['POST'])
+@permission_classes([permissions.IsAuthenticated])
+def assign_patient_to_doctor(request):
+    """
+    Assign (or reassign) a patient to a doctor.
+    POST /api/patients/assign-doctor/
+    Body: { "patient_id": "PAT-XXXX", "doctor_id": "<uuid or doctor_id>" }
+    Only hospital_admin or super_admin may call this.
+    Creates a DB notification for the doctor's linked user account.
+    """
+    if request.user.role not in ('hospital_admin', 'super_admin'):
+        return Response(
+            {'error': 'Only hospital admins can assign patients to doctors.'},
+            status=status.HTTP_403_FORBIDDEN
+        )
+
+    patient_id = request.data.get('patient_id', '').strip()
+    doctor_id = request.data.get('doctor_id', '').strip()
+
+    if not patient_id or not doctor_id:
+        return Response({'error': 'patient_id and doctor_id are required.'}, status=status.HTTP_400_BAD_REQUEST)
+
+    try:
+        patient = Patient.objects.get(Q(patient_id=patient_id) | Q(id=patient_id))
+    except Patient.DoesNotExist:
+        return Response({'error': f'Patient not found: {patient_id}'}, status=status.HTTP_404_NOT_FOUND)
+
+    from doctors.models import Doctor
+    try:
+        doctor = Doctor.objects.get(Q(id=doctor_id) | Q(doctor_id=doctor_id))
+    except Doctor.DoesNotExist:
+        return Response({'error': f'Doctor not found: {doctor_id}'}, status=status.HTTP_404_NOT_FOUND)
+
+    # Hospital admin can only assign to doctors in their own hospital
+    if request.user.role == 'hospital_admin':
+        if hasattr(request.user, 'hospital') and request.user.hospital:
+            if doctor.hospital != request.user.hospital:
+                return Response(
+                    {'error': 'Doctor does not belong to your hospital.'},
+                    status=status.HTTP_403_FORBIDDEN
+                )
+
+    previous_doctor = patient.assigned_doctor
+    patient.assigned_doctor = doctor
+    patient.save(update_fields=['assigned_doctor'])
+
+    _notify_doctor_of_assignment(doctor, patient, request.user)
+
+    return Response({
+        'message': f'{patient.full_name} assigned to {doctor.full_name}.',
+        'patient_id': patient.patient_id,
+        'doctor': {
+            'id': str(doctor.id),
+            'full_name': doctor.full_name,
+            'department': doctor.department,
+        },
+        'previous_doctor': previous_doctor.full_name if previous_doctor else None,
+    }, status=status.HTTP_200_OK)
+
+
+def _notify_doctor_of_assignment(doctor, patient, assigned_by_user):
+    """Create a DB notification for the doctor. Silently skips if no linked User account."""
+    from accounts.models import User
+    try:
+        doctor_user = User.objects.get(email=doctor.email, role='doctor')
+    except User.DoesNotExist:
+        return
+    from notifications.models import Notification
+    Notification.objects.create(
+        user=doctor_user,
+        title='New Patient Assigned',
+        message=(
+            f'Patient {patient.full_name} ({patient.patient_id}) has been assigned to you '
+            f'by {assigned_by_user.get_full_name() or assigned_by_user.username}.'
+        ),
+    )
 
 
 @api_view(['GET'])

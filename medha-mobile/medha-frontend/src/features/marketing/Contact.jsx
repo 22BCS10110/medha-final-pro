@@ -25,9 +25,9 @@ const Contact = () => {
 
                 <div className="space-y-8">
                    {[
-                     { label: "Email Us", val: "partnerships@medha.ai", icon: Mail },
-                     { label: "Phone Support", val: "+91 (80) 4567 8900", icon: Phone },
-                     { label: "HQ Address", val: "Indiranagar, Bengaluru, KA 560038", icon: MapPin },
+                     { label: "Email Us", val: "info.medhahealth.in", icon: Mail },
+                     { label: "Phone Support", val: "+91 7087846032", icon: Phone },
+                     { label: "HQ Address", val: "Sirsa, Haryana, 125055", icon: MapPin },
                    ].map((item, i) => (
                      <div key={i} className="flex gap-5 group items-center p-4 rounded-3xl bg-white border border-slate-100 hover:border-primary/20 transition-all">
                         <div className="w-14 h-14 rounded-2xl bg-primary/5 text-primary flex items-center justify-center shrink-0 group-hover:scale-110 transition-transform">

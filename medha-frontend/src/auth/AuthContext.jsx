@@ -5,6 +5,17 @@ import { startSyncEngine, stopSyncEngine, updateSyncToken } from "../services/of
 
 export const AuthContext = createContext();
 
+// Push the JWT into the Electron main process so main-process requests
+// (NFC patient lookup, sync engine) can attach the Bearer header too.
+// In browser mode this is a no-op.
+const syncTokenToMain = (token) => {
+  try {
+    window.medhaAPI?.setAuthToken?.(token ?? null);
+  } catch {
+    // ignore — renderer bridge might not be available in browser mode
+  }
+};
+
 export function AuthProvider({ children }) {
   const [user, setUser] = useState(() => {
     const saved = localStorage.getItem("medha_user");
@@ -20,6 +31,7 @@ export function AuthProvider({ children }) {
     const initAuth = async () => {
       const token = localStorage.getItem("medha_token");
       if (token) {
+        syncTokenToMain(token);
         try {
           const res = await authAPI.me();
           const userData = res.data;
@@ -30,6 +42,7 @@ export function AuthProvider({ children }) {
           localStorage.removeItem("medha_token");
           localStorage.removeItem("medha_refresh_token");
           localStorage.removeItem("medha_user");
+          syncTokenToMain(null);
           setUser(null);
         }
       }
@@ -53,6 +66,7 @@ export function AuthProvider({ children }) {
       localStorage.setItem("medha_token", tokens.access);
       localStorage.setItem("medha_refresh_token", tokens.refresh);
       localStorage.setItem("medha_user", JSON.stringify(userData));
+      syncTokenToMain(tokens.access);
       setUser(userData);
       // Start sync engine after login
       startSyncEngine().catch(() => {});
@@ -70,6 +84,7 @@ export function AuthProvider({ children }) {
       localStorage.setItem("medha_token", tokens.access);
       localStorage.setItem("medha_refresh_token", tokens.refresh);
       localStorage.setItem("medha_user", JSON.stringify(userData));
+      syncTokenToMain(tokens.access);
       setUser(userData);
       return userData;
     } finally {
@@ -95,6 +110,7 @@ export function AuthProvider({ children }) {
     localStorage.removeItem("medha_user");
     localStorage.removeItem("medha_token");
     localStorage.removeItem("medha_refresh_token");
+    syncTokenToMain(null);
   };
 
   // Permission helper methods

@@ -1,6 +1,6 @@
 """
 Django settings for medha_backend project.
-Medhā Health Intelligence Platform — Backend Configuration
+Medha Health Intelligence Platform — Backend Configuration
 """
 
 import os

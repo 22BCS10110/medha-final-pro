@@ -31,26 +31,26 @@ const calculateAge = (dob) => {
 // Status badge component
 const StatusBadge = ({ status }) => {
   const styles = {
-    active: 'bg-emerald-50 text-emerald-600 border-emerald-100',
-    inactive: 'bg-slate-50 text-slate-400 border-slate-100',
-    critical: 'bg-red-50 text-red-600 border-red-100 animate-pulse',
+    active: 'bg-[#d3e4fe] text-[#0b1c30] border-[#b7c8e1]',
+    inactive: 'bg-[#eceef0] text-[#737688] border-[#c3c5d9]',
+    critical: 'bg-[#ffdad6] text-[#93000a] border-[#ffdad6] animate-pulse',
   };
   return (
-    <span className={cn("text-[10px] font-black uppercase tracking-widest px-3 py-1 rounded-full border", styles[status] || styles.inactive)}>
+    <span className={cn("text-[10px] font-semibold uppercase tracking-wider px-3 py-1 rounded-full border", styles[status] || styles.inactive)}>
       {status || 'Unknown'}
     </span>
   );
 };
 
 // Info row component
-const InfoRow = ({ icon: Icon, label, value, color = "text-slate-400" }) => (
+const InfoRow = ({ icon: Icon, label, value, color = "text-[#737688]" }) => (
   <div className="flex items-center gap-3">
-    <div className={cn("w-8 h-8 rounded-xl flex items-center justify-center", color)}>
+    <div className={cn("w-8 h-8 rounded-lg flex items-center justify-center", color)}>
       <Icon size={14} />
     </div>
     <div className="min-w-0 flex-1">
-      <p className="text-[10px] font-black uppercase tracking-widest text-slate-400">{label}</p>
-      <p className="text-sm font-bold text-slate-900 truncate">{value || "-"}</p>
+      <p className="text-[11px] font-medium uppercase tracking-[0.03em] text-[#434656]">{label}</p>
+      <p className="text-[14px] font-semibold text-[#191c1e] truncate">{value || "-"}</p>
     </div>
   </div>
 );
@@ -61,25 +61,25 @@ const HospitalVisitCard = ({ visit, index }) => (
     initial={{ opacity: 0, y: 10 }}
     animate={{ opacity: 1, y: 0 }}
     transition={{ delay: index * 0.1 }}
-    className="flex items-center justify-between p-4 rounded-2xl bg-slate-50 border border-slate-100"
+    className="flex items-center justify-between p-4 rounded-xl bg-[#f2f4f6] border border-[#c3c5d9]"
   >
     <div className="flex items-center gap-3">
       <div className={cn(
-        "w-10 h-10 rounded-xl flex items-center justify-center",
-        visit.is_active ? "bg-emerald-100 text-emerald-600" : "bg-slate-100 text-slate-400"
+        "w-10 h-10 rounded-lg flex items-center justify-center",
+        visit.is_active ? "bg-[#d3e4fe] text-[#003ec7]" : "bg-[#eceef0] text-[#737688]"
       )}>
         <Hospital size={18} />
       </div>
       <div>
-        <p className="text-sm font-bold text-slate-900">{visit.hospital_name}</p>
-        <p className="text-[10px] font-bold text-slate-400 uppercase tracking-tighter">
+        <p className="text-[14px] font-semibold text-[#191c1e]">{visit.hospital_name}</p>
+        <p className="text-[11px] font-medium text-[#434656] tracking-wide">
           {new Date(visit.visit_date).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' })}
         </p>
       </div>
     </div>
     <span className={cn(
-      "text-[10px] font-black uppercase tracking-widest px-3 py-1 rounded-full",
-      visit.is_active ? "bg-emerald-50 text-emerald-600" : "bg-slate-100 text-slate-400"
+      "text-[10px] font-semibold uppercase tracking-wider px-3 py-1 rounded-full",
+      visit.is_active ? "bg-[#d3e4fe] text-[#003ec7]" : "bg-[#eceef0] text-[#737688]"
     )}>
       {visit.is_active ? 'Active' : 'Past'}
     </span>
@@ -92,18 +92,18 @@ const HealthRecordCard = ({ record, index }) => (
     initial={{ opacity: 0, y: 10 }}
     animate={{ opacity: 1, y: 0 }}
     transition={{ delay: index * 0.1 }}
-    className="p-4 rounded-2xl bg-white border border-slate-100 hover:border-primary/20 transition-colors"
+    className="p-4 rounded-xl bg-white border border-[#c3c5d9] hover:border-[#003ec7]/30 transition-colors"
   >
     <div className="flex items-start justify-between mb-2">
       <div className="flex items-center gap-2">
-        <FileText size={14} className="text-primary" />
-        <p className="text-sm font-bold text-slate-900">{record.title || record.diagnosis || 'Health Record'}</p>
+        <FileText size={14} className="text-[#003ec7]" />
+        <p className="text-[14px] font-semibold text-[#191c1e]">{record.title || record.diagnosis || 'Health Record'}</p>
       </div>
-      <span className="text-[10px] font-bold text-slate-400">
+      <span className="text-[11px] font-medium text-[#737688]">
         {record.date ? new Date(record.date).toLocaleDateString('en-IN', { day: 'numeric', month: 'short' }) : ''}
       </span>
     </div>
-    <p className="text-xs text-slate-500 line-clamp-2">{record.description || record.notes || ''}</p>
+    <p className="text-[13px] text-[#505f76] line-clamp-2">{record.description || record.notes || ''}</p>
   </motion.div>
 );
 
@@ -113,20 +113,20 @@ const PrescriptionCard = ({ prescription, index }) => (
     initial={{ opacity: 0, y: 10 }}
     animate={{ opacity: 1, y: 0 }}
     transition={{ delay: index * 0.1 }}
-    className="p-4 rounded-2xl bg-white border border-slate-100"
+    className="p-4 rounded-xl bg-white border border-[#c3c5d9]"
   >
     <div className="flex items-center gap-2 mb-2">
-      <Pill size={14} className="text-amber-500" />
-      <p className="text-sm font-bold text-slate-900">{prescription.medicine || prescription.medication}</p>
+      <Pill size={14} className="text-[#005479]" />
+      <p className="text-[14px] font-semibold text-[#191c1e]">{prescription.medicine || prescription.medication}</p>
     </div>
-    <div className="flex items-center gap-4 text-xs text-slate-500">
+    <div className="flex items-center gap-4 text-[13px] text-[#505f76]">
       <span>Dosage: {prescription.dosage || '-'}</span>
       <span>•</span>
       <span>Frequency: {prescription.frequency || '-'}</span>
     </div>
     <span className={cn(
-      "inline-block mt-2 text-[10px] font-black uppercase tracking-widest px-2 py-0.5 rounded-full",
-      prescription.status === 'active' ? "bg-emerald-50 text-emerald-600" : "bg-slate-100 text-slate-400"
+      "inline-block mt-2 text-[10px] font-semibold uppercase tracking-wider px-2 py-0.5 rounded-full",
+      prescription.status === 'active' ? "bg-[#d3e4fe] text-[#003ec7]" : "bg-[#eceef0] text-[#737688]"
     )}>
       {prescription.status || 'Unknown'}
     </span>
@@ -372,34 +372,34 @@ export default function DesktopNfcPanel({ role = "doctor" }) {
   };
 
   return (
-    <div className="bg-white rounded-[2.5rem] border border-slate-100 shadow-sm overflow-hidden">
+    <div className="bg-white rounded-xl border border-[#c3c5d9] shadow-[0_4px_20px_-4px_rgba(0,0,0,0.05)] overflow-hidden">
       {/* Header */}
-      <div className="p-8 border-b border-slate-50">
+      <div className="p-6 border-b border-[#eceef0]">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-4">
             <div className={cn(
-              "w-14 h-14 rounded-2xl flex items-center justify-center",
-              patient ? "bg-emerald-100 text-emerald-600"
-                : readerConnected ? "bg-primary/10 text-primary"
-                : "bg-slate-100 text-slate-400"
+              "w-12 h-12 rounded-lg flex items-center justify-center",
+              patient ? "bg-[#d3e4fe] text-[#003ec7]"
+                : readerConnected ? "bg-[#dde1ff] text-[#003ec7]"
+                : "bg-[#eceef0] text-[#737688]"
             )}>
-              {isDesktop ? <Usb size={24} /> : <ScanLine size={24} />}
+              {isDesktop ? <Usb size={22} /> : <ScanLine size={22} />}
             </div>
             <div>
-              <h3 className="text-xl font-bold text-slate-900">
-                NFC Patient Scan {isDesktop && <span className="text-xs font-normal text-slate-400">(Desktop)</span>}
+              <h3 className="text-[20px] font-semibold text-[#191c1e] leading-7 tracking-[-0.01em]">
+                NFC Patient Scan {isDesktop && <span className="text-[13px] font-normal text-[#434656]">(Desktop)</span>}
               </h3>
-              <p className="text-xs text-slate-400 uppercase tracking-widest">{scanState}</p>
+              <p className="text-[11px] font-medium text-[#434656] uppercase tracking-[0.03em]">{scanState}</p>
             </div>
           </div>
           <div className="flex items-center gap-3">
             {/* NFC Reader Status Indicator */}
             {isDesktop && nfcMode === 'auto' && (
               <div className={cn(
-                "flex items-center gap-1.5 px-3 py-1.5 rounded-full text-[10px] font-bold uppercase tracking-widest",
+                "flex items-center gap-1.5 px-3 py-1.5 rounded-full text-[10px] font-semibold uppercase tracking-wider",
                 readerConnected
-                  ? "bg-emerald-50 text-emerald-600 border border-emerald-100"
-                  : "bg-red-50 text-red-500 border border-red-100"
+                  ? "bg-[#d3e4fe] text-[#003ec7] border border-[#b7c4ff]"
+                  : "bg-[#ffdad6] text-[#93000a] border border-[#ffdad6]"
               )}>
                 <Radio size={10} className={readerConnected ? "animate-pulse" : ""} />
                 {readerConnected ? (readerName ? readerName.slice(0, 20) : 'Reader Connected') : 'No Reader'}
@@ -408,28 +408,27 @@ export default function DesktopNfcPanel({ role = "doctor" }) {
             {/* Online/Offline indicator */}
             {isDesktop && (
               <div className={cn(
-                "flex items-center gap-1 px-2 py-1 rounded-full text-[10px] font-bold",
-                isOnline ? "bg-emerald-50 text-emerald-600" : "bg-amber-50 text-amber-600"
+                "flex items-center gap-1 px-2 py-1 rounded-full text-[10px] font-semibold",
+                isOnline ? "bg-[#d3e4fe] text-[#003ec7]" : "bg-[#ffdad6] text-[#93000a]"
               )}>
                 {isOnline ? <Wifi size={10} /> : <WifiOff size={10} />}
                 {isOnline ? 'Online' : 'Offline'}
               </div>
             )}
             {isDesktop && (
-              <span className="text-xs text-slate-400">v{appVersion}</span>
+              <span className="text-[11px] text-[#737688]">v{appVersion}</span>
             )}
-            {/* Show manual scan button only in polling mode or when nfc-pcsc isn't auto-detecting */}
             {(nfcMode === 'polling' || !isDesktop) && (
               <button
                 onClick={startPolling}
-                className="inline-flex items-center gap-2 px-6 py-3 rounded-2xl bg-primary text-white text-sm font-bold hover:bg-primary/90 transition-colors shadow-lg shadow-primary/20"
+                className="inline-flex items-center gap-2 px-5 py-2.5 rounded-lg bg-[#003ec7] text-white text-[12px] font-semibold tracking-wide hover:bg-[#0038b6] transition-colors shadow-sm"
               >
                 <ScanLine size={16} />
                 Scan Patient
               </button>
             )}
             {nfcMode === 'auto' && isDesktop && !loading && (
-              <div className="text-xs text-slate-400 italic">
+              <div className="text-[11px] text-[#737688] italic">
                 Auto-detecting cards
               </div>
             )}
@@ -437,33 +436,48 @@ export default function DesktopNfcPanel({ role = "doctor" }) {
         </div>
       </div>
 
-      {/* Idle state — waiting for card in auto mode */}
+      {/* Idle state — matching Stitch NFC reference with concentric rings */}
       {!loading && !patient && !error && nfcMode === 'auto' && readerConnected && isDesktop && (
-        <div className="p-12 text-center">
-          <div className="w-20 h-20 rounded-3xl bg-primary/5 flex items-center justify-center mx-auto mb-4">
-            <CreditCard size={36} className="text-primary animate-pulse" />
+        <div className="p-8 flex items-center justify-center min-h-[360px]">
+          <div className="flex flex-col items-center text-center relative">
+            {/* Concentric decorative rings */}
+            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-48 h-48 border border-[#dde1ff] rounded-full opacity-50" />
+            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-72 h-72 border border-[#dde1ff] rounded-full opacity-20" />
+            <div className="relative z-10 flex flex-col items-center gap-5">
+              <div className="w-24 h-24 bg-[#0052ff] rounded-full flex items-center justify-center text-white shadow-md hover:scale-105 transition-transform duration-500">
+                <Radio size={44} />
+              </div>
+              <div>
+                <h2 className="text-[24px] font-semibold text-[#191c1e] leading-8 tracking-[-0.01em] mb-2">Tap to Scan NFC Card</h2>
+                <p className="text-[14px] font-normal text-[#505f76] max-w-xs mx-auto leading-5">
+                  Hold the patient's Medha Health Intelligance ID card near the NFC reader to instantly load their clinical record.
+                </p>
+              </div>
+              <div className="flex items-center gap-2 text-[#003ec7] text-[12px] font-semibold tracking-wide mt-2 bg-[#dde1ff]/30 px-4 py-2 rounded-full">
+                <span className="w-2 h-2 rounded-full bg-[#003ec7] animate-pulse" />
+                Reader Active & Waiting
+              </div>
+            </div>
           </div>
-          <p className="text-sm font-medium text-slate-600">Tap NFC card on reader</p>
-          <p className="text-xs text-slate-400 mt-1">Patient data will appear instantly</p>
         </div>
       )}
 
       {/* No reader connected in auto mode */}
       {!loading && !patient && nfcMode === 'auto' && !readerConnected && isDesktop && (
         <div className="p-12 text-center">
-          <div className="w-20 h-20 rounded-3xl bg-amber-50 flex items-center justify-center mx-auto mb-4">
-            <Usb size={36} className="text-amber-400" />
+          <div className="w-20 h-20 rounded-xl bg-[#ffdad6]/30 flex items-center justify-center mx-auto mb-4">
+            <Usb size={36} className="text-[#ba1a1a]" />
           </div>
-          <p className="text-sm font-medium text-slate-600">Connect USB NFC Reader</p>
-          <p className="text-xs text-slate-400 mt-1">Plug in ACR122U or compatible NFC reader</p>
+          <p className="text-[14px] font-medium text-[#191c1e]">Connect USB NFC Reader</p>
+          <p className="text-[13px] text-[#737688] mt-1">Plug in ACR122U or compatible NFC reader</p>
         </div>
       )}
 
       {/* Loading State */}
       {loading && (
         <div className="p-12 text-center">
-          <div className="w-12 h-12 border-4 border-primary border-t-transparent rounded-full animate-spin mx-auto mb-4" />
-          <p className="text-sm text-slate-500">
+          <div className="w-12 h-12 border-3 border-[#003ec7] border-t-transparent rounded-full animate-spin mx-auto mb-4" />
+          <p className="text-[14px] text-[#505f76]">
             {isDesktop ? "Reading NFC card..." : "Tap card on NFC reader..."}
           </p>
         </div>
@@ -471,10 +485,10 @@ export default function DesktopNfcPanel({ role = "doctor" }) {
 
       {/* Error State */}
       {error && (
-        <div className="p-8">
-          <div className="flex items-center gap-3 p-4 rounded-2xl bg-red-50 border border-red-100">
-            <AlertTriangle size={20} className="text-red-500 shrink-0" />
-            <p className="text-sm font-medium text-red-600">{error}</p>
+        <div className="p-6">
+          <div className="flex items-center gap-3 p-4 rounded-xl bg-[#ffdad6]/30 border border-[#ffdad6]">
+            <AlertTriangle size={20} className="text-[#ba1a1a] shrink-0" />
+            <p className="text-[14px] font-medium text-[#93000a]">{error}</p>
           </div>
         </div>
       )}
@@ -489,28 +503,28 @@ export default function DesktopNfcPanel({ role = "doctor" }) {
             exit={{ opacity: 0 }}
           >
             {/* Patient Header Card */}
-            <div className="p-8 bg-gradient-to-r from-slate-900 to-slate-800 text-white relative overflow-hidden">
-              <div className="absolute top-0 right-0 w-64 h-64 bg-primary/10 rounded-full blur-3xl" />
+            <div className="p-6 bg-gradient-to-r from-[#2d3133] to-[#191c1e] text-white relative overflow-hidden">
+              <div className="absolute top-0 right-0 w-64 h-64 bg-[#003ec7]/10 rounded-full blur-3xl" />
               <div className="relative z-10">
-                <div className="flex items-start justify-between mb-6">
+                <div className="flex items-start justify-between mb-5">
                   <div className="flex items-center gap-4">
-                    <div className="w-16 h-16 rounded-2xl bg-white/10 backdrop-blur-sm flex items-center justify-center border border-white/20">
-                      <UserRound size={28} className="text-primary" />
+                    <div className="w-14 h-14 rounded-xl bg-white/10 backdrop-blur-sm flex items-center justify-center border border-white/20">
+                      <UserRound size={26} className="text-[#b7c4ff]" />
                     </div>
                     <div>
-                      <h2 className="text-2xl font-bold">{patient.full_name || patient.name}</h2>
-                      <p className="text-sm text-slate-300">Patient ID: {patient.patient_id}</p>
+                      <h2 className="text-[24px] font-semibold leading-8 tracking-[-0.01em]">{patient.full_name || patient.name}</h2>
+                      <p className="text-[13px] text-[#eff1f3]/60">Patient ID: {patient.patient_id}</p>
                     </div>
                   </div>
                   <div className="flex items-center gap-2">
                     <StatusBadge status={patient.status} />
                     {dataSource === 'cache' && (
-                      <span className="flex items-center gap-1 text-[10px] font-black uppercase tracking-widest px-3 py-1 rounded-full bg-amber-500/20 text-amber-300 border border-amber-400/30">
+                      <span className="flex items-center gap-1 text-[10px] font-semibold uppercase tracking-wider px-3 py-1 rounded-full bg-amber-500/20 text-amber-300 border border-amber-400/30">
                         <Database size={10} /> Cached
                       </span>
                     )}
                     {dataSource === 'nfc_only' && (
-                      <span className="flex items-center gap-1 text-[10px] font-black uppercase tracking-widest px-3 py-1 rounded-full bg-red-500/20 text-red-300 border border-red-400/30 animate-pulse">
+                      <span className="flex items-center gap-1 text-[10px] font-semibold uppercase tracking-wider px-3 py-1 rounded-full bg-red-500/20 text-red-300 border border-red-400/30 animate-pulse">
                         <WifiOff size={10} /> Limited Offline Data
                       </span>
                     )}
@@ -519,32 +533,32 @@ export default function DesktopNfcPanel({ role = "doctor" }) {
 
                 {/* NFC-only warning banner */}
                 {dataSource === 'nfc_only' && (
-                  <div className="mb-4 p-3 rounded-xl bg-amber-500/10 border border-amber-400/20 flex items-center gap-3">
+                  <div className="mb-4 p-3 rounded-lg bg-amber-500/10 border border-amber-400/20 flex items-center gap-3">
                     <AlertTriangle size={16} className="text-amber-400 shrink-0" />
-                    <p className="text-xs text-amber-200 font-medium">
+                    <p className="text-[13px] text-amber-200 font-medium">
                       Only NFC card ID available. Full patient data will load when internet connection is restored.
                     </p>
                   </div>
                 )}
 
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                  <div className="p-3 rounded-xl bg-white/5 backdrop-blur-sm border border-white/10">
-                    <p className="text-[10px] font-black uppercase tracking-widest text-slate-400 mb-1">Age</p>
-                    <p className="text-lg font-bold">{calculateAge(patient.date_of_birth)} yrs</p>
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+                  <div className="p-3 rounded-lg bg-white/5 backdrop-blur-sm border border-white/10">
+                    <p className="text-[11px] font-medium uppercase tracking-[0.03em] text-[#eff1f3]/50 mb-1">Age</p>
+                    <p className="text-[16px] font-semibold">{calculateAge(patient.date_of_birth)} yrs</p>
                   </div>
-                  <div className="p-3 rounded-xl bg-white/5 backdrop-blur-sm border border-white/10">
-                    <p className="text-[10px] font-black uppercase tracking-widest text-slate-400 mb-1">Gender</p>
-                    <p className="text-lg font-bold">{patient.gender === 'M' ? 'Male' : patient.gender === 'F' ? 'Female' : patient.gender || '-'}</p>
+                  <div className="p-3 rounded-lg bg-white/5 backdrop-blur-sm border border-white/10">
+                    <p className="text-[11px] font-medium uppercase tracking-[0.03em] text-[#eff1f3]/50 mb-1">Gender</p>
+                    <p className="text-[16px] font-semibold">{patient.gender === 'M' ? 'Male' : patient.gender === 'F' ? 'Female' : patient.gender || '-'}</p>
                   </div>
-                  <div className="p-3 rounded-xl bg-white/5 backdrop-blur-sm border border-white/10">
-                    <p className="text-[10px] font-black uppercase tracking-widest text-slate-400 mb-1">Blood Group</p>
-                    <p className={cn("text-lg font-bold", patient.blood_group?.includes('O') ? 'text-emerald-400' : patient.blood_group?.includes('A') ? 'text-red-400' : 'text-blue-400')}>
+                  <div className="p-3 rounded-lg bg-white/5 backdrop-blur-sm border border-white/10">
+                    <p className="text-[11px] font-medium uppercase tracking-[0.03em] text-[#eff1f3]/50 mb-1">Blood Group</p>
+                    <p className={cn("text-[16px] font-semibold", patient.blood_group?.includes('O') ? 'text-emerald-400' : patient.blood_group?.includes('A') ? 'text-red-400' : 'text-[#b7c4ff]')}>
                       {patient.blood_group || '-'}
                     </p>
                   </div>
-                  <div className="p-3 rounded-xl bg-white/5 backdrop-blur-sm border border-white/10">
-                    <p className="text-[10px] font-black uppercase tracking-widest text-slate-400 mb-1">Visits</p>
-                    <p className="text-lg font-bold">{hospitalVisits.length}</p>
+                  <div className="p-3 rounded-lg bg-white/5 backdrop-blur-sm border border-white/10">
+                    <p className="text-[11px] font-medium uppercase tracking-[0.03em] text-[#eff1f3]/50 mb-1">Visits</p>
+                    <p className="text-[16px] font-semibold">{hospitalVisits.length}</p>
                   </div>
                 </div>
               </div>
@@ -552,17 +566,17 @@ export default function DesktopNfcPanel({ role = "doctor" }) {
 
             {/* Action Buttons */}
             {isDesktop && (
-              <div className="px-8 pt-6 flex gap-3">
+              <div className="px-6 pt-5 flex gap-3">
                 <button
                   onClick={handlePrintPrescription}
-                  className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-slate-100 text-slate-700 text-sm font-bold hover:bg-slate-200 transition-colors"
+                  className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-[#eceef0] text-[#191c1e] text-[12px] font-semibold tracking-wide hover:bg-[#e0e3e5] transition-colors border border-[#c3c5d9]"
                 >
                   <Printer size={14} />
                   Print Prescription
                 </button>
                 <button
                   onClick={handleExportPatientData}
-                  className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-slate-100 text-slate-700 text-sm font-bold hover:bg-slate-200 transition-colors"
+                  className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-[#eceef0] text-[#191c1e] text-[12px] font-semibold tracking-wide hover:bg-[#e0e3e5] transition-colors border border-[#c3c5d9]"
                 >
                   <Download size={14} />
                   Export Data
@@ -571,17 +585,17 @@ export default function DesktopNfcPanel({ role = "doctor" }) {
             )}
 
             {/* Tabs */}
-            <div className="px-8 pt-6 border-b border-slate-50">
+            <div className="px-6 pt-5 border-b border-[#eceef0]">
               <div className="flex gap-1 overflow-x-auto pb-2">
                 {tabs.map((tab) => (
                   <button
                     key={tab.id}
                     onClick={() => setActiveTab(tab.id)}
                     className={cn(
-                      "flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-bold whitespace-nowrap transition-all",
+                      "flex items-center gap-2 px-4 py-2 rounded-lg text-[12px] font-semibold tracking-wide whitespace-nowrap transition-all",
                       activeTab === tab.id 
-                        ? "bg-primary text-white shadow-lg shadow-primary/20" 
-                        : "text-slate-400 hover:text-slate-600 hover:bg-slate-50"
+                        ? "bg-[#003ec7] text-white shadow-sm" 
+                        : "text-[#737688] hover:text-[#191c1e] hover:bg-[#f2f4f6]"
                     )}
                   >
                     <tab.icon size={14} />
@@ -592,7 +606,7 @@ export default function DesktopNfcPanel({ role = "doctor" }) {
             </div>
 
             {/* Tab Content */}
-            <div className="p-8">
+            <div className="p-6">
               <AnimatePresence mode="wait">
                 {activeTab === "overview" && (
                   <motion.div
@@ -604,27 +618,27 @@ export default function DesktopNfcPanel({ role = "doctor" }) {
                   >
                     {/* Contact Info */}
                     <div className="grid md:grid-cols-2 gap-4">
-                      <InfoRow icon={Phone} label="Phone" value={patient.phone} color="bg-emerald-100 text-emerald-600" />
-                      <InfoRow icon={Droplets} label="Blood Group" value={patient.blood_group} color="bg-blue-100 text-blue-600" />
-                      <InfoRow icon={Shield} label="ABHA ID" value={patient.abha_id || 'Not linked'} color="bg-blue-100 text-blue-600" />
-                      <InfoRow icon={AlertTriangle} label="Allergies" value={patient.allergies || 'None reported'} color="bg-amber-100 text-amber-600" />
+                      <InfoRow icon={Phone} label="Phone" value={patient.phone} color="bg-[#d3e4fe] text-[#003ec7]" />
+                      <InfoRow icon={Droplets} label="Blood Group" value={patient.blood_group} color="bg-[#c9e6ff] text-[#005479]" />
+                      <InfoRow icon={Shield} label="ABHA ID" value={patient.abha_id || 'Not linked'} color="bg-[#dde1ff] text-[#003ec7]" />
+                      <InfoRow icon={AlertTriangle} label="Allergies" value={patient.allergies || 'None reported'} color="bg-[#ffdad6] text-[#ba1a1a]" />
                     </div>
 
                     {/* Emergency Contact */}
                     {patient.emergency_contact && (
-                      <div className="p-4 rounded-2xl bg-amber-50 border border-amber-100">
+                      <div className="p-4 rounded-xl bg-[#ffdad6]/30 border border-[#ffdad6]">
                         <div className="flex items-center gap-2 mb-2">
-                          <AlertTriangle size={16} className="text-amber-600" />
-                          <p className="text-sm font-bold text-amber-800">Emergency Contact</p>
+                          <AlertTriangle size={16} className="text-[#ba1a1a]" />
+                          <p className="text-[14px] font-semibold text-[#93000a]">Emergency Contact</p>
                         </div>
-                        <p className="text-lg font-bold text-amber-900">{patient.emergency_contact}</p>
+                        <p className="text-[16px] font-semibold text-[#191c1e]">{patient.emergency_contact}</p>
                       </div>
                     )}
 
                     {/* Recent Hospital Visits */}
                     {hospitalVisits.length > 0 && (
                       <div>
-                        <h4 className="text-sm font-black uppercase tracking-widest text-slate-400 mb-4">Recent Hospital Visits</h4>
+                        <h4 className="text-[11px] font-medium uppercase tracking-[0.03em] text-[#434656] mb-4">Recent Hospital Visits</h4>
                         <div className="space-y-2">
                           {hospitalVisits.slice(0, 3).map((visit, i) => (
                             <HospitalVisitCard key={i} visit={visit} index={i} />
@@ -635,15 +649,15 @@ export default function DesktopNfcPanel({ role = "doctor" }) {
 
                     {/* Admin Actions */}
                     {role === "admin" && (
-                      <div className="p-6 rounded-2xl bg-slate-50 border border-slate-100">
-                        <h4 className="text-sm font-black uppercase tracking-widest text-slate-900 mb-4">Admin Actions</h4>
+                      <div className="p-5 rounded-xl bg-[#f2f4f6] border border-[#c3c5d9]">
+                        <h4 className="text-[12px] font-semibold uppercase tracking-wider text-[#191c1e] mb-4">Admin Actions</h4>
                         <div className="grid md:grid-cols-2 gap-4">
                           <div>
-                            <p className="text-xs font-bold text-slate-500 mb-2">Assign Doctor</p>
+                            <p className="text-[12px] font-semibold text-[#505f76] mb-2">Assign Doctor</p>
                             <select
                               value={selectedDoctor}
                               onChange={(e) => setSelectedDoctor(e.target.value)}
-                              className="w-full rounded-xl border border-slate-200 px-4 py-3 text-sm font-medium"
+                              className="w-full rounded-lg border border-[#c3c5d9] px-4 py-2.5 text-[14px] font-normal text-[#191c1e] focus:outline-none focus:ring-2 focus:ring-[#003ec7]/20 focus:border-[#003ec7] bg-white"
                             >
                               <option value="">Select doctor</option>
                               {doctors.map((d) => (
@@ -656,7 +670,7 @@ export default function DesktopNfcPanel({ role = "doctor" }) {
                           <div className="flex items-end">
                             <button
                               onClick={assignDoctorAndCreateAppointment}
-                              className="w-full px-4 py-3 rounded-xl bg-slate-900 text-white text-sm font-bold hover:bg-slate-800 transition-colors"
+                              className="w-full px-4 py-2.5 rounded-lg bg-[#003ec7] text-white text-[12px] font-semibold tracking-wide hover:bg-[#0038b6] transition-colors shadow-sm"
                             >
                               Assign & Create Appointment
                             </button>
@@ -664,13 +678,13 @@ export default function DesktopNfcPanel({ role = "doctor" }) {
                         </div>
                         {billingSummary && (
                           <div className="mt-4 grid grid-cols-2 gap-4">
-                            <div className="p-3 rounded-xl bg-white border border-slate-100">
-                              <p className="text-[10px] font-black uppercase tracking-widest text-slate-400">Total Billed</p>
-                              <p className="text-lg font-bold text-slate-900">₹{billingSummary?.total_billed?.toLocaleString?.() ?? "0"}</p>
+                            <div className="p-3 rounded-lg bg-white border border-[#c3c5d9]">
+                              <p className="text-[11px] font-medium uppercase tracking-[0.03em] text-[#434656]">Total Billed</p>
+                              <p className="text-[16px] font-semibold text-[#191c1e]">₹{billingSummary?.total_billed?.toLocaleString?.() ?? "0"}</p>
                             </div>
-                            <div className="p-3 rounded-xl bg-white border border-slate-100">
-                              <p className="text-[10px] font-black uppercase tracking-widest text-slate-400">Outstanding</p>
-                              <p className="text-lg font-bold text-red-600">₹{billingSummary?.outstanding?.toLocaleString?.() ?? "0"}</p>
+                            <div className="p-3 rounded-lg bg-white border border-[#c3c5d9]">
+                              <p className="text-[11px] font-medium uppercase tracking-[0.03em] text-[#434656]">Outstanding</p>
+                              <p className="text-[16px] font-semibold text-[#ba1a1a]">₹{billingSummary?.outstanding?.toLocaleString?.() ?? "0"}</p>
                             </div>
                           </div>
                         )}
@@ -686,11 +700,11 @@ export default function DesktopNfcPanel({ role = "doctor" }) {
                     animate={{ opacity: 1, y: 0 }}
                     exit={{ opacity: 0, y: -10 }}
                   >
-                    <h4 className="text-sm font-black uppercase tracking-widest text-slate-400 mb-4">Hospital Visit History</h4>
+                    <h4 className="text-[11px] font-medium uppercase tracking-[0.03em] text-[#434656] mb-4">Hospital Visit History</h4>
                     {hospitalVisits.length === 0 ? (
                       <div className="text-center py-12">
-                        <Calendar size={40} className="text-slate-300 mx-auto mb-4" />
-                        <p className="text-sm text-slate-500">No hospital visits recorded</p>
+                        <Calendar size={40} className="text-[#c3c5d9] mx-auto mb-4" />
+                        <p className="text-[14px] text-[#737688]">No hospital visits recorded</p>
                       </div>
                     ) : (
                       <div className="space-y-3">
@@ -709,11 +723,11 @@ export default function DesktopNfcPanel({ role = "doctor" }) {
                     animate={{ opacity: 1, y: 0 }}
                     exit={{ opacity: 0, y: -10 }}
                   >
-                    <h4 className="text-sm font-black uppercase tracking-widest text-slate-400 mb-4">Health Records</h4>
+                    <h4 className="text-[11px] font-medium uppercase tracking-[0.03em] text-[#434656] mb-4">Health Records</h4>
                     {healthRecords.length === 0 ? (
                       <div className="text-center py-12">
-                        <FileText size={40} className="text-slate-300 mx-auto mb-4" />
-                        <p className="text-sm text-slate-500">No health records found</p>
+                        <FileText size={40} className="text-[#c3c5d9] mx-auto mb-4" />
+                        <p className="text-[14px] text-[#737688]">No health records found</p>
                       </div>
                     ) : (
                       <div className="grid md:grid-cols-2 gap-3">
@@ -732,11 +746,11 @@ export default function DesktopNfcPanel({ role = "doctor" }) {
                     animate={{ opacity: 1, y: 0 }}
                     exit={{ opacity: 0, y: -10 }}
                   >
-                    <h4 className="text-sm font-black uppercase tracking-widest text-slate-400 mb-4">Active Prescriptions</h4>
+                    <h4 className="text-[11px] font-medium uppercase tracking-[0.03em] text-[#434656] mb-4">Active Prescriptions</h4>
                     {prescriptions.length === 0 ? (
                       <div className="text-center py-12">
-                        <Pill size={40} className="text-slate-300 mx-auto mb-4" />
-                        <p className="text-sm text-slate-500">No prescriptions found</p>
+                        <Pill size={40} className="text-[#c3c5d9] mx-auto mb-4" />
+                        <p className="text-[14px] text-[#737688]">No prescriptions found</p>
                       </div>
                     ) : (
                       <div className="grid md:grid-cols-2 gap-3">

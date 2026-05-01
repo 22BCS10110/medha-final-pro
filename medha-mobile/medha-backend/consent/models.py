@@ -28,7 +28,7 @@ class PatientConsent(models.Model):
     consent_text = models.TextField(
         default=(
             "I consent to share my health records with authorized healthcare "
-            "providers via the Medha Health platform for the purpose of care management."
+            "providers via the Medha Health Intelligance platform for the purpose of care management."
         )
     )
     # Consent metadata

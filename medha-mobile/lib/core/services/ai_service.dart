@@ -36,7 +36,7 @@ class AiService {
           'Content-Type': 'application/json',
           'Authorization': 'Bearer $_apiKey',
           'HTTP-Referer': 'https://medha.health',
-          'X-Title': 'Medha Health',
+          'X-Title': 'Medha Health Intelligance',
         },
         body: jsonEncode({
           'model': _model,

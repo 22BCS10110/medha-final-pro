@@ -7,7 +7,7 @@ const HowItWorks = () => {
   const steps = [
     {
       title: "Install App",
-      desc: "Download the secure Medhā desktop environment on hospital endpoints.",
+      desc: "Download the secure Medha desktop environment on hospital endpoints.",
       icon: Download,
       step: 1
     },
@@ -72,7 +72,7 @@ const Testimonials = () => {
     {
        name: "Dr. Sarah Johnson",
        role: "Chief of Neurology",
-       body: "Medhā has transformed how we handle diagnostic workflows. The AI insights are consistently accurate and medically sound.",
+       body: "Medha has transformed how we handle diagnostic workflows. The AI insights are consistently accurate and medically sound.",
        avatar: "SJ"
     },
     {
@@ -90,7 +90,7 @@ const Testimonials = () => {
              <div className="lg:col-span-1">
                 <h2 className="text-sm font-bold uppercase tracking-[0.2em] text-primary mb-4">Patient & Doctor Trust</h2>
                 <h3 className="text-4xl font-display font-bold text-slate-900 mb-6">Voices of Intelligence</h3>
-                <p className="text-slate-600 mb-8">Join thousands of practitioners and patients who are already using Medhā to better their health journeys.</p>
+                <p className="text-slate-600 mb-8">Join thousands of practitioners and patients who are already using Medha to better their health journeys.</p>
                 <div className="flex items-center gap-2">
                    {[1, 2, 3, 4, 5].map(i => <Star key={i} size={20} className="fill-amber-400 text-amber-400" />)}
                    <span className="ml-2 font-bold text-slate-900 text-sm">4.9/5 Rating</span>
@@ -135,7 +135,7 @@ const DownloadCTA = () => {
           <div className="relative z-10">
              <h3 className="text-4xl md:text-6xl font-display font-bold text-white mb-8 tracking-tight">Ready to evolve your <br /> Healthcare Experience?</h3>
              <p className="text-primary-100 text-lg md:text-xl max-w-2xl mx-auto mb-12 text-slate-100 opacity-90">
-               Join the Medhā ecosystem today. Start your journey with the world’s most advanced health intelligence platform.
+               Join the Medha ecosystem today. Start your journey with the world’s most advanced health intelligence platform.
              </p>
              <div className="flex flex-col sm:flex-row items-center justify-center gap-6">
                 <Link to="/portal" className="bg-white text-primary px-10 py-5 rounded-2xl font-bold text-xl hover:scale-[1.02] shadow-xl transition-transform flex items-center gap-3">

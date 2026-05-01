@@ -112,7 +112,7 @@ class SettingsScreen extends ConsumerWidget {
                     Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text("Medha Health", style: tt.titleSmall?.copyWith(fontWeight: FontWeight.w700)),
+                        Text("Medha Health Intelligance", style: tt.titleSmall?.copyWith(fontWeight: FontWeight.w700)),
                         Text("Version 1.0.0", style: tt.labelSmall?.copyWith(color: AppTheme.onSurfaceVariant)),
                       ],
                     ),

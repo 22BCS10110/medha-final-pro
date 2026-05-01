@@ -29,7 +29,7 @@ const MobilePreview = () => {
         <div className="pt-10 pb-4 px-5 bg-white flex items-center justify-between border-b border-slate-100">
            <div className="flex items-center gap-2">
               <div className="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center text-primary font-black text-[10px]">M</div>
-              <span className="text-[10px] font-black uppercase tracking-widest text-slate-900">Medhā Health</span>
+              <span className="text-[10px] font-black uppercase tracking-widest text-slate-900">Medha Health</span>
            </div>
            <Bell size={16} className="text-slate-400" />
         </div>

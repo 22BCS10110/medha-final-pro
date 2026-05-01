@@ -9,7 +9,7 @@ class AppLocalizationsEn extends AppLocalizations {
   AppLocalizationsEn([String locale = 'en']) : super(locale);
 
   @override
-  String get appName => 'Medha Health';
+  String get appName => 'Medha Health Intelligance';
 
   @override
   String get languageSelection => 'Choose Language';

@@ -85,7 +85,7 @@ const PatientPortal = () => {
             <p className="text-slate-500">
               {isLogin 
                 ? 'Sign in to access your health records' 
-                : 'Register to get started with Medha Health'}
+                : 'Register to get started with Medha Health Intelligance'}
             </p>
           </motion.div>
 

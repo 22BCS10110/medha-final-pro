@@ -1,24 +1,129 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { 
-  BarChart3, 
-  Users, 
-  UserPlus, 
-  Stethoscope, 
-  CreditCard, 
-  Settings,
+import {
+  BarChart3,
+  Users,
+  UserPlus,
+  Stethoscope,
+  CreditCard,
   Bell,
   Search,
   Menu,
   X,
   LogOut,
-  ChevronRight
+  Check,
 } from 'lucide-react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../auth/AuthContext';
 import Logo from '../../components/ui/Logo';
 import OfflineStatusBar from '../../components/ui/OfflineStatusBar';
 import { cn } from '../../utils/cn';
+import { notificationsAPI } from '../../services/api';
+
+// ── Notification Bell (shared) ──────────────────────────────────
+function NotificationBell() {
+  const [open, setOpen] = useState(false);
+  const [notifications, setNotifications] = useState([]);
+  const [unreadCount, setUnreadCount] = useState(0);
+  const ref = useRef(null);
+
+  const load = async () => {
+    try {
+      const res = await notificationsAPI.list();
+      const items = res.data?.results || res.data || [];
+      setNotifications(items.slice(0, 15));
+      setUnreadCount(items.filter((n) => !n.is_read).length);
+    } catch { /* backend may be offline */ }
+  };
+
+  useEffect(() => {
+    load();
+    const id = setInterval(load, 30000);
+    return () => clearInterval(id);
+  }, []);
+
+  useEffect(() => {
+    const handler = (e) => { if (ref.current && !ref.current.contains(e.target)) setOpen(false); };
+    document.addEventListener('mousedown', handler);
+    return () => document.removeEventListener('mousedown', handler);
+  }, []);
+
+  const markAllRead = async () => {
+    try {
+      await notificationsAPI.markAllRead();
+      setNotifications((prev) => prev.map((n) => ({ ...n, is_read: true })));
+      setUnreadCount(0);
+    } catch {}
+  };
+
+  const markOne = async (id) => {
+    try {
+      await notificationsAPI.markRead(id);
+      setNotifications((prev) => prev.map((n) => n.id === id ? { ...n, is_read: true } : n));
+      setUnreadCount((c) => Math.max(0, c - 1));
+    } catch {}
+  };
+
+  return (
+    <div className="relative" ref={ref}>
+      <button
+        onClick={() => setOpen((o) => !o)}
+        className="relative w-10 h-10 rounded-xl bg-slate-50 text-slate-500 flex items-center justify-center hover:bg-slate-100 transition-colors"
+      >
+        <Bell size={20} />
+        {unreadCount > 0 && (
+          <span className="absolute -top-1 -right-1 min-w-[18px] h-[18px] rounded-full bg-red-500 border-2 border-white text-white text-[10px] font-black flex items-center justify-center px-0.5">
+            {unreadCount > 9 ? '9+' : unreadCount}
+          </span>
+        )}
+      </button>
+
+      <AnimatePresence>
+        {open && (
+          <motion.div
+            initial={{ opacity: 0, y: -8, scale: 0.95 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            exit={{ opacity: 0, y: -8, scale: 0.95 }}
+            transition={{ duration: 0.15 }}
+            className="absolute right-0 mt-2 w-80 bg-white rounded-2xl shadow-xl border border-slate-100 z-[500] overflow-hidden"
+          >
+            <div className="flex items-center justify-between px-4 py-3 border-b border-slate-100">
+              <span className="font-black text-sm text-slate-900">Notifications</span>
+              {unreadCount > 0 && (
+                <button onClick={markAllRead} className="text-xs font-bold text-primary hover:underline flex items-center gap-1">
+                  <Check size={12} /> Mark all read
+                </button>
+              )}
+            </div>
+            <div className="max-h-80 overflow-y-auto divide-y divide-slate-50">
+              {notifications.length === 0 ? (
+                <p className="px-4 py-6 text-center text-sm font-bold text-slate-400">No notifications</p>
+              ) : notifications.map((n) => (
+                <div
+                  key={n.id}
+                  onClick={() => !n.is_read && markOne(n.id)}
+                  className={cn('px-4 py-3 cursor-pointer hover:bg-slate-50 transition-colors', !n.is_read && 'bg-primary/[0.03]')}
+                >
+                  <div className="flex items-start gap-2">
+                    {!n.is_read && <span className="mt-1.5 w-2 h-2 rounded-full bg-primary shrink-0" />}
+                    <div className={cn(!n.is_read ? '' : 'ml-4')}>
+                      <p className="text-sm font-bold text-slate-900 leading-tight">{n.title}</p>
+                      <p className="text-xs text-slate-500 mt-0.5 leading-snug">{n.message}</p>
+                      <p className="text-[10px] text-slate-400 mt-1 font-bold uppercase tracking-wider">
+                        {new Date(n.created_at).toLocaleString()}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </div>
+  );
+
+}
 
 const AdminSidebar = ({ isMobileOpen, setMobileOpen }) => {
   const location = useLocation();
@@ -45,6 +150,17 @@ const AdminSidebar = ({ isMobileOpen, setMobileOpen }) => {
       <aside className="hidden lg:flex flex-col w-72 bg-white border-r border-slate-100 h-screen sticky top-0">
         <div className="p-8">
            <Logo className="h-8" />
+        </div>
+
+        {/* Register New Patient — always visible */}
+        <div className="px-6 mb-2">
+          <button
+            onClick={() => navigate('/admin/registration')}
+            className="flex items-center justify-center gap-2 w-full py-3.5 rounded-2xl bg-primary text-white font-bold text-sm shadow-lg shadow-primary/25 hover:bg-primary/90 transition-all"
+          >
+            <UserPlus size={18} />
+            Register Patient
+          </button>
         </div>
 
         <nav className="flex-grow px-6 space-y-1 mt-4">
@@ -163,10 +279,7 @@ const AdminLayout = ({ children, title = "Administrator" }) => {
 
              <div className="flex items-center gap-3">
                 <OfflineStatusBar />
-                <button className="relative w-10 h-10 rounded-xl bg-slate-50 text-slate-500 flex items-center justify-center hover:bg-slate-100 transition-colors">
-                   <Bell size={20} />
-                   <span className="absolute top-2.5 right-2.5 w-2 h-2 rounded-full bg-red-500 border-2 border-white" />
-                </button>
+                <NotificationBell />
                 <div className="flex items-center gap-3 pl-3 md:pl-6 border-l border-slate-100">
                    <div className="hidden md:block text-right">
                       <p className="text-sm font-black text-slate-900 leading-none mb-1">{user?.name || "Admin User"}</p>

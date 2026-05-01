@@ -17,6 +17,9 @@ urlpatterns = [
     # NFC card assignment (link hardware NFC UID to patient)
     path('patients/assign-nfc/', views.assign_nfc_card, name='assign-nfc-card'),
 
+    # Doctor assignment (hospital admin assigns a patient to a doctor)
+    path('patients/assign-doctor/', views.assign_patient_to_doctor, name='assign-doctor'),
+
     # NFC status for a patient
     path('patients/<str:patient_id>/nfc-status/', views.patient_nfc_status, name='patient-nfc-status'),
 

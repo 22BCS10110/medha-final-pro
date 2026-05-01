@@ -122,7 +122,7 @@ const ProblemSolution = () => {
                          <Star size={24} fill="currentColor" />
                       </div>
                       <div>
-                         <p className="text-sm font-bold text-slate-900">Medhā Intelligence Report</p>
+                         <p className="text-sm font-bold text-slate-900">Medha Intelligence Report</p>
                          <p className="text-[10px] text-slate-400 capitalize">Analysis Complete • 0.2s</p>
                       </div>
                    </div>

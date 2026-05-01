@@ -1,4 +1,4 @@
-# Medha Health Mobile (Flutter)
+# Medha Health Intelligance Mobile (Flutter)
 
 Patient-focused cross-platform app (Android + iOS) with a single Flutter codebase.
 

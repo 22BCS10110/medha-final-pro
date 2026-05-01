@@ -1,5 +1,5 @@
 /**
- * Medha Health — Offline-First Data Service
+ * Medha Health Intelligance — Offline-First Data Service
  *
  * Smart data layer that:
  *  - Online: Fetches from backend API, caches result in local DB

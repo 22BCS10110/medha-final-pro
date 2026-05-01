@@ -51,3 +51,26 @@ class PatientCardSerializer(serializers.ModelSerializer):
         model = PatientCard
         fields = '__all__'
         read_only_fields = ('id', 'card_number', 'issued_at', 'last_scanned_at', 'last_scanned_hospital')
+
+
+class PatientRelatedField(serializers.RelatedField):
+    """
+    Look up patient by either UUID (pk) or custom patient_id (PAT-XXXX).
+    Used in Records and Prescriptions serializers.
+    """
+    def get_queryset(self):
+        return Patient.objects.all()
+
+    def to_representation(self, value):
+        return value.id
+
+    def to_internal_value(self, data):
+        try:
+            return Patient.objects.get_by_id_or_code(data)
+        except Patient.DoesNotExist:
+            raise serializers.ValidationError(
+                f'Patient with ID/Code "{data}" not found. '
+                'If this is a local-only patient, please sync your data with the server.'
+            )
+        except Exception as e:
+            raise serializers.ValidationError(str(e))

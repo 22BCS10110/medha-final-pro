@@ -2,8 +2,9 @@ import React, { useState } from 'react';
 import Layout from '../../components/layout/Layout';
 import Hero from '../../components/ui/Hero';
 import { Features, ProblemSolution } from '../../components/ui/Features';
-import { Testimonials, DownloadCTA } from '../../components/ui/HowItWorks';
 import MobilePreviewModal from '../../components/ui/MobilePreviewModal';
+import AboutSection from './AboutSection';
+import ContactSection from './ContactSection';
 
 const Home = () => {
   const [isMobilePreviewOpen, setIsMobilePreviewOpen] = useState(false);
@@ -13,8 +14,8 @@ const Home = () => {
       <Hero onOpenMobilePreview={() => setIsMobilePreviewOpen(true)} />
       <ProblemSolution />
       <Features />
-      <Testimonials />
-      <DownloadCTA />
+      <AboutSection />
+      <ContactSection />
 
       <MobilePreviewModal 
         isOpen={isMobilePreviewOpen} 

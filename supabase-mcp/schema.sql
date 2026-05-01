@@ -1,5 +1,5 @@
 -- ═══════════════════════════════════════════════════════════════
--- Medha Health — Supabase Schema
+-- Medha Health Intelligance — Supabase Schema
 -- Run this in Supabase Dashboard → SQL Editor
 -- ═══════════════════════════════════════════════════════════════
 
@@ -64,7 +64,7 @@ CREATE TABLE IF NOT EXISTS patient_consents (
   id               UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   patient_id       TEXT UNIQUE NOT NULL REFERENCES patients(patient_id) ON DELETE CASCADE,
   status           TEXT NOT NULL DEFAULT 'pending' CHECK (status IN ('pending', 'granted', 'revoked')),
-  consent_text     TEXT DEFAULT 'I consent to share my health records with authorized healthcare providers via the Medha Health platform.',
+  consent_text     TEXT DEFAULT 'I consent to share my health records with authorized healthcare providers via the Medha Health Intelligance platform.',
   granted_at       TIMESTAMPTZ,
   granted_via      TEXT DEFAULT '',
   granted_at_hospital TEXT,

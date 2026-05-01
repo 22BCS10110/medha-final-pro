@@ -9,7 +9,7 @@ from doctors.models import Doctor, Appointment
 from patients.models import Patient
 from billing.models import Receipt
 from records.models import Prescription
-from django.db.models import Sum, Count
+from django.db.models import Sum, Count, Q
 from datetime import date, timedelta
 
 
@@ -62,8 +62,25 @@ def admin_dashboard(request):
 def doctor_dashboard(request):
     """Doctor dashboard - only their appointments."""
     user = request.user
- 
+
     doctor = getattr(user, 'doctor_profile', None)
+
+    # Fallback: older seed data creates doctor users without linking them to a
+    # Doctor record. Match by hospital + email (or first unassigned doctor in
+    # the user's hospital) and persist the link so subsequent calls are fast.
+    if not doctor and user.role == 'doctor' and getattr(user, 'hospital_id', None):
+        doctor = (
+            Doctor.objects
+            .filter(hospital=user.hospital, user__isnull=True)
+            .filter(Q(email__iexact=user.email) | Q(email=''))
+            .order_by('-email')  # prefer email match over blank
+            .first()
+        )
+        if doctor:
+            doctor.user = user
+            if not doctor.email:
+                doctor.email = user.email
+            doctor.save(update_fields=['user', 'email'])
 
     if not doctor:
         return Response({'error': 'No doctor profile found'}, status=404)

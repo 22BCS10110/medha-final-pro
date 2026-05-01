@@ -1,5 +1,5 @@
 /**
- * Medha Health Desktop Application — Main Process
+ * Medha Health Intelligance Desktop Application — Main Process
  *
  * Handles: auth, API proxy, local database, sync engine, NFC bridge.
  * Login → role-based redirect to app.html
@@ -39,7 +39,7 @@ function createWindow() {
     height: 800,
     minWidth: 1024,
     minHeight: 700,
-    title: 'Medha Health',
+    title: 'Medha Health Intelligance',
     webPreferences: {
       nodeIntegration: false,
       contextIsolation: true,

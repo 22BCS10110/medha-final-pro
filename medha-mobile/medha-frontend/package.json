@@ -1,10 +1,10 @@
 {
   "name": "medha-health-desktop",
-  "productName": "Medha Health",
+  "productName": "Medha Health Intelligance",
   "private": true,
   "version": "1.0.0",
-  "description": "Medha Health Desktop Application for Doctors and Admins",
-  "author": "Medha Health",
+  "description": "Medha Health Intelligance Desktop Application for Doctors and Admins",
+  "author": "Medha Health Intelligance",
   "type": "module",
   "main": "electron/main.js",
   "scripts": {
@@ -13,7 +13,7 @@
   },
   "build": {
     "appId": "com.medha.health",
-    "productName": "Medha Health",
+    "productName": "Medha Health Intelligance",
     "directories": {
       "output": "dist-electron"
     },

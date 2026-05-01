@@ -1,7 +1,7 @@
 {
   "name": "medha-supabase-mcp",
   "version": "1.0.0",
-  "description": "Supabase MCP server for Medha Health — exposes Supabase tools to Claude Code",
+  "description": "Supabase MCP server for Medha Health Intelligance — exposes Supabase tools to Claude Code",
   "type": "module",
   "main": "server.js",
   "scripts": {

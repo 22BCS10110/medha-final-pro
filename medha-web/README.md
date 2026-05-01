@@ -1,6 +1,6 @@
 # Medha Web
 
-This is the browser website frontend for Medha Health.
+This is the browser website frontend for Medha Health Intelligance.
 
 The portal UI has been removed from the website. Hospital admin and patient portal access is handled by the Electron desktop app in `medha-frontend`.
 

@@ -1,5 +1,5 @@
 /**
- * Medha Health — Background Sync Engine
+ * Medha Health Intelligance — Background Sync Engine
  *
  * Pull: fetches data from backend, caches in SQLite
  * Push: sends queued offline writes to backend

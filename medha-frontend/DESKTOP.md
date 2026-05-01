@@ -1,4 +1,4 @@
-# Medha Health Desktop Application
+# Medha Health Intelligance Desktop Application
 
 A native desktop application for doctors and hospital administrators built with Electron and React.
 
@@ -37,19 +37,19 @@ npm run electron:build
 ### Windows
 ```bash
 npm run electron:build
-# Output: dist-electron/Medha Health Setup X.X.X.exe
+# Output: dist-electron/Medha Health Intelligance Setup X.X.X.exe
 ```
 
 ### macOS
 ```bash
 npm run electron:build
-# Output: dist-electron/Medha Health X.X.X.dmg
+# Output: dist-electron/Medha Health Intelligance X.X.X.dmg
 ```
 
 ### Linux
 ```bash
 npm run electron:build
-# Output: dist-electron/Medha Health X.X.X.AppImage
+# Output: dist-electron/Medha Health Intelligance X.X.X.AppImage
 #         dist-electron/medha-health-desktop_X.X.X_amd64.deb
 ```
 
@@ -125,4 +125,4 @@ The desktop app supports direct USB NFC reader integration. When running in desk
 
 ## Support
 
-For issues and feature requests, please contact the Medha Health development team.
+For issues and feature requests, please contact the Medha Health Intelligance development team.

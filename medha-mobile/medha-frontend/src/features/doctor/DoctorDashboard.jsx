@@ -183,7 +183,7 @@ export default function DoctorDashboard() {
                          <div className="absolute top-0 right-0 w-32 h-32 bg-primary/20 rounded-full blur-3xl" />
                          <div className="flex items-center gap-3 mb-6">
                             <BrainCircuit className="text-primary" size={24} />
-                            <h4 className="text-lg font-bold">Medhā AI Insight</h4>
+                            <h4 className="text-lg font-bold">Medha AI Insight</h4>
                           </div>
                           <div className="space-y-4 relative z-10">
                             <p className="text-sm text-slate-300 leading-relaxed italic">

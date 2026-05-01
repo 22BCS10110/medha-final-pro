@@ -3,7 +3,7 @@
 // "ReferenceError: dragEvent is not defined" and interrupting React's render
 // cycle. Defining a no-op on window before React mounts neutralizes it.
 if (typeof window !== "undefined") {
-  window.dragEvent = window.dragEvent || function () {};
+  window.dragEvent = function () {};
 }
 
 import { StrictMode } from 'react'

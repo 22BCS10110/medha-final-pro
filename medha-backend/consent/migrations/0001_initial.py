@@ -20,7 +20,7 @@ class Migration(migrations.Migration):
             fields=[
                 ('id', models.UUIDField(default=uuid.uuid4, editable=False, primary_key=True, serialize=False)),
                 ('status', models.CharField(choices=[('pending', 'Pending'), ('granted', 'Granted'), ('revoked', 'Revoked')], default='pending', max_length=10)),
-                ('consent_text', models.TextField(default='I consent to share my health records with authorized healthcare providers via the Medha Health platform for the purpose of care management.')),
+                ('consent_text', models.TextField(default='I consent to share my health records with authorized healthcare providers via the Medha Health Intelligance platform for the purpose of care management.')),
                 ('granted_at', models.DateTimeField(blank=True, null=True)),
                 ('granted_via', models.CharField(blank=True, help_text='nfc, web, mobile', max_length=20)),
                 ('revoked_at', models.DateTimeField(blank=True, null=True)),

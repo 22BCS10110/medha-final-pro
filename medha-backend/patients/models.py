@@ -1,9 +1,44 @@
 from django.db import models
 from django.conf import settings
-import uuid
+from django.core.exceptions import ValidationError
+from uuid import UUID, uuid4
+
+
+class PatientQuerySet(models.QuerySet):
+    def get_by_id_or_code(self, lookup):
+        """
+        Resolve a patient by UUID primary key OR by the human-readable
+        patient_id (PAT-XXXX). If the lookup parses as a UUID, only the PK
+        path is attempted — there's no point querying patient_id with a UUID.
+        """
+        lookup_str = str(lookup)
+        try:
+            uuid_obj = UUID(lookup_str)
+        except ValueError:
+            uuid_obj = None
+
+        if uuid_obj is not None:
+            try:
+                return self.get(id=uuid_obj)
+            except self.model.DoesNotExist:
+                raise self.model.DoesNotExist(f"No patient found for '{lookup_str}'")
+
+        # Non-UUID string — treat as the human-readable code.
+        try:
+            return self.get(patient_id=lookup_str)
+        except self.model.DoesNotExist:
+            raise self.model.DoesNotExist(f"No patient found for '{lookup_str}'")
+
+class PatientManager(models.Manager):
+    def get_queryset(self):
+        return PatientQuerySet(self.model, using=self._db)
+
+    def get_by_id_or_code(self, lookup):
+        return self.get_queryset().get_by_id_or_code(lookup)
 
 
 class Patient(models.Model):
+
     """
     GLOBAL Patient model — accessible across all hospitals.
     Patients are NOT tied to a single hospital.
@@ -25,7 +60,7 @@ class Patient(models.Model):
         ('O+', 'O+'), ('O-', 'O-'), ('AB+', 'AB+'), ('AB-', 'AB-'),
     ]
 
-    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    id = models.UUIDField(primary_key=True, default=uuid4, editable=False)
     user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, null=True, blank=True, related_name='patient_profile')
     patient_id = models.CharField(max_length=20, unique=True)
     full_name = models.CharField(max_length=200)
@@ -36,13 +71,20 @@ class Patient(models.Model):
     blood_group = models.CharField(max_length=3, choices=BLOOD_GROUPS, blank=True)
     phone = models.CharField(max_length=15, blank=True)
     emergency_contact = models.CharField(max_length=15, blank=True)
+    supabase_uid = models.CharField(max_length=36, unique=True, null=True, blank=True, help_text='Supabase auth.users UUID')
     abha_id = models.CharField(max_length=20, blank=True)
+    address = models.TextField(blank=True)
     allergies = models.TextField(blank=True)
+    existing_diseases = models.TextField(blank=True)
+    height_cm = models.DecimalField(max_digits=5, decimal_places=2, null=True, blank=True)
+    weight_kg = models.DecimalField(max_digits=5, decimal_places=2, null=True, blank=True)
     reason_for_visit = models.TextField(blank=True)
     assigned_doctor = models.ForeignKey('doctors.Doctor', on_delete=models.SET_NULL, null=True, blank=True, related_name='assigned_patients')
     status = models.CharField(max_length=15, choices=STATUS_CHOICES, default='active')
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
+
+    objects = PatientManager()
 
     class Meta:
         ordering = ['-created_at']
@@ -86,7 +128,7 @@ class PatientCard(models.Model):
         ('expired', 'Expired'),
     ]
 
-    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    id = models.UUIDField(primary_key=True, default=uuid4, editable=False)
     patient = models.ForeignKey(Patient, on_delete=models.CASCADE, related_name='cards')
     card_number = models.CharField(max_length=30, unique=True, editable=False)
     nfc_uid = models.CharField(

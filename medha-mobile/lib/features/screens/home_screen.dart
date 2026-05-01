@@ -57,7 +57,7 @@ class HomeScreen extends ConsumerWidget {
                         ),
                         const SizedBox(height: 4),
                         Text(
-                          'Medha Health',
+                          'Medha Health Intelligance',
                           style: tt.headlineMedium?.copyWith(
                             fontWeight: FontWeight.w800,
                           ),

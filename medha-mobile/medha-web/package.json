@@ -2,7 +2,7 @@
   "name": "medha-web",
   "private": true,
   "version": "1.0.0",
-  "description": "Minimal browser website for Medha Health without portal UI",
+  "description": "Minimal browser website for Medha Health Intelligance without portal UI",
   "scripts": {
     "start": "node server.js"
   }

@@ -1,5 +1,5 @@
 /**
- * RBAC (Role-Based Access Control) Utilities for Medha Health Frontend
+ * RBAC (Role-Based Access Control) Utilities for Medha Health Intelligance Frontend
  */
 
 // Role hierarchy - higher index = more permissions

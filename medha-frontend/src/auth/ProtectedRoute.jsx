@@ -15,12 +15,6 @@ export const ProtectedRoute = ({ children, allowedRoles }) => {
   const { user } = useAuth();
   const rbac = getRBACContext(user);
 
-  // Browser users should never reach protected routes (App.jsx handles this),
-  // but as a safety net, redirect to download page.
-  if (!isElectron) {
-    return <Navigate to="/download" replace />;
-  }
-
   if (!rbac.isAuthenticated) {
     return <Navigate to="/auth" replace />;
   }

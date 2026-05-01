@@ -73,7 +73,7 @@ export default function LoginModal({ isOpen, onClose, initialRole }) {
               <div className="flex flex-col items-center text-center mb-10">
                 <Logo className="mb-6 scale-110" showText={false} />
                 <h2 className="text-3xl font-display font-bold text-slate-900 mb-2">Welcome Back</h2>
-                <p className="text-slate-500 font-medium">Sign in to access the Medha Health portal.</p>
+                <p className="text-slate-500 font-medium">Sign in to access the Medha Health Intelligance portal.</p>
               </div>
 
 

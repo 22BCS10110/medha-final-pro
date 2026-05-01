@@ -20,6 +20,7 @@ import Pricing from "./features/marketing/Pricing";
 import Contact from "./features/marketing/Contact";
 import Portal from "./auth/Portal";               // Download page
 import PatientPortal from "./auth/PatientPortal";
+import LoginPage from "./auth/LoginPage";
 import DesktopOnlyRedirect from "./components/DesktopOnlyRedirect";
 
 // ═══════════════════════════════════════════════════════════
@@ -64,8 +65,8 @@ function App() {
 
             {/* ─── WEBSITE ROUTES (always available) ─── */}
 
-            {/* In Electron, "/" goes to Portal (login/download). In browser, "/" is the landing page. */}
-            <Route path="/" element={isElectron ? <Portal /> : <Home />} />
+            {/* In Electron, "/" redirects to login. In browser, "/" is the landing page. */}
+            <Route path="/" element={isElectron ? <Navigate to="/auth" replace /> : <Home />} />
             <Route path="/about" element={<About />} />
             <Route path="/pricing" element={<Pricing />} />
             <Route path="/contact" element={<Contact />} />
@@ -74,85 +75,69 @@ function App() {
 
             {/* ─── DESKTOP-ONLY ROUTES ─── */}
 
-            {isElectron ? (
-              <>
-                {/* Auth */}
-                <Route path="/portal" element={<Portal />} />
-                <Route path="/auth" element={<Portal />} />
+            {/* Auth */}
+            <Route path="/portal" element={<Portal />} />
+            <Route path="/auth" element={<LoginPage />} />
 
-                {/* Admin Routes — Super Admin & Hospital Admin */}
-                <Route path="/admin" element={
-                  <ProtectedRoute allowedRoles={['super_admin', 'hospital_admin']}>
-                    <AdminOverview />
-                  </ProtectedRoute>
-                } />
-                <Route path="/admin/patients" element={
-                  <ProtectedRoute allowedRoles={['super_admin', 'hospital_admin']}>
-                    <PatientManagement />
-                  </ProtectedRoute>
-                } />
-                <Route path="/admin/doctors" element={
-                  <ProtectedRoute allowedRoles={['super_admin', 'hospital_admin']}>
-                    <DoctorManagement />
-                  </ProtectedRoute>
-                } />
-                <Route path="/admin/registration" element={
-                  <ProtectedRoute allowedRoles={['super_admin', 'hospital_admin']}>
-                    <PatientManagement />
-                  </ProtectedRoute>
-                } />
-                <Route path="/admin/billing" element={
-                  <ProtectedRoute allowedRoles={['super_admin', 'hospital_admin']}>
-                    <BillingAndReceipts />
-                  </ProtectedRoute>
-                } />
-                <Route path="/admin/reports" element={
-                  <ProtectedRoute allowedRoles={['super_admin', 'hospital_admin']}>
-                    <AdminOverview />
-                  </ProtectedRoute>
-                } />
-                {/* Doctor Routes */}
-                <Route path="/doctor" element={
-                  <ProtectedRoute allowedRoles={['doctor']}>
-                    <DoctorDashboard />
-                  </ProtectedRoute>
-                } />
+            {/* Admin Routes — Super Admin & Hospital Admin (available in browser + Electron) */}
+            <Route path="/admin" element={
+              <ProtectedRoute allowedRoles={['super_admin', 'hospital_admin']}>
+                <AdminOverview />
+              </ProtectedRoute>
+            } />
+            <Route path="/admin/patients" element={
+              <ProtectedRoute allowedRoles={['super_admin', 'hospital_admin']}>
+                <PatientManagement />
+              </ProtectedRoute>
+            } />
+            <Route path="/admin/doctors" element={
+              <ProtectedRoute allowedRoles={['super_admin', 'hospital_admin']}>
+                <DoctorManagement />
+              </ProtectedRoute>
+            } />
+            <Route path="/admin/registration" element={
+              <ProtectedRoute allowedRoles={['super_admin', 'hospital_admin']}>
+                <PatientManagement />
+              </ProtectedRoute>
+            } />
+            <Route path="/admin/billing" element={
+              <ProtectedRoute allowedRoles={['super_admin', 'hospital_admin']}>
+                <BillingAndReceipts />
+              </ProtectedRoute>
+            } />
+            <Route path="/admin/reports" element={
+              <ProtectedRoute allowedRoles={['super_admin', 'hospital_admin']}>
+                <AdminOverview />
+              </ProtectedRoute>
+            } />
 
-                {/* Patient Routes */}
-                <Route path="/patient" element={
-                  <ProtectedRoute allowedRoles={['patient']}>
-                    <PatientDashboard />
-                  </ProtectedRoute>
-                } />
+            {/* Doctor Routes */}
+            <Route path="/doctor" element={
+              <ProtectedRoute allowedRoles={['doctor']}>
+                <DoctorDashboard />
+              </ProtectedRoute>
+            } />
 
-                {/* NFC Scan — staff only */}
-                <Route path="/nfc-scan" element={
-                  <ProtectedRoute allowedRoles={['super_admin', 'hospital_admin', 'doctor']}>
-                    <NfcScanPage />
-                  </ProtectedRoute>
-                } />
+            {/* Patient Routes */}
+            <Route path="/patient" element={
+              <ProtectedRoute allowedRoles={['patient']}>
+                <PatientDashboard />
+              </ProtectedRoute>
+            } />
 
-                {/* Chat — Doctors and Patients */}
-                <Route path="/chat" element={
-                  <ProtectedRoute allowedRoles={['doctor', 'patient']}>
-                    <ChatPage />
-                  </ProtectedRoute>
-                } />
-              </>
-            ) : (
-              <>
-                {/* ─── BROWSER CATCH-ALL: redirect desktop routes to download page ─── */}
-                <Route path="/portal" element={<Navigate to="/download" replace />} />
-                <Route path="/auth" element={<Navigate to="/download" replace />} />
-                <Route path="/admin/*" element={<DesktopOnlyRedirect />} />
-                <Route path="/doctor" element={<DesktopOnlyRedirect />} />
-                <Route path="/doctor/*" element={<DesktopOnlyRedirect />} />
-                <Route path="/patient" element={<DesktopOnlyRedirect />} />
-                <Route path="/patient/*" element={<DesktopOnlyRedirect />} />
-                <Route path="/nfc-scan" element={<DesktopOnlyRedirect />} />
-                <Route path="/chat" element={<DesktopOnlyRedirect />} />
-              </>
-            )}
+            {/* NFC Scan — staff only */}
+            <Route path="/nfc-scan" element={
+              <ProtectedRoute allowedRoles={['super_admin', 'hospital_admin', 'doctor']}>
+                <NfcScanPage />
+              </ProtectedRoute>
+            } />
+
+            {/* Chat — Doctors and Patients */}
+            <Route path="/chat" element={
+              <ProtectedRoute allowedRoles={['doctor', 'patient']}>
+                <ChatPage />
+              </ProtectedRoute>
+            } />
 
             {/* Fallback — redirect unknown routes */}
             <Route path="*" element={<Navigate to="/" replace />} />

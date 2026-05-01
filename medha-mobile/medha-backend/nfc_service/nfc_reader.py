@@ -1,5 +1,5 @@
 """
-NFC Patient Card Scanner for Medha Health
+NFC Patient Card Scanner for Medha Health Intelligance
 Connects to Django backend API and displays patient information when card is scanned.
 Works in manual mode (type patient_id) or with NFC hardware if available.
 """

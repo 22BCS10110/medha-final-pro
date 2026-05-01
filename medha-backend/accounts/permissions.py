@@ -1,5 +1,5 @@
 """
-RBAC (Role-Based Access Control) Permission Classes for Medha Health
+RBAC (Role-Based Access Control) Permission Classes for Medha Health Intelligance
 """
 from rest_framework import permissions
 from functools import wraps

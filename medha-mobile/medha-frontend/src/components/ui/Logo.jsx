@@ -37,7 +37,7 @@ const Logo = ({ className, showText = true, dark = false }) => {
             "text-xl font-display font-bold tracking-tight leading-none",
             dark ? "text-white" : "text-slate-900"
           )}>
-            Medhā<span className="text-primary tracking-tighter cursor-default ml-0.5">•</span>
+            Medha<span className="text-primary tracking-tighter cursor-default ml-0.5">•</span>
           </span>
           <span className={cn(
             "text-[10px] uppercase tracking-[0.2em] font-semibold opacity-60",

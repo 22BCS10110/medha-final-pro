@@ -94,7 +94,7 @@ const Portal = () => {
           >
             Download{' '}
             <span className="bg-clip-text text-transparent bg-gradient-to-r from-primary via-secondary to-primary bg-[length:200%_auto] animate-shimmer italic">
-              Medhā
+              Medha
             </span>
             <br />
             Hospital Desktop App
@@ -107,7 +107,7 @@ const Portal = () => {
             transition={{ duration: 0.6, delay: 0.2 }}
             className="text-lg md:text-2xl text-slate-500 max-w-3xl mx-auto mb-16 leading-relaxed font-medium"
           >
-            Install the Medhā Desktop System for a lightning-fast, offline-capable experience. 
+            Install the Medha Desktop System for a lightning-fast, offline-capable experience. 
             Securely manage hospital operations and unlock the power of AI right on your local machine.
           </motion.p>
 
@@ -182,34 +182,7 @@ const Portal = () => {
       {/* 4. How It Works Section */}
       <HowItWorks />
 
-      {/* 5. Download Section Final CTA */}
-      <div className="py-24 px-6 bg-slate-50">
-         <div className="max-w-5xl mx-auto rounded-[3rem] bg-primary relative overflow-hidden p-12 md:p-24 text-center shadow-2xl">
-            <div className="absolute top-0 right-0 w-96 h-96 bg-white/10 rounded-full blur-[100px]" />
-            <div className="absolute bottom-0 left-0 w-96 h-96 bg-secondary/20 rounded-full blur-[100px]" />
-            
-            <div className="relative z-10">
-               <h3 className="text-4xl md:text-6xl font-display font-bold text-white mb-8 tracking-tight">
-                 Set Up Your Hospital Today
-               </h3>
-               <p className="text-primary-100 text-lg md:text-xl max-w-2xl mx-auto mb-12 text-slate-100 opacity-90">
-                 Medhā is secure, offline-capable, and designed specifically for the rigorous demands of modern healthcare facilities.
-               </p>
-               <div className="flex flex-col sm:flex-row items-center justify-center gap-6">
-                  <a href="#" className="bg-white text-primary px-10 py-5 rounded-2xl font-bold text-xl hover:scale-[1.02] shadow-xl transition-transform flex items-center gap-3">
-                     <Download size={22} />
-                     Download for Windows
-                  </a>
-                  <a href="#" className="bg-primary-dark border-2 border-white/20 text-white px-10 py-5 rounded-2xl font-bold text-xl hover:bg-white/10 transition-all flex items-center gap-3">
-                     <Apple size={22} />
-                     Download for macOS
-                  </a>
-               </div>
-            </div>
-         </div>
-      </div>
-
-      <MobilePreviewModal 
+      <MobilePreviewModal
         isOpen={isMobilePreviewOpen} 
         onClose={() => setIsMobilePreviewOpen(false)} 
       />

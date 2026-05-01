@@ -24,7 +24,7 @@ export default function NfcScanPage() {
       if (window.medhaAPI?.apiGet) {
         data = await window.medhaAPI.apiGet(`/patients/nfc-scan/?id=${encodeURIComponent(id)}`);
       } else {
-        const API_BASE = import.meta.env.VITE_API_URL || "http://127.0.0.1:8000";
+        const API_BASE = (import.meta.env.VITE_API_URL || "http://127.0.0.1:8000").replace(/\/+$/, "");
         const res = await fetch(`${API_BASE}/api/patients/nfc-scan/?id=${encodeURIComponent(id)}`);
         data = await res.json();
         if (!res.ok) throw new Error(data?.error || "Patient not found");

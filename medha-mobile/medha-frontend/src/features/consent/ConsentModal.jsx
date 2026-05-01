@@ -63,7 +63,7 @@ export default function ConsentModal({ isOpen, onClose, patientId, patientName, 
               <div className="bg-slate-50 rounded-2xl p-4 mb-6 text-sm text-slate-600 leading-relaxed">
                 <p>
                   By granting consent, the patient agrees to share their health records
-                  with authorized healthcare providers via the Medha Health platform for
+                  with authorized healthcare providers via the Medha Health Intelligance platform for
                   the purpose of care management.
                 </p>
                 <p className="mt-3 text-xs text-slate-400">

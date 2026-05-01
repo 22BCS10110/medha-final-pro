@@ -1,6 +1,6 @@
 import 'package:supabase_flutter/supabase_flutter.dart';
 
-/// Supabase client singleton for the Medha Health app.
+/// Supabase client singleton for the Medha Health Intelligance app.
 /// This is the only place where Supabase is initialized in the mobile app.
 class SupabaseClient {
   SupabaseClient._();

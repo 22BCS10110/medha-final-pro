@@ -112,8 +112,8 @@ class Command(BaseCommand):
                 status='on_duty'
             )
             doctors_a.append(doctor)
-            # Create user for each doctor
-            User.objects.create_user(
+            # Create user for each doctor and link to the Doctor profile
+            doctor_user = User.objects.create_user(
                 username=f'doctor_a_{i+1}',
                 password=f'doctor_a_{i+1}',
                 first_name=names_a[i].replace('Dr. ', '').split()[0],
@@ -122,6 +122,9 @@ class Command(BaseCommand):
                 role='doctor',
                 hospital=hospital_a,
             )
+            doctor.user = doctor_user
+            doctor.email = doctor_user.email
+            doctor.save(update_fields=['user', 'email'])
             self.stdout.write(f'  {doctor.full_name} ({doctor.doctor_id})')
 
         # Create doctors for Hospital B
@@ -145,11 +148,11 @@ class Command(BaseCommand):
                 specialisation=spec,
                 registration_no=f'REG-B-{2001+i}',
                 experience_years=random.randint(5, 20),
-                phone=f'98766{'0001+i'}',
+                phone=f"98766{(i+1):04d}",
                 status='on_duty'
             )
             doctors_b.append(doctor)
-            User.objects.create_user(
+            doctor_user = User.objects.create_user(
                 username=f'doctor_b_{i+1}',
                 password=f'doctor_b_{i+1}',
                 first_name=names_b[i].replace('Dr. ', '').split()[0],
@@ -158,6 +161,9 @@ class Command(BaseCommand):
                 role='doctor',
                 hospital=hospital_b,
             )
+            doctor.user = doctor_user
+            doctor.email = doctor_user.email
+            doctor.save(update_fields=['user', 'email'])
             self.stdout.write(f'  {doctor.full_name} ({doctor.doctor_id})')
 
         # Create GLOBAL patients (not tied to a single hospital)
@@ -179,7 +185,7 @@ class Command(BaseCommand):
                 gender=pdata['gender'],
                 blood_group=pdata['blood_group'],
                 phone=pdata['phone'],
-                emergency_contact=f'990022{'0001+i'}',
+                emergency_contact=f"98766{(i+1):04d}",
                 status='active',
             )
             patients.append(patient)

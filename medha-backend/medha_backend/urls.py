@@ -4,6 +4,8 @@ Updated for multi-hospital architecture.
 """
 from django.contrib import admin
 from django.urls import path, include
+from django.conf import settings
+from django.conf.urls.static import static
 from .dashboard_views import (
     admin_dashboard, doctor_dashboard, patient_dashboard,
     reports_view, hospital_settings,
@@ -36,4 +38,10 @@ urlpatterns = [
 
     # ── ABDM Simulator (Demo/Pilot) ──
     path('api/abdm/', include('abdm_simulator.urls')),
-]
+
+    # ── Notifications ──
+    path('api/', include('notifications.urls')),
+
+    # ── Patient Uploads (reports & prescription PDFs) ──
+    path('api/', include('patient_uploads.urls')),
+] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

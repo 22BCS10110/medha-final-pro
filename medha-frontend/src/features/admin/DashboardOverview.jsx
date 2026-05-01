@@ -1,17 +1,19 @@
 import React from 'react';
 import { motion } from 'framer-motion';
-import { 
-  Users, 
-  Stethoscope, 
-  CreditCard, 
-  Activity, 
-  ArrowUpRight, 
+import { useNavigate } from 'react-router-dom';
+import {
+  Users,
+  Stethoscope,
+  CreditCard,
+  Activity,
+  ArrowUpRight,
   ArrowDownRight,
-  MapPin, 
-  Clock, 
+  MapPin,
+  Clock,
   ShieldCheck,
   MoreVertical,
   Plus,
+  UserPlus,
   ChevronRight,
   AlertCircle
 } from 'lucide-react';
@@ -45,6 +47,7 @@ const DashboardOverview = () => {
   const [data, setData] = React.useState(null);
   const [loading, setLoading] = React.useState(true);
   const [dataSource, setDataSource] = React.useState(null);
+  const navigate = useNavigate();
 
   React.useEffect(() => {
     const fetchDashboard = async () => {
@@ -91,7 +94,31 @@ const DashboardOverview = () => {
   return (
     <AdminLayout title="Hospital Overview">
       <div className="space-y-10">
-        
+
+        {/* Quick Actions */}
+        <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+           <div>
+              <h2 className="text-xl font-black text-slate-900 tracking-tight">Welcome back</h2>
+              <p className="text-sm font-bold text-slate-400 mt-1">Manage patients, staff, and operations at a glance.</p>
+           </div>
+           <div className="flex items-center gap-3">
+              <button
+                 onClick={() => navigate('/admin/patients')}
+                 className="flex items-center gap-2 px-5 py-3 rounded-2xl bg-white border border-slate-100 text-slate-700 font-bold text-sm hover:bg-slate-50 transition-all shadow-sm"
+              >
+                 <Users size={18} />
+                 View Patients
+              </button>
+              <button
+                 onClick={() => navigate('/admin/registration')}
+                 className="flex items-center gap-2 px-6 py-3 rounded-2xl bg-primary text-white font-bold text-sm hover:bg-primary/90 transition-all shadow-lg shadow-primary/20"
+              >
+                 <UserPlus size={18} />
+                 Add Patient
+              </button>
+           </div>
+        </div>
+
         {/* Top Metrics Row */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
            <StatCard 

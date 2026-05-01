@@ -1,4 +1,4 @@
-# Medha Health Shared Backend Schema (Web + Mobile)
+# Medha Health Intelligance Shared Backend Schema (Web + Mobile)
 
 This schema is intended to be shared by Flutter mobile and web clients.
 

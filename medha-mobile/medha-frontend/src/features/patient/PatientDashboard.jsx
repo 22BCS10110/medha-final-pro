@@ -204,7 +204,7 @@ export default function PatientDashboard() {
                      <FileText size={40} />
                   </div>
                   <h3 className="text-2xl font-display font-bold text-slate-900 mb-2">Expanding Your Health Records</h3>
-                  <p className="text-slate-500 max-w-sm">We are integrating your full history from the Medhā Healthcare Cloud. Please wait.</p>
+                  <p className="text-slate-500 max-w-sm">We are integrating your full history from the Medha Healthcare Cloud. Please wait.</p>
                </motion.div>
             )}
           </AnimatePresence>

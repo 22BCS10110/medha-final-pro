@@ -48,7 +48,7 @@ const MobilePreviewModal = ({ isOpen, onClose }) => {
                
                <h3 className="text-4xl font-display font-bold text-slate-900 mb-6">Experience the future of <span className="text-primary italic">Personal Health.</span></h3>
                <p className="text-slate-600 mb-10 leading-relaxed">
-                  The Medhā Native App gives patients direct access to their clinical data, 
+                  The Medha Native App gives patients direct access to their clinical data, 
                   AI-driven insights, and seamless hospital integration in a high-performance mobile environment.
                </p>
 
@@ -80,7 +80,7 @@ const MobilePreviewModal = ({ isOpen, onClose }) => {
                </div>
 
                <p className="mt-8 text-center text-[10px] font-black uppercase tracking-[0.2em] text-slate-400">
-                  Join 10,000+ patients tracking their health on Medhā.
+                  Join 10,000+ patients tracking their health on Medha.
                </p>
             </div>
           </motion.div>

@@ -1,5 +1,5 @@
 """
-Medha Health System - Complete Architecture Test Suite
+Medha Health Intelligance System - Complete Architecture Test Suite
 Tests all components based on the architecture diagram
 """
 import os
@@ -59,7 +59,7 @@ class ArchitectureTest:
         
     def run_all_tests(self):
         """Run complete test suite"""
-        print_header("MEDHA HEALTH SYSTEM - ARCHITECTURE TEST SUITE")
+        print_header("Medha Health Intelligance SYSTEM - ARCHITECTURE TEST SUITE")
         print(f"Test Date: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
         print(f"Base URL: {BASE_URL}")
         
@@ -298,7 +298,7 @@ class ArchitectureTest:
 
 def simple_test():
     """Simple test function"""
-    print_header("MEDHA HEALTH SYSTEM - ARCHITECTURE VERIFICATION")
+    print_header("Medha Health Intelligance SYSTEM - ARCHITECTURE VERIFICATION")
     
     try:
         # Test 1: Database Connection

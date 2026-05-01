@@ -1,5 +1,5 @@
 """
-NFC Bridge API for Medha Health Frontend
+NFC Bridge API for Medha Health Intelligance Frontend
 FastAPI service that bridges the NFC scanner with the frontend.
 Reads from latest_scan.json and provides patient data via API.
 """

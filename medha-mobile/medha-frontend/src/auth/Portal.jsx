@@ -94,7 +94,7 @@ const Portal = () => {
           >
             Download{' '}
             <span className="bg-clip-text text-transparent bg-gradient-to-r from-primary via-secondary to-primary bg-[length:200%_auto] animate-shimmer italic">
-              Medhā
+              Medha
             </span>
             <br />
             Hospital Desktop App
@@ -107,7 +107,7 @@ const Portal = () => {
             transition={{ duration: 0.6, delay: 0.2 }}
             className="text-lg md:text-2xl text-slate-500 max-w-3xl mx-auto mb-16 leading-relaxed font-medium"
           >
-            Install the Medhā Desktop System for a lightning-fast, offline-capable experience. 
+            Install the Medha Desktop System for a lightning-fast, offline-capable experience. 
             Securely manage hospital operations and unlock the power of AI right on your local machine.
           </motion.p>
 
@@ -193,7 +193,7 @@ const Portal = () => {
                  Set Up Your Hospital Today
                </h3>
                <p className="text-primary-100 text-lg md:text-xl max-w-2xl mx-auto mb-12 text-slate-100 opacity-90">
-                 Medhā is secure, offline-capable, and designed specifically for the rigorous demands of modern healthcare facilities.
+                 Medha is secure, offline-capable, and designed specifically for the rigorous demands of modern healthcare facilities.
                </p>
                <div className="flex flex-col sm:flex-row items-center justify-center gap-6">
                   <a href="#" className="bg-white text-primary px-10 py-5 rounded-2xl font-bold text-xl hover:scale-[1.02] shadow-xl transition-transform flex items-center gap-3">

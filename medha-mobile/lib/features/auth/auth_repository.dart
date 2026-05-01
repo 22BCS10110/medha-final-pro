@@ -10,7 +10,16 @@ final authRepositoryProvider = Provider<AuthRepository>((ref) {
 });
 
 final authStateProvider = StreamProvider<User?>((ref) {
-  return FirebaseAuth.instance.authStateChanges();
+  // Use a custom transformer to suppress duplicate emissions with the same UID.
+  // Firebase can fire authStateChanges() multiple times for token refreshes
+  // without the user identity actually changing; filtering these out prevents
+  // unnecessary router re-evaluations.
+  User? lastSeen;
+  return FirebaseAuth.instance.authStateChanges().where((user) {
+    final changed = user?.uid != lastSeen?.uid;
+    if (changed) lastSeen = user;
+    return changed;
+  });
 });
 
 final guestProvider = StateNotifierProvider<GuestNotifier, bool>((ref) {

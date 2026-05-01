@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-Medha Health is a multi-hospital, multi-tenant healthcare system with three clients: a Django backend, a React+Electron desktop app (for doctors/admins), and a Flutter mobile app (for patients). The system uses NFC-based patient identification, role-based access control, and is designed for future ABDM (Ayushman Bharat Digital Mission) integration.
+Medha Health Intelligance is a multi-hospital, multi-tenant healthcare system with three clients: a Django backend, a React+Electron desktop app (for doctors/admins), and a Flutter mobile app (for patients). The system uses NFC-based patient identification, role-based access control, and is designed for future ABDM (Ayushman Bharat Digital Mission) integration.
 
 ## Architecture
 

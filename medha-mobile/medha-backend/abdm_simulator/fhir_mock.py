@@ -286,7 +286,7 @@ def generate_fhir_bundle(patient, abha_record, encounters=None, observations=Non
         # ABDM-specific metadata
         "extension": [{
             "url": "https://ndhm.gov.in/fhir/extensions/data-origin",
-            "valueString": "Medha Health Intelligence Platform (Simulated)"
+            "valueString": "Medha Health Intelligance Intelligence Platform (Simulated)"
         }]
     }
 

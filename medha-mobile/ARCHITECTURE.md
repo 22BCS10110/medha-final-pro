@@ -1,8 +1,8 @@
-# Medha Health - Multi-Hospital Architecture
+# Medha Health Intelligance - Multi-Hospital Architecture
 
 ## Overview
 
-The Medha Health platform has been converted from a single-tenant (one hospital) system to a **multi-hospital multi-tenant** architecture with **global patient access**.
+The Medha Health Intelligance platform has been converted from a single-tenant (one hospital) system to a **multi-hospital multi-tenant** architecture with **global patient access**.
 
 ---
 

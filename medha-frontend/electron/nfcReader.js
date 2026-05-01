@@ -1,5 +1,5 @@
 /**
- * Medha Health — Native NFC Card Reader (nfc-pcsc)
+ * Medha Health Intelligance — Native NFC Card Reader (nfc-pcsc)
  *
  * Manages USB NFC reader (ACR122U / PN532) connection and card tap events.
  * Supports MIFARE DESFire card read/write with UID fallback.

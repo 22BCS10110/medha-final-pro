@@ -1,12 +1,18 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; style-src 'self' 'unsafe-inline'; script-src 'self' 'unsafe-inline'; connect-src http://127.0.0.1:8000 http://localhost:8010;">
-  <title>Medha Health</title>
+  <meta http-equiv="Content-Security-Policy"
+    content="default-src 'self'; style-src 'self' 'unsafe-inline'; script-src 'self' 'unsafe-inline'; connect-src http://127.0.0.1:8000 http://localhost:8010;">
+  <title>Medha Health Intelligance</title>
   <style>
-    * { margin: 0; padding: 0; box-sizing: border-box; }
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
 
     :root {
       --bg: #f1f5f9;
@@ -48,74 +54,136 @@
 
     .sidebar-brand {
       padding: 20px 20px 16px;
-      border-bottom: 1px solid rgba(255,255,255,0.08);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
       display: flex;
       align-items: center;
       gap: 12px;
     }
 
     .sidebar-brand-icon {
-      width: 34px; height: 34px;
+      width: 34px;
+      height: 34px;
       background: var(--accent);
       border-radius: 9px;
-      display: flex; align-items: center; justify-content: center;
-      font-weight: 800; font-size: 15px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 800;
+      font-size: 15px;
     }
 
-    .sidebar-brand h1 { font-size: 17px; font-weight: 700; }
+    .sidebar-brand h1 {
+      font-size: 17px;
+      font-weight: 700;
+    }
 
-    .sidebar-nav { flex: 1; padding: 12px 10px; overflow-y: auto; }
+    .sidebar-nav {
+      flex: 1;
+      padding: 12px 10px;
+      overflow-y: auto;
+    }
 
     .sidebar-label {
-      font-size: 10px; font-weight: 700; text-transform: uppercase;
-      letter-spacing: 1.5px; color: rgba(255,255,255,0.3);
-      padding: 16px 12px 6px; margin-top: 4px;
+      font-size: 10px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 1.5px;
+      color: rgba(255, 255, 255, 0.3);
+      padding: 16px 12px 6px;
+      margin-top: 4px;
     }
 
     .nav-item {
-      display: flex; align-items: center; gap: 10px;
-      padding: 11px 14px; border-radius: 10px;
-      font-size: 14px; font-weight: 500; color: rgba(255,255,255,0.6);
-      cursor: pointer; margin-bottom: 2px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 11px 14px;
+      border-radius: 10px;
+      font-size: 14px;
+      font-weight: 500;
+      color: rgba(255, 255, 255, 0.6);
+      cursor: pointer;
+      margin-bottom: 2px;
     }
 
-    .nav-item:hover { background: rgba(255,255,255,0.06); color: #fff; }
-    .nav-item.active { background: var(--accent); color: #fff; font-weight: 600; }
+    .nav-item:hover {
+      background: rgba(255, 255, 255, 0.06);
+      color: #fff;
+    }
 
-    .nav-icon { width: 20px; text-align: center; font-size: 16px; flex-shrink: 0; }
+    .nav-item.active {
+      background: var(--accent);
+      color: #fff;
+      font-weight: 600;
+    }
+
+    .nav-icon {
+      width: 20px;
+      text-align: center;
+      font-size: 16px;
+      flex-shrink: 0;
+    }
 
     .sidebar-footer {
       padding: 16px;
-      border-top: 1px solid rgba(255,255,255,0.08);
+      border-top: 1px solid rgba(255, 255, 255, 0.08);
     }
 
     .sidebar-user {
-      display: flex; align-items: center; gap: 10px;
-      padding: 8px; border-radius: 10px; font-size: 13px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 8px;
+      border-radius: 10px;
+      font-size: 13px;
     }
 
     .sidebar-user-avatar {
-      width: 32px; height: 32px; border-radius: 8px;
-      background: var(--accent); display: flex;
-      align-items: center; justify-content: center;
-      font-weight: 700; font-size: 14px;
+      width: 32px;
+      height: 32px;
+      border-radius: 8px;
+      background: var(--accent);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      font-size: 14px;
     }
 
-    .sidebar-user-name { font-weight: 600; font-size: 13px; }
-    .sidebar-user-role { font-size: 11px; color: rgba(255,255,255,0.4); }
+    .sidebar-user-name {
+      font-weight: 600;
+      font-size: 13px;
+    }
+
+    .sidebar-user-role {
+      font-size: 11px;
+      color: rgba(255, 255, 255, 0.4);
+    }
 
     .logout-btn {
-      width: 100%; margin-top: 10px; padding: 9px;
-      background: rgba(255,255,255,0.06); border: none;
-      color: rgba(255,255,255,0.5); font-size: 13px;
-      font-weight: 600; border-radius: 8px; cursor: pointer;
+      width: 100%;
+      margin-top: 10px;
+      padding: 9px;
+      background: rgba(255, 255, 255, 0.06);
+      border: none;
+      color: rgba(255, 255, 255, 0.5);
+      font-size: 13px;
+      font-weight: 600;
+      border-radius: 8px;
+      cursor: pointer;
       font-family: inherit;
     }
-    .logout-btn:hover { background: rgba(255,255,255,0.1); color: #fff; }
+
+    .logout-btn:hover {
+      background: rgba(255, 255, 255, 0.1);
+      color: #fff;
+    }
 
     /* ═══ MAIN AREA ═══ */
     .main-area {
-      flex: 1; display: flex; flex-direction: column;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
       overflow: hidden;
     }
 
@@ -124,37 +192,70 @@
       background: var(--card);
       border-bottom: 1px solid var(--border);
       padding: 14px 28px;
-      display: flex; align-items: center; gap: 16px;
+      display: flex;
+      align-items: center;
+      gap: 16px;
       flex-shrink: 0;
     }
 
-    .topbar-title { font-size: 18px; font-weight: 700; flex: 1; }
+    .topbar-title {
+      font-size: 18px;
+      font-weight: 700;
+      flex: 1;
+    }
 
     .sync-badge {
-      display: flex; align-items: center; gap: 6px;
-      padding: 5px 12px; border-radius: 8px;
-      font-size: 12px; font-weight: 600;
-      background: var(--accent-light); color: var(--accent);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      padding: 5px 12px;
+      border-radius: 8px;
+      font-size: 12px;
+      font-weight: 600;
+      background: var(--accent-light);
+      color: var(--accent);
     }
-    .sync-badge.offline { background: var(--red-light); color: var(--red); }
-    .sync-badge.syncing { background: var(--blue-light); color: var(--blue); }
+
+    .sync-badge.offline {
+      background: var(--red-light);
+      color: var(--red);
+    }
+
+    .sync-badge.syncing {
+      background: var(--blue-light);
+      color: var(--blue);
+    }
+
     .sync-badge-dot {
-      width: 7px; height: 7px; border-radius: 50%;
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
       background: currentColor;
     }
 
     .pending-badge {
-      padding: 4px 10px; border-radius: 6px;
-      font-size: 11px; font-weight: 700;
-      background: var(--amber-light); color: var(--amber);
+      padding: 4px 10px;
+      border-radius: 6px;
+      font-size: 11px;
+      font-weight: 700;
+      background: var(--amber-light);
+      color: var(--amber);
     }
 
     /* ── Content ── */
-    .content { flex: 1; overflow-y: auto; padding: 24px 28px; }
+    .content {
+      flex: 1;
+      overflow-y: auto;
+      padding: 24px 28px;
+    }
 
     /* ═══ SHARED UI COMPONENTS ═══ */
 
-    .page-title { font-size: 22px; font-weight: 700; margin-bottom: 20px; }
+    .page-title {
+      font-size: 22px;
+      font-weight: 700;
+      margin-bottom: 20px;
+    }
 
     .card {
       background: var(--card);
@@ -165,149 +266,438 @@
     }
 
     .card-title {
-      font-size: 13px; font-weight: 700; color: var(--muted);
-      text-transform: uppercase; letter-spacing: 1px;
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 1px;
       margin-bottom: 12px;
     }
 
-    .stat-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 14px; margin-bottom: 20px; }
-    .stat-card { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 18px; }
-    .stat-label { font-size: 12px; font-weight: 600; color: var(--dim); margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.5px; }
-    .stat-value { font-size: 28px; font-weight: 800; color: var(--text); }
-    .stat-sub { font-size: 12px; color: var(--muted); margin-top: 4px; }
+    .stat-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 14px;
+      margin-bottom: 20px;
+    }
+
+    .stat-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 18px;
+    }
+
+    .stat-label {
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--dim);
+      margin-bottom: 6px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .stat-value {
+      font-size: 28px;
+      font-weight: 800;
+      color: var(--text);
+    }
+
+    .stat-sub {
+      font-size: 12px;
+      color: var(--muted);
+      margin-top: 4px;
+    }
 
     .search-bar {
-      display: flex; align-items: center; gap: 10px;
-      background: var(--card); border: 2px solid var(--border);
-      border-radius: 12px; padding: 10px 16px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      background: var(--card);
+      border: 2px solid var(--border);
+      border-radius: 12px;
+      padding: 10px 16px;
       margin-bottom: 16px;
     }
-    .search-bar input {
-      border: none; outline: none; font-size: 15px; font-weight: 500;
-      flex: 1; color: var(--text); background: transparent; font-family: inherit;
-    }
-    .search-bar input::placeholder { color: var(--dim); }
-    .search-icon { font-size: 18px; color: var(--dim); }
 
-    table { width: 100%; border-collapse: collapse; }
+    .search-bar input {
+      border: none;
+      outline: none;
+      font-size: 15px;
+      font-weight: 500;
+      flex: 1;
+      color: var(--text);
+      background: transparent;
+      font-family: inherit;
+    }
+
+    .search-bar input::placeholder {
+      color: var(--dim);
+    }
+
+    .search-icon {
+      font-size: 18px;
+      color: var(--dim);
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
     th {
-      text-align: left; font-size: 11px; font-weight: 700;
-      color: var(--dim); text-transform: uppercase; letter-spacing: 0.8px;
-      padding: 12px 16px; border-bottom: 1px solid var(--border);
+      text-align: left;
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--dim);
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+      padding: 12px 16px;
+      border-bottom: 1px solid var(--border);
     }
+
     td {
-      padding: 14px 16px; border-bottom: 1px solid #f1f5f9;
-      font-size: 14px; font-weight: 500;
+      padding: 14px 16px;
+      border-bottom: 1px solid #f1f5f9;
+      font-size: 14px;
+      font-weight: 500;
     }
-    tr:hover td { background: #f8fafc; }
-    .td-name { font-weight: 600; color: var(--text); }
-    .td-muted { color: var(--muted); font-size: 13px; }
+
+    tr:hover td {
+      background: #f8fafc;
+    }
+
+    .td-name {
+      font-weight: 600;
+      color: var(--text);
+    }
+
+    .td-muted {
+      color: var(--muted);
+      font-size: 13px;
+    }
 
     .badge {
-      display: inline-block; padding: 3px 10px; border-radius: 6px;
-      font-size: 11px; font-weight: 700; text-transform: uppercase;
+      display: inline-block;
+      padding: 3px 10px;
+      border-radius: 6px;
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
     }
-    .badge-green { background: var(--accent-light); color: var(--accent); }
-    .badge-red { background: var(--red-light); color: var(--red); }
-    .badge-blue { background: var(--blue-light); color: var(--blue); }
-    .badge-amber { background: var(--amber-light); color: var(--amber); }
-    .badge-gray { background: #f1f5f9; color: var(--dim); }
+
+    .badge-green {
+      background: var(--accent-light);
+      color: var(--accent);
+    }
+
+    .badge-red {
+      background: var(--red-light);
+      color: var(--red);
+    }
+
+    .badge-blue {
+      background: var(--blue-light);
+      color: var(--blue);
+    }
+
+    .badge-amber {
+      background: var(--amber-light);
+      color: var(--amber);
+    }
+
+    .badge-gray {
+      background: #f1f5f9;
+      color: var(--dim);
+    }
 
     .btn {
-      display: inline-flex; align-items: center; gap: 6px;
-      padding: 10px 18px; border-radius: 10px;
-      font-size: 14px; font-weight: 600; cursor: pointer;
-      border: none; font-family: inherit;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 10px 18px;
+      border-radius: 10px;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      border: none;
+      font-family: inherit;
     }
-    .btn-primary { background: var(--accent); color: #fff; }
-    .btn-primary:hover { background: #0d6d66; }
-    .btn-outline { background: var(--card); border: 1px solid var(--border); color: var(--text); }
-    .btn-outline:hover { background: #f8fafc; }
-    .btn-sm { padding: 7px 14px; font-size: 13px; }
-    .btn-link { background: none; border: none; color: var(--accent); cursor: pointer; font-weight: 600; font-size: 14px; padding: 0; font-family: inherit; }
-    .btn-link:hover { text-decoration: underline; }
 
-    .action-row { display: flex; align-items: center; gap: 10px; margin-bottom: 16px; flex-wrap: wrap; }
+    .btn-primary {
+      background: var(--accent);
+      color: #fff;
+    }
+
+    .btn-primary:hover {
+      background: #0d6d66;
+    }
+
+    .btn-outline {
+      background: var(--card);
+      border: 1px solid var(--border);
+      color: var(--text);
+    }
+
+    .btn-outline:hover {
+      background: #f8fafc;
+    }
+
+    .btn-sm {
+      padding: 7px 14px;
+      font-size: 13px;
+    }
+
+    .btn-link {
+      background: none;
+      border: none;
+      color: var(--accent);
+      cursor: pointer;
+      font-weight: 600;
+      font-size: 14px;
+      padding: 0;
+      font-family: inherit;
+    }
+
+    .btn-link:hover {
+      text-decoration: underline;
+    }
+
+    .action-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 16px;
+      flex-wrap: wrap;
+    }
 
     .empty-state {
-      text-align: center; padding: 48px 20px; color: var(--dim);
-      font-size: 15px; font-weight: 500;
+      text-align: center;
+      padding: 48px 20px;
+      color: var(--dim);
+      font-size: 15px;
+      font-weight: 500;
     }
 
-    .form-group { margin-bottom: 16px; }
-    .form-label { display: block; font-size: 13px; font-weight: 600; color: var(--muted); margin-bottom: 6px; }
-    .form-input {
-      width: 100%; padding: 12px 14px; font-size: 14px; font-weight: 500;
-      border: 2px solid var(--border); border-radius: 10px; outline: none;
-      color: var(--text); background: #f8fafc; font-family: inherit;
+    .form-group {
+      margin-bottom: 16px;
     }
-    .form-input:focus { border-color: var(--accent); background: #fff; }
-    .form-select { appearance: none; cursor: pointer; }
-    .form-textarea { min-height: 100px; resize: vertical; }
-    .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+
+    .form-label {
+      display: block;
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--muted);
+      margin-bottom: 6px;
+    }
+
+    .form-input {
+      width: 100%;
+      padding: 12px 14px;
+      font-size: 14px;
+      font-weight: 500;
+      border: 2px solid var(--border);
+      border-radius: 10px;
+      outline: none;
+      color: var(--text);
+      background: #f8fafc;
+      font-family: inherit;
+    }
+
+    .form-input:focus {
+      border-color: var(--accent);
+      background: #fff;
+    }
+
+    .form-select {
+      appearance: none;
+      cursor: pointer;
+    }
+
+    .form-textarea {
+      min-height: 100px;
+      resize: vertical;
+    }
+
+    .form-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px;
+    }
 
     .modal-overlay {
-      position: fixed; inset: 0; background: rgba(0,0,0,0.4);
-      display: flex; align-items: center; justify-content: center; z-index: 100;
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.4);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 100;
     }
+
     .modal {
-      background: var(--card); border-radius: 18px;
-      padding: 28px; width: 520px; max-height: 85vh;
-      overflow-y: auto; box-shadow: 0 20px 60px rgba(0,0,0,0.15);
+      background: var(--card);
+      border-radius: 18px;
+      padding: 28px;
+      width: 520px;
+      max-height: 85vh;
+      overflow-y: auto;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15);
     }
-    .modal-title { font-size: 20px; font-weight: 700; margin-bottom: 20px; }
-    .modal-actions { display: flex; gap: 10px; justify-content: flex-end; margin-top: 20px; }
 
-    .hidden { display: none !important; }
+    .modal-title {
+      font-size: 20px;
+      font-weight: 700;
+      margin-bottom: 20px;
+    }
 
-    .loading-text { padding: 40px; text-align: center; color: var(--dim); font-size: 15px; }
+    .modal-actions {
+      display: flex;
+      gap: 10px;
+      justify-content: flex-end;
+      margin-top: 20px;
+    }
+
+    .hidden {
+      display: none !important;
+    }
+
+    .loading-text {
+      padding: 40px;
+      text-align: center;
+      color: var(--dim);
+      font-size: 15px;
+    }
 
     .data-source {
-      font-size: 11px; font-weight: 600; padding: 2px 8px; border-radius: 4px;
-      display: inline-block; margin-left: 8px;
+      font-size: 11px;
+      font-weight: 600;
+      padding: 2px 8px;
+      border-radius: 4px;
+      display: inline-block;
+      margin-left: 8px;
     }
-    .data-source.cache { background: var(--amber-light); color: var(--amber); }
-    .data-source.api { background: var(--accent-light); color: var(--accent); }
 
-    .detail-row { display: flex; gap: 8px; padding: 8px 0; border-bottom: 1px solid #f1f5f9; }
-    .detail-label { font-size: 13px; font-weight: 600; color: var(--dim); width: 140px; flex-shrink: 0; }
-    .detail-value { font-size: 14px; font-weight: 500; color: var(--text); }
+    .data-source.cache {
+      background: var(--amber-light);
+      color: var(--amber);
+    }
+
+    .data-source.api {
+      background: var(--accent-light);
+      color: var(--accent);
+    }
+
+    .detail-row {
+      display: flex;
+      gap: 8px;
+      padding: 8px 0;
+      border-bottom: 1px solid #f1f5f9;
+    }
+
+    .detail-label {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--dim);
+      width: 140px;
+      flex-shrink: 0;
+    }
+
+    .detail-value {
+      font-size: 14px;
+      font-weight: 500;
+      color: var(--text);
+    }
 
     .waitlist-item {
-      display: flex; align-items: center; justify-content: space-between;
-      padding: 12px 16px; border-bottom: 1px solid #f1f5f9;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 12px 16px;
+      border-bottom: 1px solid #f1f5f9;
     }
-    .waitlist-item:last-child { border-bottom: none; }
-    .waitlist-name { font-weight: 600; font-size: 14px; }
-    .waitlist-meta { font-size: 12px; color: var(--muted); }
+
+    .waitlist-item:last-child {
+      border-bottom: none;
+    }
+
+    .waitlist-name {
+      font-weight: 600;
+      font-size: 14px;
+    }
+
+    .waitlist-meta {
+      font-size: 12px;
+      color: var(--muted);
+    }
 
     .nfc-panel {
-      background: var(--blue-light); border: 2px dashed var(--blue);
-      border-radius: 14px; padding: 24px; text-align: center;
-      margin-bottom: 16px; cursor: pointer;
+      background: var(--blue-light);
+      border: 2px dashed var(--blue);
+      border-radius: 14px;
+      padding: 24px;
+      text-align: center;
+      margin-bottom: 16px;
+      cursor: pointer;
     }
-    .nfc-panel:hover { background: #dbeafe; }
-    .nfc-panel-icon { font-size: 32px; margin-bottom: 8px; }
-    .nfc-panel-text { font-size: 15px; font-weight: 600; color: var(--blue); }
-    .nfc-panel-sub { font-size: 12px; color: var(--muted); margin-top: 4px; }
 
-    .tab-bar { display: flex; gap: 4px; margin-bottom: 20px; border-bottom: 2px solid var(--border); padding-bottom: 0; }
+    .nfc-panel:hover {
+      background: #dbeafe;
+    }
+
+    .nfc-panel-icon {
+      font-size: 32px;
+      margin-bottom: 8px;
+    }
+
+    .nfc-panel-text {
+      font-size: 15px;
+      font-weight: 600;
+      color: var(--blue);
+    }
+
+    .nfc-panel-sub {
+      font-size: 12px;
+      color: var(--muted);
+      margin-top: 4px;
+    }
+
+    .tab-bar {
+      display: flex;
+      gap: 4px;
+      margin-bottom: 20px;
+      border-bottom: 2px solid var(--border);
+      padding-bottom: 0;
+    }
+
     .tab-item {
-      padding: 10px 18px; font-size: 14px; font-weight: 600;
-      color: var(--muted); cursor: pointer; border-bottom: 2px solid transparent;
+      padding: 10px 18px;
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--muted);
+      cursor: pointer;
+      border-bottom: 2px solid transparent;
       margin-bottom: -2px;
     }
-    .tab-item:hover { color: var(--text); }
-    .tab-item.active { color: var(--accent); border-bottom-color: var(--accent); }
+
+    .tab-item:hover {
+      color: var(--text);
+    }
+
+    .tab-item.active {
+      color: var(--accent);
+      border-bottom-color: var(--accent);
+    }
   </style>
 </head>
+
 <body>
 
   <!-- ═══ SIDEBAR ═══ -->
   <div class="sidebar">
     <div class="sidebar-brand">
       <div class="sidebar-brand-icon">M</div>
-      <h1>Medha Health</h1>
+      <h1>Medha Health Intelligance</h1>
     </div>
 
     <div class="sidebar-nav" id="sidebarNav"></div>
@@ -343,227 +733,227 @@
   <!-- ═══ MODAL CONTAINER ═══ -->
   <div id="modalContainer" class="hidden"></div>
 
-<script>
-// ══════════════════════════════════════════════════════════════
-//  STATE
-// ══════════════════════════════════════════════════════════════
+  <script>
+    // ══════════════════════════════════════════════════════════════
+    //  STATE
+    // ══════════════════════════════════════════════════════════════
 
-const api = window.medhaAPI;
-let currentUser = {};
-let currentRole = '';
-let currentPage = '';
-let syncStatus = { online: true, state: 'idle', pending: 0 };
+    const api = window.medhaAPI;
+    let currentUser = {};
+    let currentRole = '';
+    let currentPage = '';
+    let syncStatus = { online: true, state: 'idle', pending: 0 };
 
-// ══════════════════════════════════════════════════════════════
-//  INIT
-// ══════════════════════════════════════════════════════════════
+    // ══════════════════════════════════════════════════════════════
+    //  INIT
+    // ══════════════════════════════════════════════════════════════
 
-window.addEventListener('DOMContentLoaded', async () => {
-  // Retrieve user from sessionStorage (set by login page)
-  try {
-    currentUser = JSON.parse(sessionStorage.getItem('medha_user') || '{}');
-    currentRole = sessionStorage.getItem('medha_role') || currentUser.role || 'doctor';
-  } catch { currentRole = 'doctor'; }
+    window.addEventListener('DOMContentLoaded', async () => {
+      // Retrieve user from sessionStorage (set by login page)
+      try {
+        currentUser = JSON.parse(sessionStorage.getItem('medha_user') || '{}');
+        currentRole = sessionStorage.getItem('medha_role') || currentUser.role || 'doctor';
+      } catch { currentRole = 'doctor'; }
 
-  // Set user info in sidebar
-  const name = currentUser.full_name || currentUser.username || 'User';
-  document.getElementById('userName').textContent = name;
-  document.getElementById('userRole').textContent = currentRole;
-  document.getElementById('userAvatar').textContent = name.charAt(0).toUpperCase();
+      // Set user info in sidebar
+      const name = currentUser.full_name || currentUser.username || 'User';
+      document.getElementById('userName').textContent = name;
+      document.getElementById('userRole').textContent = currentRole;
+      document.getElementById('userAvatar').textContent = name.charAt(0).toUpperCase();
 
-  buildSidebar();
-  setupSyncListener();
+      buildSidebar();
+      setupSyncListener();
 
-  // Navigate to dashboard
-  if (currentRole === 'doctor') navigateTo('doctor-dashboard');
-  else navigateTo('admin-dashboard');
-});
+      // Navigate to dashboard
+      if (currentRole === 'doctor') navigateTo('doctor-dashboard');
+      else navigateTo('admin-dashboard');
+    });
 
-// ══════════════════════════════════════════════════════════════
-//  SIDEBAR NAVIGATION
-// ══════════════════════════════════════════════════════════════
+    // ══════════════════════════════════════════════════════════════
+    //  SIDEBAR NAVIGATION
+    // ══════════════════════════════════════════════════════════════
 
-const doctorNav = [
-  { section: 'Clinical' },
-  { id: 'doctor-dashboard', icon: '&#9636;', label: 'Dashboard' },
-  { id: 'doctor-patients', icon: '&#128101;', label: 'Patients' },
-  { id: 'doctor-appointments', icon: '&#128197;', label: 'Appointments' },
-  { id: 'doctor-records', icon: '&#128203;', label: 'Records & Notes' },
-  { id: 'doctor-prescriptions', icon: '&#128138;', label: 'Prescriptions' },
-  { section: 'Tools' },
-  { id: 'doctor-nfc', icon: '&#128179;', label: 'NFC Scanner' },
-  { id: 'doctor-consent', icon: '&#9989;', label: 'Consent' },
-];
+    const doctorNav = [
+      { section: 'Clinical' },
+      { id: 'doctor-dashboard', icon: '&#9636;', label: 'Dashboard' },
+      { id: 'doctor-patients', icon: '&#128101;', label: 'Patients' },
+      { id: 'doctor-appointments', icon: '&#128197;', label: 'Appointments' },
+      { id: 'doctor-records', icon: '&#128203;', label: 'Records & Notes' },
+      { id: 'doctor-prescriptions', icon: '&#128138;', label: 'Prescriptions' },
+      { section: 'Tools' },
+      { id: 'doctor-nfc', icon: '&#128179;', label: 'NFC Scanner' },
+      { id: 'doctor-consent', icon: '&#9989;', label: 'Consent' },
+    ];
 
-const adminNav = [
-  { section: 'Management' },
-  { id: 'admin-dashboard', icon: '&#9636;', label: 'Dashboard' },
-  { id: 'admin-patients', icon: '&#128101;', label: 'Patients' },
-  { id: 'admin-doctors', icon: '&#129658;', label: 'Doctors' },
-  { section: 'Finance' },
-  { id: 'admin-billing', icon: '&#128176;', label: 'Billing' },
-  { section: 'System' },
-  { id: 'admin-offline', icon: '&#128230;', label: 'Offline Data' },
-];
+    const adminNav = [
+      { section: 'Management' },
+      { id: 'admin-dashboard', icon: '&#9636;', label: 'Dashboard' },
+      { id: 'admin-patients', icon: '&#128101;', label: 'Patients' },
+      { id: 'admin-doctors', icon: '&#129658;', label: 'Doctors' },
+      { section: 'Finance' },
+      { id: 'admin-billing', icon: '&#128176;', label: 'Billing' },
+      { section: 'System' },
+      { id: 'admin-offline', icon: '&#128230;', label: 'Offline Data' },
+    ];
 
-function buildSidebar() {
-  const nav = currentRole === 'doctor' ? doctorNav : adminNav;
-  const container = document.getElementById('sidebarNav');
-  container.innerHTML = '';
-  for (const item of nav) {
-    if (item.section) {
-      container.innerHTML += `<div class="sidebar-label">${item.section}</div>`;
-    } else {
-      container.innerHTML += `<div class="nav-item" data-page="${item.id}" onclick="navigateTo('${item.id}')"><span class="nav-icon">${item.icon}</span>${item.label}</div>`;
-    }
-  }
-}
-
-function navigateTo(page) {
-  currentPage = page;
-
-  // Update sidebar active state
-  document.querySelectorAll('.nav-item').forEach(el => {
-    el.classList.toggle('active', el.dataset.page === page);
-  });
-
-  // Update topbar title
-  const label = page.replace('doctor-','').replace('admin-','').replace(/-/g,' ');
-  document.getElementById('topbarTitle').textContent = label.charAt(0).toUpperCase() + label.slice(1);
-
-  // Render page
-  const c = document.getElementById('content');
-  c.innerHTML = '<div class="loading-text">Loading...</div>';
-
-  const pages = {
-    'doctor-dashboard': renderDoctorDashboard,
-    'doctor-patients': renderDoctorPatients,
-    'doctor-appointments': renderDoctorAppointments,
-    'doctor-records': renderDoctorRecords,
-    'doctor-prescriptions': renderDoctorPrescriptions,
-    'doctor-nfc': renderNfcScanner,
-    'doctor-consent': renderConsent,
-    'admin-dashboard': renderAdminDashboard,
-    'admin-patients': renderAdminPatients,
-    'admin-doctors': renderAdminDoctors,
-    'admin-billing': renderAdminBilling,
-    'admin-offline': renderOfflineData,
-  };
-
-  if (pages[page]) pages[page](c);
-  else c.innerHTML = '<div class="empty-state">Page not found</div>';
-}
-
-// ══════════════════════════════════════════════════════════════
-//  SYNC STATUS
-// ══════════════════════════════════════════════════════════════
-
-function setupSyncListener() {
-  api.sync.onStatus((s) => {
-    syncStatus = s;
-    updateSyncUI();
-  });
-  // Initial check
-  api.sync.isOnline().then(online => {
-    syncStatus.online = online;
-    updateSyncUI();
-  });
-}
-
-function updateSyncUI() {
-  const badge = document.getElementById('syncBadge');
-  const label = document.getElementById('syncLabel');
-  const pending = document.getElementById('pendingBadge');
-
-  badge.className = 'sync-badge';
-  if (!syncStatus.online) {
-    badge.classList.add('offline');
-    label.textContent = 'Offline';
-  } else if (syncStatus.state === 'syncing' || syncStatus.state === 'pushing') {
-    badge.classList.add('syncing');
-    label.textContent = 'Syncing...';
-  } else {
-    label.textContent = 'Online';
-  }
-
-  if (syncStatus.pending > 0) {
-    pending.classList.remove('hidden');
-    pending.textContent = `${syncStatus.pending} pending`;
-  } else {
-    pending.classList.add('hidden');
-  }
-}
-
-// ══════════════════════════════════════════════════════════════
-//  DATA FETCHING (online-first, offline fallback)
-// ══════════════════════════════════════════════════════════════
-
-async function fetchData(apiEndpoint, cacheGetter, cacheSetter) {
-  try {
-    const res = await api.apiGet(apiEndpoint);
-    if (res.success) {
-      if (cacheSetter) cacheSetter(res.data);
-      return { data: res.data, source: 'api' };
-    }
-    throw new Error('API failed');
-  } catch {
-    if (cacheGetter) {
-      const cached = await cacheGetter();
-      if (cached && (Array.isArray(cached) ? cached.length : true)) {
-        return { data: cached, source: 'cache' };
+    function buildSidebar() {
+      const nav = currentRole === 'doctor' ? doctorNav : adminNav;
+      const container = document.getElementById('sidebarNav');
+      container.innerHTML = '';
+      for (const item of nav) {
+        if (item.section) {
+          container.innerHTML += `<div class="sidebar-label">${item.section}</div>`;
+        } else {
+          container.innerHTML += `<div class="nav-item" data-page="${item.id}" onclick="navigateTo('${item.id}')"><span class="nav-icon">${item.icon}</span>${item.label}</div>`;
+        }
       }
     }
-    return { data: null, source: 'none' };
-  }
-}
 
-async function fetchCached(key, apiEndpoint) {
-  try {
-    const res = await api.apiGet(apiEndpoint);
-    if (res.success) {
-      api.db.setCache(key, res.data);
-      return { data: res.data, source: 'api' };
+    function navigateTo(page) {
+      currentPage = page;
+
+      // Update sidebar active state
+      document.querySelectorAll('.nav-item').forEach(el => {
+        el.classList.toggle('active', el.dataset.page === page);
+      });
+
+      // Update topbar title
+      const label = page.replace('doctor-', '').replace('admin-', '').replace(/-/g, ' ');
+      document.getElementById('topbarTitle').textContent = label.charAt(0).toUpperCase() + label.slice(1);
+
+      // Render page
+      const c = document.getElementById('content');
+      c.innerHTML = '<div class="loading-text">Loading...</div>';
+
+      const pages = {
+        'doctor-dashboard': renderDoctorDashboard,
+        'doctor-patients': renderDoctorPatients,
+        'doctor-appointments': renderDoctorAppointments,
+        'doctor-records': renderDoctorRecords,
+        'doctor-prescriptions': renderDoctorPrescriptions,
+        'doctor-nfc': renderNfcScanner,
+        'doctor-consent': renderConsent,
+        'admin-dashboard': renderAdminDashboard,
+        'admin-patients': renderAdminPatients,
+        'admin-doctors': renderAdminDoctors,
+        'admin-billing': renderAdminBilling,
+        'admin-offline': renderOfflineData,
+      };
+
+      if (pages[page]) pages[page](c);
+      else c.innerHTML = '<div class="empty-state">Page not found</div>';
     }
-    throw new Error();
-  } catch {
-    const c = await api.db.getCache(key);
-    return c ? { data: c.data, source: 'cache' } : { data: null, source: 'none' };
-  }
-}
 
-function srcBadge(source) {
-  if (source === 'cache') return '<span class="data-source cache">Cached</span>';
-  if (source === 'api') return '<span class="data-source api">Live</span>';
-  return '';
-}
+    // ══════════════════════════════════════════════════════════════
+    //  SYNC STATUS
+    // ══════════════════════════════════════════════════════════════
 
-function statusBadge(status) {
-  if (!status) return '';
-  const s = status.toLowerCase();
-  if (['active','completed','paid','confirmed','on_duty','stable'].includes(s)) return `<span class="badge badge-green">${status}</span>`;
-  if (['critical','cancelled','failed','off_duty'].includes(s)) return `<span class="badge badge-red">${status}</span>`;
-  if (['pending','scheduled','waiting','break'].includes(s)) return `<span class="badge badge-amber">${status}</span>`;
-  if (['in_progress','in_surgery','checked_in'].includes(s)) return `<span class="badge badge-blue">${status}</span>`;
-  return `<span class="badge badge-gray">${status}</span>`;
-}
+    function setupSyncListener() {
+      api.sync.onStatus((s) => {
+        syncStatus = s;
+        updateSyncUI();
+      });
+      // Initial check
+      api.sync.isOnline().then(online => {
+        syncStatus.online = online;
+        updateSyncUI();
+      });
+    }
 
-function formatDate(d) {
-  if (!d) return '-';
-  try { return new Date(d).toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' }); }
-  catch { return d; }
-}
+    function updateSyncUI() {
+      const badge = document.getElementById('syncBadge');
+      const label = document.getElementById('syncLabel');
+      const pending = document.getElementById('pendingBadge');
 
-// ══════════════════════════════════════════════════════════════
-//  DOCTOR: DASHBOARD
-// ══════════════════════════════════════════════════════════════
+      badge.className = 'sync-badge';
+      if (!syncStatus.online) {
+        badge.classList.add('offline');
+        label.textContent = 'Offline';
+      } else if (syncStatus.state === 'syncing' || syncStatus.state === 'pushing') {
+        badge.classList.add('syncing');
+        label.textContent = 'Syncing...';
+      } else {
+        label.textContent = 'Online';
+      }
 
-async function renderDoctorDashboard(el) {
-  const dash = await fetchCached('dashboard_doctor', '/dashboard/doctor/');
-  const d = dash.data || {};
-  const stats = d.stats || {};
-  const waitlist = d.waitlist || [];
+      if (syncStatus.pending > 0) {
+        pending.classList.remove('hidden');
+        pending.textContent = `${syncStatus.pending} pending`;
+      } else {
+        pending.classList.add('hidden');
+      }
+    }
 
-  el.innerHTML = `
+    // ══════════════════════════════════════════════════════════════
+    //  DATA FETCHING (online-first, offline fallback)
+    // ══════════════════════════════════════════════════════════════
+
+    async function fetchData(apiEndpoint, cacheGetter, cacheSetter) {
+      try {
+        const res = await api.apiGet(apiEndpoint);
+        if (res.success) {
+          if (cacheSetter) cacheSetter(res.data);
+          return { data: res.data, source: 'api' };
+        }
+        throw new Error('API failed');
+      } catch {
+        if (cacheGetter) {
+          const cached = await cacheGetter();
+          if (cached && (Array.isArray(cached) ? cached.length : true)) {
+            return { data: cached, source: 'cache' };
+          }
+        }
+        return { data: null, source: 'none' };
+      }
+    }
+
+    async function fetchCached(key, apiEndpoint) {
+      try {
+        const res = await api.apiGet(apiEndpoint);
+        if (res.success) {
+          api.db.setCache(key, res.data);
+          return { data: res.data, source: 'api' };
+        }
+        throw new Error();
+      } catch {
+        const c = await api.db.getCache(key);
+        return c ? { data: c.data, source: 'cache' } : { data: null, source: 'none' };
+      }
+    }
+
+    function srcBadge(source) {
+      if (source === 'cache') return '<span class="data-source cache">Cached</span>';
+      if (source === 'api') return '<span class="data-source api">Live</span>';
+      return '';
+    }
+
+    function statusBadge(status) {
+      if (!status) return '';
+      const s = status.toLowerCase();
+      if (['active', 'completed', 'paid', 'confirmed', 'on_duty', 'stable'].includes(s)) return `<span class="badge badge-green">${status}</span>`;
+      if (['critical', 'cancelled', 'failed', 'off_duty'].includes(s)) return `<span class="badge badge-red">${status}</span>`;
+      if (['pending', 'scheduled', 'waiting', 'break'].includes(s)) return `<span class="badge badge-amber">${status}</span>`;
+      if (['in_progress', 'in_surgery', 'checked_in'].includes(s)) return `<span class="badge badge-blue">${status}</span>`;
+      return `<span class="badge badge-gray">${status}</span>`;
+    }
+
+    function formatDate(d) {
+      if (!d) return '-';
+      try { return new Date(d).toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' }); }
+      catch { return d; }
+    }
+
+    // ══════════════════════════════════════════════════════════════
+    //  DOCTOR: DASHBOARD
+    // ══════════════════════════════════════════════════════════════
+
+    async function renderDoctorDashboard(el) {
+      const dash = await fetchCached('dashboard_doctor', '/dashboard/doctor/');
+      const d = dash.data || {};
+      const stats = d.stats || {};
+      const waitlist = d.waitlist || [];
+
+      el.innerHTML = `
     <div class="page-title">Good ${getTimeGreeting()}, Dr. ${currentUser.full_name || currentUser.username || ''} ${srcBadge(dash.source)}</div>
 
     <div class="stat-grid">
@@ -591,7 +981,7 @@ async function renderDoctorDashboard(el) {
     <div class="card">
       <div class="card-title">Today's Waitlist</div>
       ${waitlist.length === 0 ? '<div class="empty-state">No patients waiting</div>' :
-        waitlist.map(w => `
+          waitlist.map(w => `
         <div class="waitlist-item">
           <div>
             <div class="waitlist-name">${w.patient_name || 'Unknown'}</div>
@@ -601,21 +991,21 @@ async function renderDoctorDashboard(el) {
         </div>`).join('')}
     </div>
   `;
-}
+    }
 
-function getTimeGreeting() {
-  const h = new Date().getHours();
-  if (h < 12) return 'Morning';
-  if (h < 17) return 'Afternoon';
-  return 'Evening';
-}
+    function getTimeGreeting() {
+      const h = new Date().getHours();
+      if (h < 12) return 'Morning';
+      if (h < 17) return 'Afternoon';
+      return 'Evening';
+    }
 
-// ══════════════════════════════════════════════════════════════
-//  DOCTOR: PATIENTS
-// ══════════════════════════════════════════════════════════════
+    // ══════════════════════════════════════════════════════════════
+    //  DOCTOR: PATIENTS
+    // ══════════════════════════════════════════════════════════════
 
-async function renderDoctorPatients(el) {
-  el.innerHTML = `
+    async function renderDoctorPatients(el) {
+      el.innerHTML = `
     <div class="page-title">Patient Management</div>
     <div class="action-row">
       <div class="search-bar" style="flex:1; margin-bottom:0;">
@@ -625,41 +1015,41 @@ async function renderDoctorPatients(el) {
     </div>
     <div id="patientsList"><div class="loading-text">Loading patients...</div></div>
   `;
-  loadPatients();
-}
+      loadPatients();
+    }
 
-let searchTimer = null;
-function searchPatientsDebounced() {
-  clearTimeout(searchTimer);
-  searchTimer = setTimeout(loadPatients, 300);
-}
+    let searchTimer = null;
+    function searchPatientsDebounced() {
+      clearTimeout(searchTimer);
+      searchTimer = setTimeout(loadPatients, 300);
+    }
 
-async function loadPatients() {
-  const q = document.getElementById('patientSearch')?.value?.trim() || '';
-  const listEl = document.getElementById('patientsList');
-  if (!listEl) return;
+    async function loadPatients() {
+      const q = document.getElementById('patientSearch')?.value?.trim() || '';
+      const listEl = document.getElementById('patientsList');
+      if (!listEl) return;
 
-  let result;
-  if (q.length > 1) {
-    result = await fetchData(
-      `/patients/search/?q=${encodeURIComponent(q)}`,
-      () => api.db.searchPatients(q),
-      (d) => api.db.cachePatients(Array.isArray(d) ? d : [])
-    );
-  } else {
-    result = await fetchData('/patients/', () => api.db.patients(), (d) => api.db.cachePatients(Array.isArray(d) ? d : []));
-  }
+      let result;
+      if (q.length > 1) {
+        result = await fetchData(
+          `/patients/search/?q=${encodeURIComponent(q)}`,
+          () => api.db.searchPatients(q),
+          (d) => api.db.cachePatients(Array.isArray(d) ? d : [])
+        );
+      } else {
+        result = await fetchData('/patients/', () => api.db.patients(), (d) => api.db.cachePatients(Array.isArray(d) ? d : []));
+      }
 
-  const patients = Array.isArray(result.data) ? result.data : [];
+      const patients = Array.isArray(result.data) ? result.data : [];
 
-  if (patients.length === 0) {
-    listEl.innerHTML = '<div class="empty-state">No patients found</div>';
-    return;
-  }
+      if (patients.length === 0) {
+        listEl.innerHTML = '<div class="empty-state">No patients found</div>';
+        return;
+      }
 
-  const isAdmin = currentRole !== 'doctor';
+      const isAdmin = currentRole !== 'doctor';
 
-  listEl.innerHTML = `
+      listEl.innerHTML = `
     <div class="card" style="padding:0; overflow:hidden;">
       <table>
         <thead><tr>
@@ -669,17 +1059,17 @@ async function loadPatients() {
         </tr></thead>
         <tbody>
           ${patients.map(p => {
-             const hasAssigned = (window._nfcAssignedIds && window._nfcAssignedIds.has(p.id || p.patient_id)) || p.has_nfc || p.nfc_uid;
-             let nfcTd = '';
-             if (isAdmin) {
-                nfcTd = `<td>
-                   ${hasAssigned ? 
-                      '<span style="color:green;font-weight:bold;">Assigned &#9989;</span>' : 
-                      `<button onclick="showAssignNfcModal('${p.id || p.patient_id}', '${p.full_name}')" style="background:#6366f1;color:#fff;padding:6px 14px;border-radius:8px;font-weight:600;cursor:pointer;border:none;">Assign NFC</button>`
-                   }
+        const hasAssigned = (window._nfcAssignedIds && window._nfcAssignedIds.has(p.id || p.patient_id)) || p.has_nfc || p.nfc_uid;
+        let nfcTd = '';
+        if (isAdmin) {
+          nfcTd = `<td>
+                   ${hasAssigned ?
+              '<span style="color:green;font-weight:bold;">Assigned &#9989;</span>' :
+              `<button onclick="showAssignNfcModal('${p.id || p.patient_id}', '${p.full_name}')" style="background:#6366f1;color:#fff;padding:6px 14px;border-radius:8px;font-weight:600;cursor:pointer;border:none;">Assign NFC</button>`
+            }
                 </td>`;
-             }
-             return `
+        }
+        return `
           <tr>
             <td>
               <div class="td-name">${p.full_name || '-'}</div>
@@ -691,52 +1081,52 @@ async function loadPatients() {
             ${nfcTd}
             <td><button class="btn btn-sm btn-outline" onclick="viewPatient('${p.id}')">View</button></td>
           </tr>`
-          }).join('')}
+      }).join('')}
         </tbody>
       </table>
     </div>
     <div style="font-size:12px; color:var(--dim); margin-top:8px;">${patients.length} patient(s) ${srcBadge(result.source)}</div>
   `;
-}
+    }
 
-function genderLabel(g) {
-  if (!g) return '-';
-  if (g === 'M' || g === 'male' || g === 'Male') return 'Male';
-  if (g === 'F' || g === 'female' || g === 'Female') return 'Female';
-  return g;
-}
+    function genderLabel(g) {
+      if (!g) return '-';
+      if (g === 'M' || g === 'male' || g === 'Male') return 'Male';
+      if (g === 'F' || g === 'female' || g === 'Female') return 'Female';
+      return g;
+    }
 
-// ══════════════════════════════════════════════════════════════
-//  PATIENT PROFILE (Detail View)
-// ══════════════════════════════════════════════════════════════
+    // ══════════════════════════════════════════════════════════════
+    //  PATIENT PROFILE (Detail View)
+    // ══════════════════════════════════════════════════════════════
 
-async function viewPatient(id) {
-  const el = document.getElementById('content');
-  el.innerHTML = '<div class="loading-text">Loading patient profile...</div>';
-  document.getElementById('topbarTitle').textContent = 'Patient Profile';
+    async function viewPatient(id) {
+      const el = document.getElementById('content');
+      el.innerHTML = '<div class="loading-text">Loading patient profile...</div>';
+      document.getElementById('topbarTitle').textContent = 'Patient Profile';
 
-  // Fetch patient (offline-first: try local DB first for speed)
-  let patient = null, source = 'none';
-  const local = await api.db.patient(id);
-  if (local) { patient = local; source = 'cache'; }
+      // Fetch patient (offline-first: try local DB first for speed)
+      let patient = null, source = 'none';
+      const local = await api.db.patient(id);
+      if (local) { patient = local; source = 'cache'; }
 
-  try {
-    const res = await api.apiGet(`/patients/${id}/`);
-    if (res.success) { patient = res.data; source = 'api'; api.db.cachePatients([patient]); }
-  } catch {}
+      try {
+        const res = await api.apiGet(`/patients/${id}/`);
+        if (res.success) { patient = res.data; source = 'api'; api.db.cachePatients([patient]); }
+      } catch { }
 
-  if (!patient) { el.innerHTML = '<div class="empty-state">Patient not found</div>'; return; }
+      if (!patient) { el.innerHTML = '<div class="empty-state">Patient not found</div>'; return; }
 
-  // Also fetch records and prescriptions
-  const [records, prescriptions] = await Promise.all([
-    fetchData(`/records/?patient=${id}`, () => api.db.recordsFor(id), null),
-    fetchData(`/prescriptions/?patient=${id}`, () => api.db.prescriptionsFor(id), null),
-  ]);
+      // Also fetch records and prescriptions
+      const [records, prescriptions] = await Promise.all([
+        fetchData(`/records/?patient=${id}`, () => api.db.recordsFor(id), null),
+        fetchData(`/prescriptions/?patient=${id}`, () => api.db.prescriptionsFor(id), null),
+      ]);
 
-  const recs = Array.isArray(records.data) ? records.data : [];
-  const rxs = Array.isArray(prescriptions.data) ? prescriptions.data : [];
+      const recs = Array.isArray(records.data) ? records.data : [];
+      const rxs = Array.isArray(prescriptions.data) ? prescriptions.data : [];
 
-  el.innerHTML = `
+      el.innerHTML = `
     <div style="margin-bottom:16px;">
       <button class="btn-link" onclick="navigateTo('${currentRole}-patients')">&larr; Back to Patients</button>
     </div>
@@ -776,24 +1166,24 @@ async function viewPatient(id) {
     </div>
   `;
 
-  // Store for tab switching
-  window._patientRecs = recs;
-  window._patientRxs = rxs;
-  window._patientRecsSrc = records.source;
-  window._patientRxsSrc = prescriptions.source;
-  window._viewingPatientId = id;
-}
+      // Store for tab switching
+      window._patientRecs = recs;
+      window._patientRxs = rxs;
+      window._patientRecsSrc = records.source;
+      window._patientRxsSrc = prescriptions.source;
+      window._viewingPatientId = id;
+    }
 
-function showPatientTab(tab, tabEl) {
-  document.querySelectorAll('.tab-item').forEach(t => t.classList.remove('active'));
-  tabEl.classList.add('active');
-  const container = document.getElementById('patientTabContent');
-  if (tab === 'records') container.innerHTML = renderRecordsTable(window._patientRecs, window._patientRecsSrc, window._viewingPatientId);
-  else container.innerHTML = renderPrescriptionsTable(window._patientRxs, window._patientRxsSrc, window._viewingPatientId);
-}
+    function showPatientTab(tab, tabEl) {
+      document.querySelectorAll('.tab-item').forEach(t => t.classList.remove('active'));
+      tabEl.classList.add('active');
+      const container = document.getElementById('patientTabContent');
+      if (tab === 'records') container.innerHTML = renderRecordsTable(window._patientRecs, window._patientRecsSrc, window._viewingPatientId);
+      else container.innerHTML = renderPrescriptionsTable(window._patientRxs, window._patientRxsSrc, window._viewingPatientId);
+    }
 
-function renderRecordsTable(recs, source, patientId) {
-  return `
+    function renderRecordsTable(recs, source, patientId) {
+      return `
     <div class="action-row">
       <span style="font-size:13px; color:var(--dim);">${recs.length} record(s) ${srcBadge(source)}</span>
       <button class="btn btn-sm btn-primary" style="margin-left:auto;" onclick="showAddRecordModal('${patientId}')">+ Add Record</button>
@@ -814,10 +1204,10 @@ function renderRecordsTable(recs, source, patientId) {
       </table>
     </div>`}
   `;
-}
+    }
 
-function renderPrescriptionsTable(rxs, source, patientId) {
-  return `
+    function renderPrescriptionsTable(rxs, source, patientId) {
+      return `
     <div class="action-row">
       <span style="font-size:13px; color:var(--dim);">${rxs.length} prescription(s) ${srcBadge(source)}</span>
       <button class="btn btn-sm btn-primary" style="margin-left:auto;" onclick="showAddPrescriptionModal('${patientId}')">+ New Prescription</button>
@@ -838,16 +1228,16 @@ function renderPrescriptionsTable(rxs, source, patientId) {
       </table>
     </div>`}
   `;
-}
+    }
 
-// ══════════════════════════════════════════════════════════════
-//  ADD RECORD MODAL
-// ══════════════════════════════════════════════════════════════
+    // ══════════════════════════════════════════════════════════════
+    //  ADD RECORD MODAL
+    // ══════════════════════════════════════════════════════════════
 
-function showAddRecordModal(patientId) {
-  const mc = document.getElementById('modalContainer');
-  mc.classList.remove('hidden');
-  mc.innerHTML = `
+    function showAddRecordModal(patientId) {
+      const mc = document.getElementById('modalContainer');
+      mc.classList.remove('hidden');
+      mc.innerHTML = `
     <div class="modal-overlay" onclick="closeModal(event)">
       <div class="modal" onclick="event.stopPropagation()">
         <div class="modal-title">Add Medical Record</div>
@@ -884,45 +1274,45 @@ function showAddRecordModal(patientId) {
       </div>
     </div>
   `;
-}
-
-async function submitRecord(e, patientId) {
-  e.preventDefault();
-  const btn = document.getElementById('recSubmitBtn');
-  btn.disabled = true; btn.textContent = 'Saving...';
-
-  const payload = {
-    patient: patientId,
-    diagnosis: document.getElementById('recDiagnosis').value,
-    record_type: document.getElementById('recType').value,
-    date: document.getElementById('recDate').value,
-    notes: document.getElementById('recNotes').value,
-  };
-
-  try {
-    const res = await api.apiPost('/records/', payload);
-    if (res.success) {
-      closeModal();
-      viewPatient(patientId);
-      return;
     }
-    throw new Error();
-  } catch {
-    // Queue for offline sync
-    await api.sync.queue('create', 'records', null, payload);
-    closeModal();
-    viewPatient(patientId);
-  }
-}
 
-// ══════════════════════════════════════════════════════════════
-//  ADD PRESCRIPTION MODAL
-// ══════════════════════════════════════════════════════════════
+    async function submitRecord(e, patientId) {
+      e.preventDefault();
+      const btn = document.getElementById('recSubmitBtn');
+      btn.disabled = true; btn.textContent = 'Saving...';
 
-function showAddPrescriptionModal(patientId) {
-  const mc = document.getElementById('modalContainer');
-  mc.classList.remove('hidden');
-  mc.innerHTML = `
+      const payload = {
+        patient: patientId,
+        diagnosis: document.getElementById('recDiagnosis').value,
+        record_type: document.getElementById('recType').value,
+        date: document.getElementById('recDate').value,
+        notes: document.getElementById('recNotes').value,
+      };
+
+      try {
+        const res = await api.apiPost('/records/', payload);
+        if (res.success) {
+          closeModal();
+          viewPatient(patientId);
+          return;
+        }
+        throw new Error();
+      } catch {
+        // Queue for offline sync
+        await api.sync.queue('create', 'records', null, payload);
+        closeModal();
+        viewPatient(patientId);
+      }
+    }
+
+    // ══════════════════════════════════════════════════════════════
+    //  ADD PRESCRIPTION MODAL
+    // ══════════════════════════════════════════════════════════════
+
+    function showAddPrescriptionModal(patientId) {
+      const mc = document.getElementById('modalContainer');
+      mc.classList.remove('hidden');
+      mc.innerHTML = `
     <div class="modal-overlay" onclick="closeModal(event)">
       <div class="modal" onclick="event.stopPropagation()">
         <div class="modal-title">New Prescription</div>
@@ -957,47 +1347,51 @@ function showAddPrescriptionModal(patientId) {
       </div>
     </div>
   `;
-}
+    }
 
-async function submitPrescription(e, patientId) {
-  e.preventDefault();
-  const btn = document.getElementById('rxSubmitBtn');
-  btn.disabled = true; btn.textContent = 'Saving...';
+    async function submitPrescription(e, patientId) {
+      e.preventDefault();
 
-  const payload = {
-    patient: patientId,
-    medicine: document.getElementById('rxMedicine').value,
-    dosage: document.getElementById('rxDosage').value,
-    duration: document.getElementById('rxDuration').value,
-    date: document.getElementById('rxDate').value,
-    notes: document.getElementById('rxNotes').value,
-  };
+      const btn = document.getElementById('rxSubmitBtn');
+      btn.disabled = true;
+      btn.textContent = 'Saving...';
 
-  try {
-    const res = await api.apiPost('/prescriptions/', payload);
-    if (res.success) { closeModal(); viewPatient(patientId); return; }
-    throw new Error();
-  } catch {
-    await api.sync.queue('create', 'prescriptions', null, payload);
-    closeModal();
-    viewPatient(patientId);
-  }
-}
+      const payload = {
+        patient: patientId,
+        medicine: document.getElementById('rxMedicine').value,
+        dosage: document.getElementById('rxDosage').value,
+        duration: document.getElementById('rxDuration').value,
+        notes: document.getElementById('rxNotes').value,
+      };
 
-function closeModal(e) {
-  if (e && e.target !== e.currentTarget) return;
-  document.getElementById('modalContainer').classList.add('hidden');
-  document.getElementById('modalContainer').innerHTML = '';
-}
+      try {
+        const res = await api.apiPost('/prescriptions/', payload);
+        closeModal();
+        viewPatient(patientId);
+      } catch (err) {
+        console.error(err);
+        alert("Failed to save prescription");
+      }
+    }
 
-// ══════════════════════════════════════════════════════════════
-//  ASSIGN NFC MODAL
-// ══════════════════════════════════════════════════════════════
+    function closeModal(e) {
+      if (e && e.target !== e.currentTarget) return;
+      document.getElementById('modalContainer').classList.add('hidden');
+      document.getElementById('modalContainer').innerHTML = '';
+    }
 
-function showAssignNfcModal(patientId, patientName) {
-  const mc = document.getElementById('modalContainer');
-  mc.classList.remove('hidden');
-  mc.innerHTML = `
+    if (typeof window !== "undefined") {
+      window.submitPrescription = submitPrescription;
+      window.closeModal = closeModal;
+    }
+    // ══════════════════════════════════════════════════════════════
+    //  ASSIGN NFC MODAL
+    // ══════════════════════════════════════════════════════════════
+
+    function showAssignNfcModal(patientId, patientName) {
+      const mc = document.getElementById('modalContainer');
+      mc.classList.remove('hidden');
+      mc.innerHTML = `
     <div class="modal-overlay" onclick="closeNfcModal(event)">
       <div class="modal" style="text-align:center" onclick="event.stopPropagation()">
         <div class="modal-title">Assign NFC to ${patientName}</div>
@@ -1012,47 +1406,47 @@ function showAssignNfcModal(patientId, patientName) {
       </div>
     </div>
   `;
-  
-  // Register one-time listener
-  window._nfcAssignUnsub = api.nfcHardware.onNFCCard(async (uid) => {
-      const statusEl = document.getElementById('nfcAssignStatus');
-      if (!statusEl) return;
-      statusEl.innerHTML = 'Assigning... <br><small style="color:var(--dim)">UID: ' + uid + '</small>';
-      try {
-         const res = await api.nfcHardware.assign(patientId, uid);
-         if (res.success) {
+
+      // Register one-time listener
+      window._nfcAssignUnsub = api.nfcHardware.onNFCCard(async (uid) => {
+        const statusEl = document.getElementById('nfcAssignStatus');
+        if (!statusEl) return;
+        statusEl.innerHTML = 'Assigning... <br><small style="color:var(--dim)">UID: ' + uid + '</small>';
+        try {
+          const res = await api.nfcHardware.assign(patientId, uid);
+          if (res.success) {
             statusEl.innerHTML = '<span style="color:var(--accent)">Successfully assigned &#9989;</span>';
             if (!window._nfcAssignedIds) window._nfcAssignedIds = new Set();
             window._nfcAssignedIds.add(patientId);
             setTimeout(() => {
-                closeNfcModal();
-                loadPatients(); // refresh table to show ✅
+              closeNfcModal();
+              loadPatients(); // refresh table to show ✅
             }, 1000);
-         } else {
+          } else {
             statusEl.innerHTML = '<span style="color:var(--red)">' + (res.error || 'Failed to assign card') + '</span>';
-         }
-      } catch (err) {
-         statusEl.innerHTML = '<span style="color:var(--red)">Error occurred</span>';
-      }
-  });
-}
+          }
+        } catch (err) {
+          statusEl.innerHTML = '<span style="color:var(--red)">Error occurred</span>';
+        }
+      });
+    }
 
-function closeNfcModal(e) {
-  if (e && e.target !== e.currentTarget) return;
-  if (window._nfcAssignUnsub) { window._nfcAssignUnsub(); window._nfcAssignUnsub = null; }
-  document.getElementById('modalContainer').classList.add('hidden');
-  document.getElementById('modalContainer').innerHTML = '';
-}
+    function closeNfcModal(e) {
+      if (e && e.target !== e.currentTarget) return;
+      if (window._nfcAssignUnsub) { window._nfcAssignUnsub(); window._nfcAssignUnsub = null; }
+      document.getElementById('modalContainer').classList.add('hidden');
+      document.getElementById('modalContainer').innerHTML = '';
+    }
 
-// ══════════════════════════════════════════════════════════════
-//  DOCTOR: APPOINTMENTS
-// ══════════════════════════════════════════════════════════════
+    // ══════════════════════════════════════════════════════════════
+    //  DOCTOR: APPOINTMENTS
+    // ══════════════════════════════════════════════════════════════
 
-async function renderDoctorAppointments(el) {
-  const result = await fetchData('/appointments/', () => api.db.appointments(), null);
-  const appts = Array.isArray(result.data) ? result.data : [];
+    async function renderDoctorAppointments(el) {
+      const result = await fetchData('/appointments/', () => api.db.appointments(), null);
+      const appts = Array.isArray(result.data) ? result.data : [];
 
-  el.innerHTML = `
+      el.innerHTML = `
     <div class="page-title">Appointments ${srcBadge(result.source)}</div>
     ${appts.length === 0 ? '<div class="empty-state">No appointments found</div>' : `
     <div class="card" style="padding:0; overflow:hidden;">
@@ -1075,17 +1469,17 @@ async function renderDoctorAppointments(el) {
     </div>
     <div style="font-size:12px; color:var(--dim);">${appts.length} appointment(s)</div>`}
   `;
-}
+    }
 
-// ══════════════════════════════════════════════════════════════
-//  DOCTOR: RECORDS & NOTES (all records)
-// ══════════════════════════════════════════════════════════════
+    // ══════════════════════════════════════════════════════════════
+    //  DOCTOR: RECORDS & NOTES (all records)
+    // ══════════════════════════════════════════════════════════════
 
-async function renderDoctorRecords(el) {
-  const result = await fetchData('/records/', () => api.db.allRecords(), null);
-  const recs = Array.isArray(result.data) ? result.data : [];
+    async function renderDoctorRecords(el) {
+      const result = await fetchData('/records/', () => api.db.allRecords(), null);
+      const recs = Array.isArray(result.data) ? result.data : [];
 
-  el.innerHTML = `
+      el.innerHTML = `
     <div class="page-title">Records & Notes ${srcBadge(result.source)}</div>
     ${recs.length === 0 ? '<div class="empty-state">No records found</div>' : `
     <div class="card" style="padding:0; overflow:hidden;">
@@ -1104,17 +1498,17 @@ async function renderDoctorRecords(el) {
     </div>
     <div style="font-size:12px; color:var(--dim);">${recs.length} record(s)</div>`}
   `;
-}
+    }
 
-// ══════════════════════════════════════════════════════════════
-//  DOCTOR: PRESCRIPTIONS (all)
-// ══════════════════════════════════════════════════════════════
+    // ══════════════════════════════════════════════════════════════
+    //  DOCTOR: PRESCRIPTIONS (all)
+    // ══════════════════════════════════════════════════════════════
 
-async function renderDoctorPrescriptions(el) {
-  const result = await fetchData('/prescriptions/', () => api.db.allPrescriptions(), null);
-  const rxs = Array.isArray(result.data) ? result.data : [];
+    async function renderDoctorPrescriptions(el) {
+      const result = await fetchData('/prescriptions/', () => api.db.allPrescriptions(), null);
+      const rxs = Array.isArray(result.data) ? result.data : [];
 
-  el.innerHTML = `
+      el.innerHTML = `
     <div class="page-title">Prescriptions ${srcBadge(result.source)}</div>
     ${rxs.length === 0 ? '<div class="empty-state">No prescriptions found</div>' : `
     <div class="card" style="padding:0; overflow:hidden;">
@@ -1134,14 +1528,14 @@ async function renderDoctorPrescriptions(el) {
     </div>
     <div style="font-size:12px; color:var(--dim);">${rxs.length} prescription(s)</div>`}
   `;
-}
+    }
 
-// ══════════════════════════════════════════════════════════════
-//  DOCTOR: NFC SCANNER
-// ══════════════════════════════════════════════════════════════
+    // ══════════════════════════════════════════════════════════════
+    //  DOCTOR: NFC SCANNER
+    // ══════════════════════════════════════════════════════════════
 
-async function renderNfcScanner(el) {
-  el.innerHTML = `
+    async function renderNfcScanner(el) {
+      el.innerHTML = `
     <div class="page-title">NFC Patient Lookup</div>
 
     <div class="nfc-panel" onclick="triggerNfcScan()">
@@ -1161,54 +1555,54 @@ async function renderNfcScanner(el) {
 
     <div id="nfcResult"></div>
   `;
-}
+    }
 
-async function triggerNfcScan() {
-  const resultEl = document.getElementById('nfcResult');
-  resultEl.innerHTML = '<div class="loading-text">Scanning NFC reader...</div>';
+    async function triggerNfcScan() {
+      const resultEl = document.getElementById('nfcResult');
+      resultEl.innerHTML = '<div class="loading-text">Scanning NFC reader...</div>';
 
-  const scan = await api.nfc.scan();
-  if (!scan.success || !scan.data?.patient_id) {
-    resultEl.innerHTML = '<div class="card" style="border-left:4px solid var(--red);"><p style="font-size:14px; color:var(--red); font-weight:600;">NFC reader not detected or no card found. Try manual search.</p></div>';
-    return;
-  }
+      const scan = await api.nfc.scan();
+      if (!scan.success || !scan.data?.patient_id) {
+        resultEl.innerHTML = '<div class="card" style="border-left:4px solid var(--red);"><p style="font-size:14px; color:var(--red); font-weight:600;">NFC reader not detected or no card found. Try manual search.</p></div>';
+        return;
+      }
 
-  await nfcLookupPatient(scan.data.patient_id);
-}
+      await nfcLookupPatient(scan.data.patient_id);
+    }
 
-async function nfcManualLookup() {
-  const q = document.getElementById('nfcManualSearch')?.value?.trim();
-  if (!q) return;
-  await nfcLookupPatient(q);
-}
+    async function nfcManualLookup() {
+      const q = document.getElementById('nfcManualSearch')?.value?.trim();
+      if (!q) return;
+      await nfcLookupPatient(q);
+    }
 
-async function nfcLookupPatient(patientId) {
-  const resultEl = document.getElementById('nfcResult');
-  resultEl.innerHTML = '<div class="loading-text">Looking up patient...</div>';
+    async function nfcLookupPatient(patientId) {
+      const resultEl = document.getElementById('nfcResult');
+      resultEl.innerHTML = '<div class="loading-text">Looking up patient...</div>';
 
-  // Offline-first: local DB first, then API
-  let patient = null, source = 'none';
+      // Offline-first: local DB first, then API
+      let patient = null, source = 'none';
 
-  const local = await api.db.patient(patientId);
-  if (local) { patient = local; source = 'cache'; }
+      const local = await api.db.patient(patientId);
+      if (local) { patient = local; source = 'cache'; }
 
-  try {
-    const res = await api.apiGet(`/patients/${patientId}/`);
-    if (res.success) { patient = res.data; source = 'api'; api.db.cachePatients([patient]); }
-  } catch {}
+      try {
+        const res = await api.apiGet(`/patients/${patientId}/`);
+        if (res.success) { patient = res.data; source = 'api'; api.db.cachePatients([patient]); }
+      } catch { }
 
-  if (!patient) {
-    // Try NFC service directly
-    const nfcRes = await api.nfc.patient(patientId);
-    if (nfcRes.success && nfcRes.data) { patient = nfcRes.data; source = 'nfc'; }
-  }
+      if (!patient) {
+        // Try NFC service directly
+        const nfcRes = await api.nfc.patient(patientId);
+        if (nfcRes.success && nfcRes.data) { patient = nfcRes.data; source = 'nfc'; }
+      }
 
-  if (!patient) {
-    resultEl.innerHTML = '<div class="card" style="border-left:4px solid var(--amber);"><p style="font-size:14px; color:var(--amber); font-weight:600;">Patient not found for ID: ' + patientId + '</p></div>';
-    return;
-  }
+      if (!patient) {
+        resultEl.innerHTML = '<div class="card" style="border-left:4px solid var(--amber);"><p style="font-size:14px; color:var(--amber); font-weight:600;">Patient not found for ID: ' + patientId + '</p></div>';
+        return;
+      }
 
-  resultEl.innerHTML = `
+      resultEl.innerHTML = `
     <div class="card" style="border-left:4px solid var(--accent);">
       <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:12px;">
         <div style="font-size:18px; font-weight:700;">${patient.full_name || 'Unknown'} ${srcBadge(source)}</div>
@@ -1227,14 +1621,14 @@ async function nfcLookupPatient(patientId) {
       </div>
     </div>
   `;
-}
+    }
 
-// ══════════════════════════════════════════════════════════════
-//  DOCTOR: CONSENT
-// ══════════════════════════════════════════════════════════════
+    // ══════════════════════════════════════════════════════════════
+    //  DOCTOR: CONSENT
+    // ══════════════════════════════════════════════════════════════
 
-async function renderConsent(el) {
-  el.innerHTML = `
+    async function renderConsent(el) {
+      el.innerHTML = `
     <div class="page-title">Consent Management</div>
     <div class="card">
       <div class="card-title">Check Patient Consent</div>
@@ -1246,19 +1640,19 @@ async function renderConsent(el) {
     </div>
     <div id="consentResult"></div>
   `;
-}
+    }
 
-async function checkConsent() {
-  const pid = document.getElementById('consentPatientId')?.value?.trim();
-  if (!pid) return;
-  const resultEl = document.getElementById('consentResult');
-  resultEl.innerHTML = '<div class="loading-text">Checking consent...</div>';
+    async function checkConsent() {
+      const pid = document.getElementById('consentPatientId')?.value?.trim();
+      if (!pid) return;
+      const resultEl = document.getElementById('consentResult');
+      resultEl.innerHTML = '<div class="loading-text">Checking consent...</div>';
 
-  try {
-    const res = await api.apiGet(`/consent/${pid}/check/`);
-    if (res.success) {
-      const d = res.data;
-      resultEl.innerHTML = `
+      try {
+        const res = await api.apiGet(`/consent/${pid}/check/`);
+        if (res.success) {
+          const d = res.data;
+          resultEl.innerHTML = `
         <div class="card" style="border-left:4px solid ${d.has_consent ? 'var(--accent)' : 'var(--amber)'};">
           <div style="font-size:16px; font-weight:700; margin-bottom:12px;">
             ${d.has_consent ? '&#9989; Consent Granted' : '&#9888; No Active Consent'}
@@ -1271,30 +1665,30 @@ async function checkConsent() {
           ${!d.has_consent ? `<button class="btn btn-primary btn-sm" style="margin-top:12px;" onclick="requestConsent('${pid}')">Request Consent</button>` : ''}
         </div>
       `;
-    } else throw new Error();
-  } catch {
-    resultEl.innerHTML = '<div class="card"><p style="color:var(--red); font-weight:600;">Could not check consent. Server may be unreachable.</p></div>';
-  }
-}
+        } else throw new Error();
+      } catch {
+        resultEl.innerHTML = '<div class="card"><p style="color:var(--red); font-weight:600;">Could not check consent. Server may be unreachable.</p></div>';
+      }
+    }
 
-async function requestConsent(pid) {
-  try {
-    const res = await api.apiPost(`/consent/${pid}/grant/`, { consent_text: 'Patient grants access to medical records for treatment purposes.' });
-    if (res.success) { checkConsent(); return; }
-  } catch {}
-  alert('Failed to grant consent. Please try again.');
-}
+    async function requestConsent(pid) {
+      try {
+        const res = await api.apiPost(`/consent/${pid}/grant/`, { consent_text: 'Patient grants access to medical records for treatment purposes.' });
+        if (res.success) { checkConsent(); return; }
+      } catch { }
+      alert('Failed to grant consent. Please try again.');
+    }
 
-// ══════════════════════════════════════════════════════════════
-//  ADMIN: DASHBOARD
-// ══════════════════════════════════════════════════════════════
+    // ══════════════════════════════════════════════════════════════
+    //  ADMIN: DASHBOARD
+    // ══════════════════════════════════════════════════════════════
 
-async function renderAdminDashboard(el) {
-  const dash = await fetchCached('dashboard_admin', '/dashboard/admin/');
-  const d = dash.data || {};
-  const m = d.metrics || {};
+    async function renderAdminDashboard(el) {
+      const dash = await fetchCached('dashboard_admin', '/dashboard/admin/');
+      const d = dash.data || {};
+      const m = d.metrics || {};
 
-  el.innerHTML = `
+      el.innerHTML = `
     <div class="page-title">${m.hospital_name || 'Hospital'} Dashboard ${srcBadge(dash.source)}</div>
 
     <div class="stat-grid">
@@ -1342,26 +1736,26 @@ async function renderAdminDashboard(el) {
         </div>`).join('')}
     </div>` : ''}
   `;
-}
+    }
 
-// ══════════════════════════════════════════════════════════════
-//  ADMIN: PATIENTS
-// ══════════════════════════════════════════════════════════════
+    // ══════════════════════════════════════════════════════════════
+    //  ADMIN: PATIENTS
+    // ══════════════════════════════════════════════════════════════
 
-async function renderAdminPatients(el) {
-  // Same as doctor patients, reuse
-  await renderDoctorPatients(el);
-}
+    async function renderAdminPatients(el) {
+      // Same as doctor patients, reuse
+      await renderDoctorPatients(el);
+    }
 
-// ══════════════════════════════════════════════════════════════
-//  ADMIN: DOCTORS
-// ══════════════════════════════════════════════════════════════
+    // ══════════════════════════════════════════════════════════════
+    //  ADMIN: DOCTORS
+    // ══════════════════════════════════════════════════════════════
 
-async function renderAdminDoctors(el) {
-  const result = await fetchData('/doctors/', () => api.db.doctors(), (d) => api.db.cacheDoctors(Array.isArray(d) ? d : []));
-  const docs = Array.isArray(result.data) ? result.data : [];
+    async function renderAdminDoctors(el) {
+      const result = await fetchData('/doctors/', () => api.db.doctors(), (d) => api.db.cacheDoctors(Array.isArray(d) ? d : []));
+      const docs = Array.isArray(result.data) ? result.data : [];
 
-  el.innerHTML = `
+      el.innerHTML = `
     <div class="page-title">Doctor Management ${srcBadge(result.source)}</div>
     ${docs.length === 0 ? '<div class="empty-state">No doctors found</div>' : `
     <div class="card" style="padding:0; overflow:hidden;">
@@ -1383,22 +1777,22 @@ async function renderAdminDoctors(el) {
     </div>
     <div style="font-size:12px; color:var(--dim);">${docs.length} doctor(s)</div>`}
   `;
-}
+    }
 
-// ══════════════════════════════════════════════════════════════
-//  ADMIN: BILLING
-// ══════════════════════════════════════════════════════════════
+    // ══════════════════════════════════════════════════════════════
+    //  ADMIN: BILLING
+    // ══════════════════════════════════════════════════════════════
 
-async function renderAdminBilling(el) {
-  const [summary, receipts] = await Promise.all([
-    fetchCached('billing_summary', '/billing/summary/'),
-    fetchData('/billing/receipts/', () => api.db.receipts(), null),
-  ]);
+    async function renderAdminBilling(el) {
+      const [summary, receipts] = await Promise.all([
+        fetchCached('billing_summary', '/billing/summary/'),
+        fetchData('/billing/receipts/', () => api.db.receipts(), null),
+      ]);
 
-  const s = summary.data || {};
-  const rList = Array.isArray(receipts.data) ? receipts.data : [];
+      const s = summary.data || {};
+      const rList = Array.isArray(receipts.data) ? receipts.data : [];
 
-  el.innerHTML = `
+      el.innerHTML = `
     <div class="page-title">Billing & Receipts ${srcBadge(summary.source)}</div>
 
     <div class="stat-grid">
@@ -1438,19 +1832,19 @@ async function renderAdminBilling(el) {
     </div>
     <div style="font-size:12px; color:var(--dim);">${rList.length} receipt(s)</div>`}
   `;
-}
+    }
 
-// ══════════════════════════════════════════════════════════════
-//  ADMIN: OFFLINE DATA (stats + manual sync)
-// ══════════════════════════════════════════════════════════════
+    // ══════════════════════════════════════════════════════════════
+    //  ADMIN: OFFLINE DATA (stats + manual sync)
+    // ══════════════════════════════════════════════════════════════
 
-async function renderOfflineData(el) {
-  const stats = await api.db.stats();
-  const count = await api.sync.count();
-  const online = await api.sync.isOnline();
-  const lastPull = await api.db.getCache('last_pull');
+    async function renderOfflineData(el) {
+      const stats = await api.db.stats();
+      const count = await api.sync.count();
+      const online = await api.sync.isOnline();
+      const lastPull = await api.db.getCache('last_pull');
 
-  el.innerHTML = `
+      el.innerHTML = `
     <div class="page-title">Offline Data Management</div>
 
     <div class="stat-grid">
@@ -1500,31 +1894,32 @@ async function renderOfflineData(el) {
       </div>
     </div>
   `;
-}
+    }
 
-async function doForcePull() {
-  const res = await api.sync.forcePull();
-  if (res?.success) alert('Data pulled successfully from server.');
-  else alert('Pull failed. Are you online?');
-  renderOfflineData(document.getElementById('content'));
-}
+    async function doForcePull() {
+      const res = await api.sync.forcePull();
+      if (res?.success) alert('Data pulled successfully from server.');
+      else alert('Pull failed. Are you online?');
+      renderOfflineData(document.getElementById('content'));
+    }
 
-async function doForcePush() {
-  const res = await api.sync.forcePush();
-  if (res?.success) alert(`Push complete. ${res.pushed || 0} item(s) synced.`);
-  else alert('Push failed. Are you online?');
-  renderOfflineData(document.getElementById('content'));
-}
+    async function doForcePush() {
+      const res = await api.sync.forcePush();
+      if (res?.success) alert(`Push complete. ${res.pushed || 0} item(s) synced.`);
+      else alert('Push failed. Are you online?');
+      renderOfflineData(document.getElementById('content'));
+    }
 
-// ══════════════════════════════════════════════════════════════
-//  LOGOUT
-// ══════════════════════════════════════════════════════════════
+    // ══════════════════════════════════════════════════════════════
+    //  LOGOUT
+    // ══════════════════════════════════════════════════════════════
 
-async function doLogout() {
-  sessionStorage.clear();
-  await api.logout();
-}
+    async function doLogout() {
+      sessionStorage.clear();
+      await api.logout();
+    }
 
-</script>
+  </script>
 </body>
+
 </html>

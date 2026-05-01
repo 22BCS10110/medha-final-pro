@@ -1,5 +1,5 @@
 /**
- * Medha Health — Supabase MCP Server
+ * Medha Health Intelligance — Supabase MCP Server
  * =====================================
  * Exposes Supabase as a set of MCP tools that Claude Code can call.
  * Runs alongside the Django backend — does NOT replace it.

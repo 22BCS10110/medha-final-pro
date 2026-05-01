@@ -6,8 +6,10 @@ const isElectronProd = window.electronAPI?.isElectron && !import.meta.env.DEV;
 const API_BASE = import.meta.env.VITE_API_URL || (isElectronProd ? "http://127.0.0.1:8000" : "");
 const NFC_API_BASE = import.meta.env.VITE_NFC_API_URL || "http://localhost:8010";
 
+const CLEAN_API_BASE = API_BASE.endsWith('/') ? API_BASE.slice(0, -1) : API_BASE;
+
 const api = axios.create({
-  baseURL: `${API_BASE}/api`,
+  baseURL: `${CLEAN_API_BASE}/api`,
   headers: {
     "Content-Type": "application/json",
   },
@@ -32,11 +34,12 @@ api.interceptors.response.use(
       const refreshToken = localStorage.getItem("medha_refresh_token");
       if (refreshToken) {
         try {
-          const res = await axios.post(`${API_BASE}/api/auth/refresh/`, {
+          const res = await axios.post(`${CLEAN_API_BASE}/api/auth/refresh/`, {
             refresh: refreshToken,
           });
           const newAccess = res.data.access;
           localStorage.setItem("medha_token", newAccess);
+          try { window.medhaAPI?.setAuthToken?.(newAccess); } catch {}
           originalRequest.headers.Authorization = `Bearer ${newAccess}`;
           return api(originalRequest);
         } catch {
@@ -91,6 +94,15 @@ export const patientsAPI = {
   getByNfcUid: (uid) => api.get(`/patients/by-nfc/${encodeURIComponent(uid)}/`),
   assignNfc: (patientId, nfcUid) => api.post('/patients/assign-nfc/', { patient_id: patientId, nfc_uid: nfcUid }),
   nfcStatus: (patientId) => api.get(`/patients/${encodeURIComponent(patientId)}/nfc-status/`),
+  assignDoctor: (patientId, doctorId) => api.post('/patients/assign-doctor/', { patient_id: patientId, doctor_id: doctorId }),
+};
+
+// ═══ NOTIFICATIONS ═══
+export const notificationsAPI = {
+  list: () => api.get("/notifications/"),
+  unreadCount: () => api.get("/notifications/unread-count/"),
+  markRead: (id) => api.patch(`/notifications/${id}/mark-read/`),
+  markAllRead: () => api.patch("/notifications/mark-all-read/"),
 };
 
 // ═══ DOCTORS ═══
@@ -135,10 +147,24 @@ export const reportsAPI = {
   get: () => api.get("/reports/"),
 };
 
+// ═══ PATIENT UPLOADS ═══
+export const uploadsAPI = {
+  list: (params) => api.get("/patient-uploads/", { params }),
+  upload: (formData) =>
+    api.post("/patient-uploads/", formData, {
+      headers: { "Content-Type": "multipart/form-data" },
+    }),
+  delete: (id) => api.delete(`/patient-uploads/${id}/`),
+  // Returns a URL string for direct download (opened via <a> or window.open)
+  downloadUrl: (id) => `${CLEAN_API_BASE}/api/patient-uploads/${id}/download/`,
+};
+
 // ═══ HOSPITAL ═══
 export const hospitalAPI = {
   getSettings: () => api.get("/hospital/settings/"),
   updateSettings: (data) => api.put("/hospital/settings/", data),
+  list: () => api.get("/hospitals/brief/"),
+  myHospital: () => api.get("/hospitals/my-hospital/"),
 };
 
 // ═══ CONTACT ═══

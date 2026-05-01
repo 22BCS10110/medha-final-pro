@@ -2,7 +2,7 @@
 
 ## Overview
 
-Medha Health now has a complete RBAC system implemented across both backend (Django) and frontend (React).
+Medha Health Intelligance now has a complete RBAC system implemented across both backend (Django) and frontend (React).
 
 ## Role Hierarchy
 

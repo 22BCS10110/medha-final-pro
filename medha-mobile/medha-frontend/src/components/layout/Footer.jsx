@@ -44,9 +44,7 @@ const Footer = () => {
           <div className="lg:col-span-2 space-y-6">
             <Logo className="mb-4" />
             <p className="text-slate-600 text-base leading-relaxed max-w-sm">
-              The next generation of healthcare intelligence. 
-              Empowering clinics, doctors, and students with 
-              AI-driven insights and seamless administrative tools.
+              Intelligence That Travels With You
             </p>
             <div className="flex items-center gap-4 pt-2">
               <a href="#" className="w-10 h-10 rounded-lg bg-white border border-slate-200 flex items-center justify-center text-slate-500 hover:text-primary hover:border-primary transition-all duration-300">
@@ -87,7 +85,7 @@ const Footer = () => {
         {/* Bottom Banner */}
         <div className="pt-8 border-t border-slate-200 flex flex-col md:flex-row justify-between items-center gap-6">
           <div className="flex items-center gap-2 text-sm text-slate-500">
-            <span>&copy; {currentYear} Medhā Health Intelligence. All rights reserved.</span>
+            <span>&copy; {currentYear} Medha Health Intelligence. All rights reserved.</span>
             <span className="inline-block w-1 h-1 rounded-full bg-slate-300" />
             <span>Built for the future of Medicine.</span>
           </div>

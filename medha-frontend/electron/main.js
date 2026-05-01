@@ -1,5 +1,5 @@
 /**
- * Medha Health Desktop Application — Main Process
+ * Medha Health Intelligance Desktop Application — Main Process
  *
  * Handles: auth, API proxy, local database, sync engine, NFC bridge.
  * Login → role-based redirect to app.html
@@ -39,7 +39,7 @@ function createWindow() {
     height: 800,
     minWidth: 1024,
     minHeight: 700,
-    title: 'Medha Health',
+    title: 'Medha Health Intelligance',
     webPreferences: {
       nodeIntegration: false,
       contextIsolation: true,
@@ -317,6 +317,24 @@ function registerHandlers() {
   ipcMain.handle('navigate:app', (_e, { user, tokens }) => {
     authToken = tokens?.access || authToken;
     mainWindow.loadFile(path.join(__dirname, 'app.html'));
+  });
+
+  // Renderer-driven login (React Portal/LoginModal) pushes the JWT here so
+  // main-process API calls (NFC lookups, sync engine) authenticate too.
+  ipcMain.handle('auth:set-token', (_e, token) => {
+    authToken = token || null;
+    if (sync) {
+      if (authToken) {
+        sync.start(authToken, (status) => {
+          if (mainWindow && !mainWindow.isDestroyed()) {
+            mainWindow.webContents.send('sync:status', status);
+          }
+        });
+      } else {
+        sync.stop();
+      }
+    }
+    return { success: true };
   });
 
   // ── API Proxy (online requests) ──

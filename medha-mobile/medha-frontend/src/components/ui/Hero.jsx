@@ -49,7 +49,7 @@ const Hero = ({ onOpenMobilePreview }) => {
         >
           Intelligence that <br />
           <span className="bg-clip-text text-transparent bg-gradient-to-r from-primary via-secondary to-primary bg-[length:200%_auto] animate-shimmer italic">
-            Saves Lives.
+            Travels With You.
           </span>
         </motion.h1>
 
@@ -60,7 +60,7 @@ const Hero = ({ onOpenMobilePreview }) => {
           transition={{ duration: 0.6, delay: 0.2 }}
           className="text-lg md:text-2xl text-slate-500 max-w-3xl mx-auto mb-16 leading-relaxed font-medium"
         >
-          Medhā harmonizes clinical expertise with advanced AI to deliver 
+          Medha harmonizes clinical expertise with advanced AI to deliver 
           high-fidelity health insights. Built for hospitals that prioritize 
           outcome over output.
         </motion.p>

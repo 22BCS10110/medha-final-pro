@@ -47,7 +47,7 @@ class MedhaApp extends ConsumerWidget {
     final router = ref.watch(appRouterProvider);
 
     return MaterialApp.router(
-      title: "Medha Health",
+      title: "Medha Health Intelligance",
       debugShowCheckedModeBanner: false,
       theme: AppTheme.lightTheme,
       routerConfig: router,

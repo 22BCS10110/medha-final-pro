@@ -14,7 +14,12 @@
       "Bash(python:*)",
       "Bash(node --check server.js)",
       "Bash(/c/flutter/bin/flutter devices:*)",
-      "Bash(/c/flutter/bin/flutter run:*)"
+      "Bash(/c/flutter/bin/flutter run:*)",
+      "Bash(.venv/Scripts/python.exe manage.py check)",
+      "Bash(.venv/Scripts/python.exe -c ' *)",
+      "Bash(node -e ' *)",
+      "Bash(cp \"D:/medha project mac os/medha project/logo 1.1.jpeg\" \"D:/medha project mac os/medha project/medha-frontend/electron/logo-white.jpeg\")",
+      "Bash(cp \"D:/medha project mac os/medha project/logo 1.2.jpeg\" \"D:/medha project mac os/medha project/medha-frontend/electron/logo-blue.jpeg\")"
     ]
   }
 }

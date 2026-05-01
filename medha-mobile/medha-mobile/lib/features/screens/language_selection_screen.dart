@@ -81,7 +81,7 @@ class LanguageSelectionScreen extends ConsumerWidget {
                     borderRadius: BorderRadius.circular(999),
                   ),
                   child: Text(
-                    "Medha Health • Clinical Sanctuary",
+                    "Medha Health Intelligance • Clinical Sanctuary",
                     style: GoogleFonts.plusJakartaSans(
                       color: AppTheme.primary,
                       fontWeight: FontWeight.w700,
