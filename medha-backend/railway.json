@@ -2,10 +2,10 @@
   "$schema": "https://railway.com/railway.schema.json",
   "build": {
     "builder": "RAILPACK",
-    "buildCommand": "python manage.py collectstatic --noinput"
+    "buildCommand": "pip install -r requirements.txt && python manage.py migrate --noinput && python manage.py collectstatic --noinput"
   },
   "deploy": {
-    "startCommand": "gunicorn medha_backend.wsgi --bind 0.0.0.0:$PORT",
+    "startCommand": "gunicorn medha_backend.wsgi --bind 0.0.0.0:$PORT --workers 2 --timeout 120",
     "restartPolicyType": "ON_FAILURE",
     "restartPolicyMaxRetries": 3
   }
