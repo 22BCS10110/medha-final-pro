@@ -12,7 +12,7 @@
     "build": "vite build",
     "preview": "vite preview",
     "electron": "electron .",
-    "postinstall": "electron-rebuild -f -w better-sqlite3"
+    "rebuild-native": "electron-rebuild -f -w better-sqlite3"
   },
   "build": {
     "appId": "com.medha.health",
